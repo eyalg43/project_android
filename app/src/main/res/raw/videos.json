@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "title": "Sample Video 1",
+    "description": "This is the first sample video.",
+    "author": "Author 1",
+    "views": "1,234 views",
+    "uploadtime": "1 hour ago",
+    "authorImage": "lebron",
+    "url": "android.resource://com.example.project_android/raw/video1"
+  },
+  {
+    "id": 2,
+    "title": "Sample Video 2",
+    "description": "This is the second sample video.",
+    "author": "Author 2",
+    "views": "2,345 views",
+    "uploadtime": "2 hours ago",
+    "authorImage": "lebron",
+    "url": "android.resource://com.example.project_android/raw/video2"
+  }
+]
