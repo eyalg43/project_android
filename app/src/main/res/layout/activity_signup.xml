@@ -4,69 +4,62 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:backgroundTint="@android:color/white"
+    android:padding="16dp"
     tools:context=".SignupActivity">
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="375dp"
-        android:layout_height="110dp"
-        android:background="@android:color/transparent"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/vidtube_logo1"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/editTextUsername"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editTextUsername"
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:layout_marginTop="60dp"
+        android:layout_marginBottom="444dp"
         android:hint=" Username"
-        android:textSize="20sp"
         android:inputType="text"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView" />
+        app:layout_constraintTop_toBottomOf="@id/imageView2"
+        app:layout_constraintVertical_bias="1.0" />
 
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="0dp"
         android:layout_height="70dp"
+        android:layout_marginTop="8dp"
         android:hint=" Password"
-        android:textSize="20sp"
         android:inputType="textPassword"
-        android:layout_marginBottom="16dp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editTextUsername" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextUsername" />
 
     <EditText
         android:id="@+id/editTextConfirmPassword"
         android:layout_width="0dp"
         android:layout_height="70dp"
+        android:layout_marginTop="4dp"
         android:hint=" Confirm Password"
-        android:textSize="20sp"
         android:inputType="textPassword"
-        android:layout_marginBottom="16dp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editTextPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
     <EditText
         android:id="@+id/editTextDisplayName"
         android:layout_width="0dp"
         android:layout_height="70dp"
+        android:layout_marginTop="8dp"
         android:hint=" Display Name"
-        android:textSize="20sp"
         android:inputType="text"
-        android:layout_marginBottom="8dp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editTextConfirmPassword" />
 
@@ -74,14 +67,14 @@
         android:id="@+id/buttonUploadImage"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
+        android:backgroundTint="@android:color/holo_blue_dark"
         android:text="Upload Profile Picture"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:backgroundTint="@android:color/holo_blue_dark"
-        app:layout_constraintVertical_bias="0.79" />
+        app:layout_constraintVertical_bias="0.802" />
 
     <ImageView
         android:id="@+id/imageViewProfile"
@@ -100,8 +93,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character."
-        android:textSize="18sp"
         android:textColor="@android:color/holo_red_dark"
+        android:textSize="18sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -112,14 +105,13 @@
 
     <Button
         android:id="@+id/buttonSignup"
-        android:layout_width="0dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="116dp"
+        android:layout_width="329dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="120dp"
+        android:backgroundTint="@android:color/holo_blue_dark"
         android:text="Sign Up"
         android:textSize="25sp"
-        android:backgroundTint="@android:color/holo_blue_dark"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewPasswordRequirements" />
 
@@ -128,13 +120,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sign Up to VidTube:"
-        android:textStyle="bold"
         android:textSize="25sp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextUsername"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:layout_constraintVertical_bias="1.0" />
+        tools:layout_editor_absoluteY="145dp" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="347dp"
+        android:layout_height="74dp"
+        android:layout_marginTop="36dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo_vidtube1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
