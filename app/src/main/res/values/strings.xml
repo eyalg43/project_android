@@ -9,4 +9,15 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="passwords_do_not_match">Passwords do not match.</string>
+    <string name="please_choose_a_profile_picture">Please choose a profile picture.</string>
+    <string name="display_name">Display Name</string>
+    <string name="upload_profile_picture">Upload Profile Picture</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_up_to_vidtube">Sign Up to VidTube:</string>
+    <string name="image_successfully_uploaded">Image successfully uploaded.</string>
+    <string name="password_must_have_at_least_8_characters_1_uppercase_1_lowercase_1_number_and_1_special_character">Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.</string>
 </resources>
