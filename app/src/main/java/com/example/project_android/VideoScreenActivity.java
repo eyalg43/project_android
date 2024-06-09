@@ -7,6 +7,8 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.InputStream;
@@ -22,7 +24,8 @@ public class VideoScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_video_screen);
 
         // Load and parse the JSON file
-        List<VideoData> videoDataList = loadJSONFromRaw();
+        List<VideoData> videoDataList = loadJSONFromRaw(R.raw.videos, new TypeToken<List<VideoData>>(){}.getType());
+        List<VideoComments> videoCommentsList = loadJSONFromRaw(R.raw.comments, new TypeToken<List<VideoComments>>(){}.getType());
 
         if (videoDataList != null && !videoDataList.isEmpty()) {
             // Display the first video's details
@@ -61,13 +64,31 @@ public class VideoScreenActivity extends AppCompatActivity {
             });
 
             videoView.start();
+
+            // Display comments
+            VideoComments commentsForFirstVideo = findCommentsForVideo(videoCommentsList, firstVideo.getId());
+            if (commentsForFirstVideo != null) {
+                RecyclerView commentsRecyclerView = findViewById(R.id.comments_recycler_view);
+                commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+                CommentsAdapter commentsAdapter = new CommentsAdapter(commentsForFirstVideo.getComments());
+                commentsRecyclerView.setAdapter(commentsAdapter);
+            }
         }
     }
 
-    private List<VideoData> loadJSONFromRaw() {
-        InputStream inputStream = getResources().openRawResource(R.raw.videos);
+    private <T> T loadJSONFromRaw(int resourceId, Type type) {
+        InputStream inputStream = getResources().openRawResource(resourceId);
         InputStreamReader reader = new InputStreamReader(inputStream);
-        Type listType = new TypeToken<List<VideoData>>(){}.getType();
-        return new Gson().fromJson(reader, listType);
+        return new Gson().fromJson(reader, type);
+    }
+
+    private VideoComments findCommentsForVideo(List<VideoComments> videoCommentsList, int videoId) {
+        String videoIdStr = String.valueOf(videoId);
+        for (VideoComments videoComments : videoCommentsList) {
+            if (videoComments.getVideoId().equals(videoIdStr)) {
+                return videoComments;
+            }
+        }
+        return null;
     }
 }
