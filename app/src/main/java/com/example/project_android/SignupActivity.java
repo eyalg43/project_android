@@ -61,6 +61,14 @@ public class SignupActivity extends AppCompatActivity {
                     textViewPasswordRequirements.setVisibility(View.VISIBLE);
                     textViewPasswordRequirements.setText("Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.");
                     return;
+                } else {
+                    textViewPasswordRequirements.setVisibility(View.GONE);
+                }
+
+                // Check if passwords match
+                if (!password.equals(confirmPassword)) {
+                    Toast.makeText(SignupActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 // Other signup logic here
