@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">project_android</string>
+    <string name="app_name">VidTube</string>
+    <string name="video_image">Video Image</string>
+    <string name="author_image">Author Image</string>
+    <string name="video_title">Video Title</string>
+    <string name="channel_name">Channel Name</string>
+    <string name="space_details">\u00A0-\u00A0</string>
+    <string name="views">Views</string>
+    <string name="upload_time">Upload time</string>
 </resources>

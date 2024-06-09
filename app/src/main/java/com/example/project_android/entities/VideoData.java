@@ -1,18 +1,18 @@
 package com.example.project_android.entities;
 
-public class Video {
+public class VideoData {
     private int id;
     private String title;
     private String description;
     private String author;
-    private int views;
-    private int img;
+    private String views;
+    private String img;
     private String video;
     private String uploadTime;
-    private int authorImage;
+    private String authorImage;
 
-    public Video(int id, String title, String description, String author,
-                 int views, int img, String video, String uploadTime, int authorImage) {
+    public VideoData(int id, String title, String description, String author,
+                     String views, String img, String video, String uploadTime, String authorImage) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -56,19 +56,17 @@ public class Video {
         this.author = author;
     }
 
-    public int getViews() {
-        return views;
-    }
+    public String getViews() {return views; }
 
-    public void setViews(int views) {
+    public void setViews(String views) {
         this.views = views;
     }
 
-    public int getImg() {
+    public String getImg() {
         return img;
     }
 
-    public void setImg(int img) {
+    public void setImg(String img) {
         this.img = img;
     }
 
@@ -88,11 +86,11 @@ public class Video {
         this.uploadTime = uploadTime;
     }
 
-    public int getAuthorImage() {
+    public String getAuthorImage() {
         return authorImage;
     }
 
-    public void setAuthorImage(int authorImage) {
+    public void setAuthorImage(String authorImage) {
         this.authorImage = authorImage;
     }
 }
