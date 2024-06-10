@@ -6,11 +6,24 @@ public class VideoData {
     private String description;
     private String author;
     private String views;
-    private String uploadtime;
+    private String img;
+    private String video;
+    private String uploadTime;
     private String authorImage;
-    private String url;
 
-    // Getters and setters
+    public VideoData(int id, String title, String description, String author,
+                     String views, String img, String video, String uploadTime, String authorImage) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.author = author;
+        this.views = views;
+        this.img = img;
+        this.video = video;
+        this.uploadTime = uploadTime;
+        this.authorImage = authorImage;
+    }
+
     public int getId() {
         return id;
     }
@@ -51,12 +64,28 @@ public class VideoData {
         this.views = views;
     }
 
-    public String getUploadtime() {
-        return uploadtime;
+    public String getImg() {
+        return img;
     }
 
-    public void setUploadtime(String uploadtime) {
-        this.uploadtime = uploadtime;
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    public String getVideo() {
+        return video;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
+    }
+
+    public String getUploadTime() {
+        return uploadTime;
+    }
+
+    public void setUploadTime(String uploadTime) {
+        this.uploadTime = uploadTime;
     }
 
     public String getAuthorImage() {
@@ -65,13 +94,5 @@ public class VideoData {
 
     public void setAuthorImage(String authorImage) {
         this.authorImage = authorImage;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 }

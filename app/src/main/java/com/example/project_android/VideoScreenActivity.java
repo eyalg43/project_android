@@ -2,15 +2,20 @@ package com.example.project_android;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -18,14 +23,18 @@ import java.util.List;
 
 public class VideoScreenActivity extends AppCompatActivity {
 
+    private RecyclerView relatedVideosRecyclerView;
+    private VideoAdapter videoAdapter;
+    private List<VideoData> relatedVideosList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_screen);
 
         // Load and parse the JSON file
-        List<VideoData> videoDataList = loadJSONFromRaw(R.raw.videos, new TypeToken<List<VideoData>>(){}.getType());
-        List<VideoComments> videoCommentsList = loadJSONFromRaw(R.raw.comments, new TypeToken<List<VideoComments>>(){}.getType());
+        List<VideoData> videoDataList = loadVideoJSONFromRaw();
+        List<VideoComments> videoCommentsList = loadCommentsJSONFromRaw();
 
         if (videoDataList != null && !videoDataList.isEmpty()) {
             // Display the first video's details
@@ -41,7 +50,7 @@ public class VideoScreenActivity extends AppCompatActivity {
 
             titleTextView.setText(firstVideo.getTitle());
             viewsTextView.setText(firstVideo.getViews());
-            uploadTimeTextView.setText(firstVideo.getUploadtime());
+            uploadTimeTextView.setText(firstVideo.getUploadTime());
             descriptionTextView.setText(firstVideo.getDescription());
             authorTextView.setText(firstVideo.getAuthor());
 
@@ -50,7 +59,7 @@ public class VideoScreenActivity extends AppCompatActivity {
             authorImageView.setImageResource(imageResource);
 
             // Load video
-            Uri videoUri = Uri.parse(firstVideo.getUrl());
+            Uri videoUri = Uri.parse(firstVideo.getVideo());
             videoView.setVideoURI(videoUri);
 
             // Add media controls to the VideoView
@@ -65,6 +74,17 @@ public class VideoScreenActivity extends AppCompatActivity {
 
             videoView.start();
 
+            // Setup related videos RecyclerView
+            relatedVideosRecyclerView = findViewById(R.id.related_videos_recycler_view);
+            relatedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+            // Remove the first video from the list to display related videos
+            videoDataList.remove(0);
+
+            // Initialize adapter and set it to RecyclerView
+            videoAdapter = new VideoAdapter(videoDataList, this::playSelectedVideo);
+            relatedVideosRecyclerView.setAdapter(videoAdapter);
+
             // Display comments
             VideoComments commentsForFirstVideo = findCommentsForVideo(videoCommentsList, firstVideo.getId());
             if (commentsForFirstVideo != null) {
@@ -73,13 +93,36 @@ public class VideoScreenActivity extends AppCompatActivity {
                 CommentsAdapter commentsAdapter = new CommentsAdapter(commentsForFirstVideo.getComments());
                 commentsRecyclerView.setAdapter(commentsAdapter);
             }
+
+            // Set up the show comments button
+            Button showCommentsButton = findViewById(R.id.show_comments_button);
+            View commentsContainer = findViewById(R.id.comments_container);
+
+            Button hideCommentsButton = findViewById(R.id.close_comments_button);
+
+            showCommentsButton.setOnClickListener(v -> {
+                findViewById(R.id.content_container).setVisibility(View.GONE);
+                commentsContainer.setVisibility(View.VISIBLE);
+            });
+            hideCommentsButton.setOnClickListener(v -> {
+                findViewById(R.id.content_container).setVisibility(View.VISIBLE);
+                commentsContainer.setVisibility(View.GONE);
+            });
         }
     }
 
-    private <T> T loadJSONFromRaw(int resourceId, Type type) {
-        InputStream inputStream = getResources().openRawResource(resourceId);
+    private List<VideoData> loadVideoJSONFromRaw() {
+        InputStream inputStream = getResources().openRawResource(R.raw.videos);
         InputStreamReader reader = new InputStreamReader(inputStream);
-        return new Gson().fromJson(reader, type);
+        Type listType = new TypeToken<List<VideoData>>() {}.getType();
+        return new Gson().fromJson(reader, listType);
+    }
+
+    private List<VideoComments> loadCommentsJSONFromRaw() {
+        InputStream inputStream = getResources().openRawResource(R.raw.comments);
+        InputStreamReader reader = new InputStreamReader(inputStream);
+        Type listType = new TypeToken<List<VideoComments>>() {}.getType();
+        return new Gson().fromJson(reader, listType);
     }
 
     private VideoComments findCommentsForVideo(List<VideoComments> videoCommentsList, int videoId) {
@@ -90,5 +133,31 @@ public class VideoScreenActivity extends AppCompatActivity {
             }
         }
         return null;
+    }
+
+    private void playSelectedVideo(VideoData selectedVideo) {
+        TextView titleTextView = findViewById(R.id.video_title);
+        TextView viewsTextView = findViewById(R.id.video_views);
+        TextView uploadTimeTextView = findViewById(R.id.video_uploadtime);
+        TextView descriptionTextView = findViewById(R.id.video_description);
+        TextView authorTextView = findViewById(R.id.author_name);
+        ImageView authorImageView = findViewById(R.id.author_image);
+        VideoView videoView = findViewById(R.id.video_view);
+
+        titleTextView.setText(selectedVideo.getTitle());
+        viewsTextView.setText(selectedVideo.getViews());
+        uploadTimeTextView.setText(selectedVideo.getUploadTime());
+        descriptionTextView.setText(selectedVideo.getDescription());
+        authorTextView.setText(selectedVideo.getAuthor());
+
+        // Load author image
+        int imageResource = getResources().getIdentifier(selectedVideo.getAuthorImage(), "drawable", getPackageName());
+        authorImageView.setImageResource(imageResource);
+
+        // Load video
+        Uri videoUri = Uri.parse(selectedVideo.getVideo());
+        videoView.setVideoURI(videoUri);
+
+        videoView.setOnPreparedListener(mp -> videoView.start());
     }
 }
