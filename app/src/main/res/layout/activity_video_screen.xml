@@ -203,6 +203,14 @@
                 android:background="@color/white"
                 android:visibility="gone">
 
+                <Button
+                    android:backgroundTint="@color/white"
+                    android:textColor="@color/black"
+                    android:id="@+id/close_comments_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="X" />
+
                 <TextView
                     android:id="@+id/comments_section"
                     android:layout_width="wrap_content"
@@ -218,11 +226,6 @@
                     android:layout_marginTop="8dp"
                     android:layout_weight="1" />
 
-                <Button
-                    android:id="@+id/close_comments_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="X" />
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -7,6 +7,19 @@ public class CommentData {
     private String date;
     private String img;
 
+    // Default constructor
+    public CommentData() {
+    }
+
+    // Constructor with parameters
+    public CommentData(int id, String text, String username, String date, String img) {
+        this.id = id;
+        this.text = text;
+        this.username = username;
+        this.date = date;
+        this.img = img;
+    }
+
     // Getters and Setters
     public int getId() {
         return id;

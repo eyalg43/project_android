@@ -6,6 +6,16 @@ public class VideoComments {
     private String videoId;
     private List<CommentData> comments;
 
+    // Default constructor
+    public VideoComments() {
+    }
+
+    // Constructor with parameters
+    public VideoComments(String videoId, List<CommentData> comments) {
+        this.videoId = videoId;
+        this.comments = comments;
+    }
+
     // Getters and Setters
     public String getVideoId() {
         return videoId;
@@ -23,4 +33,3 @@ public class VideoComments {
         this.comments = comments;
     }
 }
-// Path: app/src/main/res/layout/activity_video_comments.xml

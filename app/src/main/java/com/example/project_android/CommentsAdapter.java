@@ -7,14 +7,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.CommentViewHolder> {
+    private List<CommentData> commentsList;
 
-    private final List<CommentData> comments;
-
-    public CommentsAdapter(List<CommentData> comments) {
-        this.comments = comments;
+    public CommentsAdapter(List<CommentData> commentsList) {
+        // Ensure the commentsList is modifiable
+        this.commentsList = new ArrayList<>(commentsList);
     }
 
     @NonNull
@@ -26,7 +27,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
-        CommentData comment = comments.get(position);
+        CommentData comment = commentsList.get(position);
         holder.usernameTextView.setText(comment.getUsername());
         holder.dateTextView.setText(comment.getDate());
         holder.commentTextView.setText(comment.getText());
@@ -38,11 +39,17 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
     @Override
     public int getItemCount() {
-        return comments.size();
+        return commentsList.size();
+    }
+
+    public void updateComments(List<CommentData> newComments) {
+        // Ensure the newComments list is modifiable
+        commentsList.clear();
+        commentsList.addAll(new ArrayList<>(newComments));
+        notifyDataSetChanged();
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {
-
         TextView usernameTextView;
         TextView dateTextView;
         TextView commentTextView;
