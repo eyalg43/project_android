@@ -4,10 +4,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -28,9 +32,20 @@ public class HomePage extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private VideosListAdapter adapter;
     private List<VideoData> allVideos;
+    private DrawerLayout drawerLayout;
+    private Button toggleModeButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if ((getResources().getConfiguration().uiMode &
+                android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
         setContentView(R.layout.activity_home_page);
 
         RecyclerView listVideos = findViewById(R.id.listVideos);
@@ -91,6 +106,53 @@ public class HomePage extends AppCompatActivity {
                 return false;
             }
         });
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        ImageButton menuButton = findViewById(R.id.menu_button);
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawerLayout.isDrawerOpen(findViewById(R.id.sidebar))) {
+                    drawerLayout.closeDrawer(findViewById(R.id.sidebar));
+                } else {
+                    drawerLayout.openDrawer(findViewById(R.id.sidebar));
+                }
+            }
+        });
+
+        LinearLayout menuHome = findViewById(R.id.menu_home);
+        LinearLayout menuShorts = findViewById(R.id.menu_shorts);
+        LinearLayout menuSubscriptions = findViewById(R.id.menu_subscriptions);
+        LinearLayout menuYou = findViewById(R.id.menu_you);
+        LinearLayout menuHistory = findViewById(R.id.menu_history);
+
+        View.OnClickListener menuClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.closeDrawer(findViewById(R.id.sidebar));
+            }
+        };
+
+        menuHome.setOnClickListener(menuClickListener);
+        menuShorts.setOnClickListener(menuClickListener);
+        menuSubscriptions.setOnClickListener(menuClickListener);
+        menuYou.setOnClickListener(menuClickListener);
+        menuHistory.setOnClickListener(menuClickListener);
+
+        toggleModeButton = findViewById(R.id.btn_toggle_mode);
+        updateModeButtonText(); // Set initial text based on current mode
+        toggleModeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int nightMode = AppCompatDelegate.getDefaultNightMode();
+                if (nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                }
+                updateModeButtonText();
+            }
+        });
     }
 
     private List<VideoData> loadVideosFromJson() {
@@ -109,5 +171,14 @@ public class HomePage extends AppCompatActivity {
             }
         }
         adapter.setVideos(filteredList);
+    }
+
+    private void updateModeButtonText() {
+        int nightMode = AppCompatDelegate.getDefaultNightMode();
+        if (nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
+            toggleModeButton.setText("Light Mode");
+        } else {
+            toggleModeButton.setText("Dark Mode");
+        }
     }
 }

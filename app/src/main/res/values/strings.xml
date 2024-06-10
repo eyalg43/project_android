@@ -7,4 +7,6 @@
     <string name="space_details">\u00A0-\u00A0</string>
     <string name="views">Views</string>
     <string name="upload_time">Upload time</string>
+    <string name="menu_button">Menu Button</string>
+    <string name="search_button">Search Button</string>
 </resources>
