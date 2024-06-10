@@ -6,10 +6,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,24 +28,17 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomePage extends AppCompatActivity {
+public class HomePage extends BaseActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private VideosListAdapter adapter;
     private List<VideoData> allVideos;
     private DrawerLayout drawerLayout;
     private Button toggleModeButton;
+    private ImageView toggleModeIcon;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if ((getResources().getConfiguration().uiMode &
-                android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
-                android.content.res.Configuration.UI_MODE_NIGHT_YES) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
-
         setContentView(R.layout.activity_home_page);
 
         RecyclerView listVideos = findViewById(R.id.listVideos);
@@ -140,6 +133,7 @@ public class HomePage extends AppCompatActivity {
         menuHistory.setOnClickListener(menuClickListener);
 
         toggleModeButton = findViewById(R.id.btn_toggle_mode);
+        toggleModeIcon = findViewById(R.id.toggle_mode_icon);
         updateModeButtonText(); // Set initial text based on current mode
         toggleModeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,7 +144,7 @@ public class HomePage extends AppCompatActivity {
                 } else {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 }
-                updateModeButtonText();
+                recreate();
             }
         });
     }
@@ -177,8 +171,10 @@ public class HomePage extends AppCompatActivity {
         int nightMode = AppCompatDelegate.getDefaultNightMode();
         if (nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             toggleModeButton.setText("Light Mode");
+            toggleModeIcon.setImageResource(R.drawable.ic_light_mode);
         } else {
             toggleModeButton.setText("Dark Mode");
+            toggleModeIcon.setImageResource(R.drawable.ic_dark_mode);
         }
     }
 }
