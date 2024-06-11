@@ -53,4 +53,6 @@
     <string name="sign_up_to_vidtube">Sign Up to VidTube:</string>
     <string name="image_successfully_uploaded">Image successfully uploaded.</string>
     <string name="password_must_have_at_least_8_characters_1_uppercase_1_lowercase_1_number_and_1_special_character">Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
 </resources>

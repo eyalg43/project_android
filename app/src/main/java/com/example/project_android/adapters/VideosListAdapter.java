@@ -4,17 +4,25 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project_android.R;
+import com.example.project_android.UserState;
 import com.example.project_android.entities.VideoData;
 
 import java.util.List;
 
 public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.VideoViewHolder> {
+
+    public interface OnItemClickListener {
+        void onItemClick(VideoData video);
+        void onEditClick(VideoData video);
+        void onDeleteClick(VideoData video);
+    }
 
     class VideoViewHolder extends RecyclerView.ViewHolder {
         private final TextView videoTitle;
@@ -23,6 +31,8 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
         private final TextView videoUploadTime;
         private final ImageView videoAuthorImage;
         private final ImageView videoImage;
+        private final Button editButton;
+        private final Button deleteButton;
 
         public VideoViewHolder(View itemView) {
             super(itemView);
@@ -32,16 +42,20 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
             videoUploadTime = itemView.findViewById(R.id.videoUploadTime);
             videoAuthorImage = itemView.findViewById(R.id.videoAuthorImage);
             videoImage = itemView.findViewById(R.id.videoImage);
+            editButton = itemView.findViewById(R.id.edit_button);
+            deleteButton = itemView.findViewById(R.id.delete_button);
         }
     }
 
     private final LayoutInflater mInflater;
     private List<VideoData> videoData;
     private Context context;
+    private OnItemClickListener onItemClickListener;
 
-    public VideosListAdapter(Context context) {
+    public VideosListAdapter(Context context, OnItemClickListener onItemClickListener) {
         this.mInflater = LayoutInflater.from(context);
         this.context = context;
+        this.onItemClickListener = onItemClickListener;
     }
 
     @Override
@@ -64,12 +78,47 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
 
             holder.videoAuthorImage.setImageResource(authorImageResId);
             holder.videoImage.setImageResource(imgResId);
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onItemClick(current);
+                    }
+                }
+            });
+
+            if (UserState.isLoggedIn()) {
+                holder.editButton.setVisibility(View.VISIBLE);
+                holder.deleteButton.setVisibility(View.VISIBLE);
+            } else {
+                holder.editButton.setVisibility(View.GONE);
+                holder.deleteButton.setVisibility(View.GONE);
+            }
+
+            holder.editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onEditClick(current);
+                    }
+                }
+            });
+
+            holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onDeleteClick(current);
+                    }
+                }
+            });
         } else {
             holder.videoTitle.setText("No VideoData");
         }
     }
 
-    public void setVideos(List<VideoData> videoData){
+    public void setVideos(List<VideoData> videoData) {
         this.videoData = videoData;
         notifyDataSetChanged();
     }
