@@ -19,7 +19,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -85,9 +89,16 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
+                // Save image to internal storage
+                String imagePath = saveImageToInternalStorage(selectedImageUri);
+                if (imagePath == null) {
+                    textViewImageError.setVisibility(View.VISIBLE);
+                    textViewImageError.setText("Failed to save profile picture.");
+                    return;
+                }
+
                 // Add user to in-memory state
-                String imageUri = selectedImageUri != null ? selectedImageUri.toString() : "";  // Save image URI or path
-                UserState.addUser(username, password, displayName, imageUri);
+                UserState.addUser(username, password, displayName, imagePath);
 
                 // Proceed with signup logic
                 Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
@@ -124,8 +135,7 @@ public class SignupActivity extends AppCompatActivity {
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        intent.setType("image/*");
-            startActivityForResult(intent, REQUEST_IMAGE_GET);
+        startActivityForResult(intent, REQUEST_IMAGE_GET);
     }
 
     @Override
@@ -149,7 +159,8 @@ public class SignupActivity extends AppCompatActivity {
                 selectedImageUri = data.getData();
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
-                    imageViewProfile.setVisibility(View.GONE);  // Hide the ImageView
+                    imageViewProfile.setImageBitmap(bitmap);
+                    imageViewProfile.setVisibility(View.VISIBLE);  // Show the ImageView
 
                     TextView textViewImageSuccess = findViewById(R.id.textViewImageSuccess);
                     textViewImageSuccess.setVisibility(View.VISIBLE);  // Show success message
@@ -158,6 +169,25 @@ public class SignupActivity extends AppCompatActivity {
                     Log.e("SignupActivity", "Error loading image: " + e.getMessage());
                 }
             }
+        }
+    }
+
+    private String saveImageToInternalStorage(Uri imageUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+
+            File directory = getFilesDir();
+            File file = new File(directory, "profile_image_" + System.currentTimeMillis() + ".png");
+
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.close();
+
+            return file.getAbsolutePath();
+        } catch (IOException e) {
+            Log.e("SignupActivity", "Error saving image: " + e.getMessage());
+            return null;
         }
     }
 }

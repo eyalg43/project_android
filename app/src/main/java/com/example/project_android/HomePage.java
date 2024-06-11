@@ -1,8 +1,8 @@
 package com.example.project_android;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -24,7 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.project_android.adapters.VideosListAdapter;
 import com.example.project_android.entities.VideoData;
 
-import java.io.InputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -260,14 +260,16 @@ public class HomePage extends AppCompatActivity {
         }
     }
 
-    private void loadProfileImage(String imageUriString) {
-        try {
-            Uri imageUri = Uri.parse(imageUriString);
-            ContentResolver resolver = getContentResolver();
-            InputStream inputStream = resolver.openInputStream(imageUri);
-            profileImage.setImageBitmap(android.graphics.BitmapFactory.decodeStream(inputStream));
-        } catch (Exception e) {
-            Log.e("HomePage", "Failed to load profile image: " + e.getMessage());
+    private void loadProfileImage(String imagePath) {
+        if (imagePath != null && !imagePath.isEmpty()) {
+            File imgFile = new File(imagePath);
+            if (imgFile.exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                profileImage.setImageBitmap(bitmap);
+            } else {
+                profileImage.setImageResource(R.drawable.img2); // fallback to a default image
+            }
+        } else {
             profileImage.setImageResource(R.drawable.img2); // fallback to a default image
         }
     }
