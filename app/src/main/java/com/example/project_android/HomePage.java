@@ -1,5 +1,8 @@
 package com.example.project_android;
 
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -9,7 +12,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,23 +23,26 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project_android.adapters.VideosListAdapter;
 import com.example.project_android.entities.VideoData;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomePage extends BaseActivity {
+public class HomePage extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private VideosListAdapter adapter;
     private List<VideoData> allVideos;
     private DrawerLayout drawerLayout;
     private Button toggleModeButton;
     private ImageView toggleModeIcon;
+    private Button signInButton;
+    private Button signUpButton;
+    private ImageView profileImage;
+    private TextView welcomeMessage;
+    private LinearLayout profileContainer;
+    private LinearLayout authButtonsContainer;
+    private Button signOutButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,23 +61,17 @@ public class HomePage extends BaseActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        List<VideoData> videos = loadVideosFromJson();
-                        if (videos != null) {
-                            adapter.setVideos(videos);
-                        } else {
-                            Log.e("HomePage", "Failed to load videos from JSON");
-                        }
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 }, 2000);
             }
         });
 
-        allVideos = loadVideosFromJson();
+        allVideos = VideosState.getInstance().getVideoList();
         if (allVideos != null) {
             adapter.setVideos(allVideos);
         } else {
-            Log.e("HomePage", "Failed to load videos from JSON");
+            Log.e("HomePage", "Error getting videos");
         }
         swipeRefreshLayout.setRefreshing(false);
 
@@ -147,14 +149,50 @@ public class HomePage extends BaseActivity {
                 recreate();
             }
         });
-    }
 
-    private List<VideoData> loadVideosFromJson() {
-        InputStream inputStream = getResources().openRawResource(R.raw.videos);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        Gson gson = new Gson();
-        Type videoListType = new TypeToken<List<VideoData>>() {}.getType();
-        return gson.fromJson(reader, videoListType);
+        signInButton = findViewById(R.id.btn_sign_in);
+        signUpButton = findViewById(R.id.btn_sign_up);
+        authButtonsContainer = findViewById(R.id.auth_buttons_container);
+        profileImage = findViewById(R.id.profile_image);
+        profileContainer = findViewById(R.id.profile_container);
+        welcomeMessage = findViewById(R.id.welcome_message);
+        signOutButton = findViewById(R.id.btn_sign_out);
+
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePage.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePage.this, SignupActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserState.logout();
+                authButtonsContainer.setVisibility(View.VISIBLE);
+                profileContainer.setVisibility(View.GONE);
+            }
+        });
+
+        // Check if user is logged in
+        if (UserState.isLoggedIn()) {
+            User loggedInUser = UserState.getLoggedInUser();
+            if (loggedInUser != null) {
+                authButtonsContainer.setVisibility(View.GONE);
+                profileContainer.setVisibility(View.VISIBLE);
+                welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
+                loadProfileImage(loggedInUser.getImageUri());
+            }
+        }
     }
 
     private void filterVideos(String text) {
@@ -173,6 +211,18 @@ public class HomePage extends BaseActivity {
             toggleModeIcon.setImageResource(R.drawable.ic_light_mode);
         } else {
             toggleModeIcon.setImageResource(R.drawable.ic_dark_mode);
+        }
+    }
+
+    private void loadProfileImage(String imageUriString) {
+        try {
+            Uri imageUri = Uri.parse(imageUriString);
+            ContentResolver resolver = getContentResolver();
+            InputStream inputStream = resolver.openInputStream(imageUri);
+            profileImage.setImageBitmap(android.graphics.BitmapFactory.decodeStream(inputStream));
+        } catch (Exception e) {
+            Log.e("HomePage", "Failed to load profile image: " + e.getMessage());
+            profileImage.setImageResource(R.drawable.img2); // fallback to a default image
         }
     }
 }
