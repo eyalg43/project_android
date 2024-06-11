@@ -236,6 +236,21 @@ public class HomePage extends AppCompatActivity {
         adapter.setVideos(filteredList);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateVideos();
+    }
+
+    private void updateVideos() {
+        allVideos = VideosState.getInstance().getVideoList();
+        if (allVideos != null) {
+            adapter.setVideos(allVideos);
+        } else {
+            Log.e("HomePage", "Error getting videos");
+        }
+    }
+
     private void updateModeButtonText() {
         int nightMode = AppCompatDelegate.getDefaultNightMode();
         if (nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
