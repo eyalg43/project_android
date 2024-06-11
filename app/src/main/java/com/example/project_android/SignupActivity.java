@@ -31,6 +31,9 @@ public class SignupActivity extends AppCompatActivity {
     private TextView textViewPasswordRequirements;
     private TextView textViewPasswordMatch;
     private TextView textViewImageError;
+    private TextView textViewDisplayNameError;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,7 @@ public class SignupActivity extends AppCompatActivity {
         textViewPasswordRequirements = findViewById(R.id.textViewPasswordRequirements);
         textViewPasswordMatch = findViewById(R.id.textViewPasswordMatch);
         textViewImageError = findViewById(R.id.textViewImageError);
+        textViewDisplayNameError = findViewById(R.id.textViewDisplayNameError);
 
         buttonUploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,6 +80,15 @@ public class SignupActivity extends AppCompatActivity {
                     textViewPasswordMatch.setVisibility(View.VISIBLE);
                     textViewPasswordMatch.setText("Passwords do not match.");
                     return;
+                }
+
+                // Check if display name is filled
+                if (displayName.isEmpty()) {
+                    textViewDisplayNameError.setVisibility(View.VISIBLE);
+                    textViewDisplayNameError.setText("Display name is required.");
+                    return;
+                } else {
+                    textViewDisplayNameError.setVisibility(View.GONE);
                 }
 
                 // Check if image is selected
