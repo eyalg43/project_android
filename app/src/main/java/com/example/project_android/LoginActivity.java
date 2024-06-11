@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (UserState.validateLogin(username, password)) {
                     // Successful login
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, HomePage.class);
                     startActivity(intent);
                     finish();
                 } else {
