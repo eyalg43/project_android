@@ -2,12 +2,9 @@ package com.example.project_android;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.project_android.VideosState;
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.example.project_android.entities.VideoData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -23,22 +20,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
         // Load videos from JSON and set them in the state
         List<VideoData> videoList = loadVideosFromJson();
         VideosState.getInstance().setVideoList(videoList);
 
-        // Existing button to navigate to UploadVideo activity
-        Button buttonUploadVideo = findViewById(R.id.buttonUploadVideo);
-        buttonUploadVideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, UploadVideo.class);
-                startActivity(intent);
-            }
-        });
+        // Apply theme based on system settings
+        applyTheme();
+
+        // Start HomePage activity
+        Intent intent = new Intent(MainActivity.this, HomePage.class);
+        startActivity(intent);
+
+        // Finish MainActivity to prevent looping
+        finish();
     }
 
     private List<VideoData> loadVideosFromJson() {
@@ -47,5 +43,15 @@ public class MainActivity extends AppCompatActivity {
         Gson gson = new Gson();
         Type videoListType = new TypeToken<List<VideoData>>() {}.getType();
         return gson.fromJson(reader, videoListType);
+    }
+
+    private void applyTheme() {
+        if ((getResources().getConfiguration().uiMode &
+                android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
     }
 }

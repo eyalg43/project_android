@@ -1,5 +1,6 @@
 package com.example.project_android;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,23 +20,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project_android.adapters.VideosListAdapter;
 import com.example.project_android.entities.VideoData;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomePage extends BaseActivity {
+public class HomePage extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private VideosListAdapter adapter;
     private List<VideoData> allVideos;
     private DrawerLayout drawerLayout;
     private Button toggleModeButton;
     private ImageView toggleModeIcon;
+    private Button signInButton;
+    private Button signUpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,23 +51,17 @@ public class HomePage extends BaseActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        List<VideoData> videos = loadVideosFromJson();
-                        if (videos != null) {
-                            adapter.setVideos(videos);
-                        } else {
-                            Log.e("HomePage", "Failed to load videos from JSON");
-                        }
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 }, 2000);
             }
         });
 
-        allVideos = loadVideosFromJson();
+        allVideos = VideosState.getInstance().getVideoList();
         if (allVideos != null) {
             adapter.setVideos(allVideos);
         } else {
-            Log.e("HomePage", "Failed to load videos from JSON");
+            Log.e("HomePage", "Error getting videos");
         }
         swipeRefreshLayout.setRefreshing(false);
 
@@ -147,15 +139,28 @@ public class HomePage extends BaseActivity {
                 recreate();
             }
         });
+
+        signInButton = findViewById(R.id.btn_sign_in);
+        signUpButton = findViewById(R.id.btn_sign_up);
+
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePage.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePage.this, SignupActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
-    private List<VideoData> loadVideosFromJson() {
-        InputStream inputStream = getResources().openRawResource(R.raw.videos);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        Gson gson = new Gson();
-        Type videoListType = new TypeToken<List<VideoData>>() {}.getType();
-        return gson.fromJson(reader, videoListType);
-    }
+
 
     private void filterVideos(String text) {
         List<VideoData> filteredList = new ArrayList<>();
