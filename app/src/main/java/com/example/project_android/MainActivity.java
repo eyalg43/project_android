@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         applyTheme();
 
         // Start HomePage activity
-        Intent intent = new Intent(MainActivity.this, HomePage.class);
+        Intent intent = new Intent(MainActivity.this, VideoScreenActivity.class);
         startActivity(intent);
 
         // Finish MainActivity to prevent looping

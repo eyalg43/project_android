@@ -55,7 +55,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_video_screen);
 
         // Load and parse the JSON files
-        originalVideoList = loadVideoJSONFromRaw(); // Change videoDataList to originalVideoList
+        originalVideoList = VideosState.getInstance().getVideoList(); // Change videoDataList to originalVideoList
         videoCommentsList = loadCommentsJSONFromRaw();
 
         // Initialize NestedScrollView
@@ -184,13 +184,6 @@ public class VideoScreenActivity extends AppCompatActivity {
 
         // Update related videos
         updateRelatedVideos(video);
-    }
-
-    private List<VideoData> loadVideoJSONFromRaw() {
-        InputStream inputStream = getResources().openRawResource(R.raw.videos);
-        InputStreamReader reader = new InputStreamReader(inputStream);
-        Type listType = new TypeToken<List<VideoData>>() {}.getType();
-        return new Gson().fromJson(reader, listType);
     }
 
     private List<VideoComments> loadCommentsJSONFromRaw() {
