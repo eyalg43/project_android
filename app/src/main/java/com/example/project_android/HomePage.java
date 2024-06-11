@@ -1,6 +1,8 @@
 package com.example.project_android;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -21,6 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.project_android.adapters.VideosListAdapter;
 import com.example.project_android.entities.VideoData;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +37,12 @@ public class HomePage extends AppCompatActivity {
     private ImageView toggleModeIcon;
     private Button signInButton;
     private Button signUpButton;
+    private ImageView profileImage;
+    private TextView welcomeMessage;
+    private LinearLayout profileContainer;
+    private LinearLayout authButtonsContainer;
+    private Button signOutButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +152,11 @@ public class HomePage extends AppCompatActivity {
 
         signInButton = findViewById(R.id.btn_sign_in);
         signUpButton = findViewById(R.id.btn_sign_up);
+        authButtonsContainer = findViewById(R.id.auth_buttons_container);
+        profileImage = findViewById(R.id.profile_image);
+        profileContainer = findViewById(R.id.profile_container);
+        welcomeMessage = findViewById(R.id.welcome_message);
+        signOutButton = findViewById(R.id.btn_sign_out);
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,9 +173,27 @@ public class HomePage extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserState.logout();
+                authButtonsContainer.setVisibility(View.VISIBLE);
+                profileContainer.setVisibility(View.GONE);
+            }
+        });
+
+        // Check if user is logged in
+        if (UserState.isLoggedIn()) {
+            User loggedInUser = UserState.getLoggedInUser();
+            if (loggedInUser != null) {
+                authButtonsContainer.setVisibility(View.GONE);
+                profileContainer.setVisibility(View.VISIBLE);
+                welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
+                loadProfileImage(loggedInUser.getImageUri());
+            }
+        }
     }
-
-
 
     private void filterVideos(String text) {
         List<VideoData> filteredList = new ArrayList<>();
@@ -178,6 +211,18 @@ public class HomePage extends AppCompatActivity {
             toggleModeIcon.setImageResource(R.drawable.ic_light_mode);
         } else {
             toggleModeIcon.setImageResource(R.drawable.ic_dark_mode);
+        }
+    }
+
+    private void loadProfileImage(String imageUriString) {
+        try {
+            Uri imageUri = Uri.parse(imageUriString);
+            ContentResolver resolver = getContentResolver();
+            InputStream inputStream = resolver.openInputStream(imageUri);
+            profileImage.setImageBitmap(android.graphics.BitmapFactory.decodeStream(inputStream));
+        } catch (Exception e) {
+            Log.e("HomePage", "Failed to load profile image: " + e.getMessage());
+            profileImage.setImageResource(R.drawable.img2); // fallback to a default image
         }
     }
 }

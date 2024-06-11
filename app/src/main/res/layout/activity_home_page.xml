@@ -231,6 +231,7 @@
 
                 <!-- Sign In and Sign Up buttons -->
                 <LinearLayout
+                    android:id="@+id/auth_buttons_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -287,6 +288,44 @@
                             android:paddingLeft="16dp"
                             android:paddingRight="16dp" />
                     </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/profile_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:paddingTop="16dp">
+
+                    <ImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:contentDescription="Profile Image"
+                        android:scaleType="centerCrop"
+                        android:padding="8dp"
+                        android:clipToOutline="true" />
+
+                    <TextView
+                        android:id="@+id/welcome_message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="@color/colorText"
+                        android:paddingTop="8dp" />
+
+                    <Button
+                        android:id="@+id/btn_sign_out"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sign Out"
+                        android:textColor="@color/colorText"
+                        android:backgroundTint="@color/colorButtonBackground"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:onClick="signOutUser" />
                 </LinearLayout>
 
                 <View
