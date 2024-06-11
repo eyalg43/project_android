@@ -21,6 +21,7 @@
     <color name="subscribeBackground">#000000</color>
     <color name="subscribeTextColor">#FFFFFF</color>
     <color name="nonSubscribeBackground">#D3D3D3</color>
-    <color name="nonSubscribeTextColor">#000000</color>
+    <color name="oppositeOfBackground">#000000</color>
+
 
 </resources>

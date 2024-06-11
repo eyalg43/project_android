@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project_android.adapters.CommentsAdapter;
 import com.example.project_android.adapters.VideoAdapter;
+import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.VideoComments;
 import com.example.project_android.entities.VideoData;
 import com.google.gson.Gson;
@@ -24,8 +26,11 @@ import com.google.gson.reflect.TypeToken;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class VideoScreenActivity extends AppCompatActivity {
 
@@ -35,6 +40,7 @@ public class VideoScreenActivity extends AppCompatActivity {
     private VideoAdapter videoAdapter;
     private List<VideoComments> videoCommentsList;
     private CommentsAdapter commentsAdapter;
+    private VideoData currentVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +85,49 @@ public class VideoScreenActivity extends AppCompatActivity {
                 findViewById(R.id.content_container).setVisibility(View.VISIBLE);
                 commentsContainer.setVisibility(View.GONE);
             });
+
+            // Handle comment submission
+            Button submitCommentButton = findViewById(R.id.submit_comment_button);
+            EditText usernameInput = findViewById(R.id.username_input);
+            EditText commentInput = findViewById(R.id.comment_input);
+
+            submitCommentButton.setOnClickListener(v -> {
+                String commentText = commentInput.getText().toString().trim();
+                String username = usernameInput.getText().toString().trim();
+                if (!commentText.isEmpty() && !username.isEmpty()) {
+                    addComment(username, commentText);
+                    commentInput.setText("");
+                }
+            });
+        }
+    }
+
+    private void addComment(String username, String commentText) {
+        if (currentVideo != null) {
+            // Assuming static profile picture for now
+            CommentData newComment = new CommentData();
+            newComment.setId(generateCommentId());
+            newComment.setText(commentText);
+            newComment.setUsername(username);
+            newComment.setDate(getCurrentTime());
+            newComment.setImg("img1");
+
+            VideoComments videoComments = findCommentsForVideo(currentVideo.getId());
+            if (videoComments != null) {
+                videoComments.getComments().add(newComment);
+                commentsAdapter.updateComments(videoComments.getComments());
+            } else {
+                VideoComments newVideoComments = new VideoComments();
+                newVideoComments.setVideoId(String.valueOf(currentVideo.getId()));
+                newVideoComments.setComments(Collections.singletonList(newComment));
+                videoCommentsList.add(newVideoComments);
+                commentsAdapter.updateComments(newVideoComments.getComments());
+            }
         }
     }
 
     private void displayVideoDetails(VideoData video) {
+        currentVideo = video;
         TextView titleTextView = findViewById(R.id.video_title);
         TextView viewsTextView = findViewById(R.id.video_views);
         TextView uploadTimeTextView = findViewById(R.id.video_uploadtime);
@@ -156,5 +201,24 @@ public class VideoScreenActivity extends AppCompatActivity {
 
     private void playSelectedVideo(VideoData selectedVideo) {
         displayVideoDetails(selectedVideo);
+    }
+
+    private int generateCommentId() {
+        // Generate a unique comment ID
+        int maxId = 0;
+        for (VideoComments videoComments : videoCommentsList) {
+            for (CommentData comment : videoComments.getComments()) {
+                if (comment.getId() > maxId) {
+                    maxId = comment.getId();
+                }
+            }
+        }
+        return maxId + 1;
+    }
+
+    private String getCurrentTime() {
+        // Get the current time in "x hours ago" format
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
+        return sdf.format(new Date());
     }
 }
