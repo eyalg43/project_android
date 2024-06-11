@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,6 +45,8 @@ public class VideoScreenActivity extends AppCompatActivity {
     private CommentsAdapter commentsAdapter;
     private VideoData currentVideo;
     private List<VideoData> originalVideoList;
+    private NestedScrollView nestedScrollView;
+
 
 
     @Override
@@ -54,6 +57,9 @@ public class VideoScreenActivity extends AppCompatActivity {
         // Load and parse the JSON files
         originalVideoList = loadVideoJSONFromRaw(); // Change videoDataList to originalVideoList
         videoCommentsList = loadCommentsJSONFromRaw();
+
+        // Initialize NestedScrollView
+        nestedScrollView = findViewById(R.id.nested_scroll_view);
 
         // Initialize comments RecyclerView with an empty list
         RecyclerView commentsRecyclerView = findViewById(R.id.comments_recycler_view);
@@ -139,7 +145,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         VideoView videoView = findViewById(R.id.video_view);
 
         titleTextView.setText(video.getTitle());
-        viewsTextView.setText(video.getViews());
+        viewsTextView.setText(video.getViews() + " views");
         uploadTimeTextView.setText(video.getUploadTime());
         descriptionTextView.setText(video.getDescription());
         authorTextView.setText(video.getAuthor());
@@ -230,7 +236,7 @@ public class VideoScreenActivity extends AppCompatActivity {
 
     private void resetScrollPosition() {
         // Reset the scroll position to the top
-        relatedVideosRecyclerView.scrollToPosition(0);
+        nestedScrollView.scrollTo(0, 0);
     }
 
     private int generateCommentId() {
