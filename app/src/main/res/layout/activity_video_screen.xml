@@ -222,6 +222,7 @@
 
                 <!-- New section for adding comments -->
                 <LinearLayout
+                    android:id="@+id/comment_input_section"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -234,14 +235,14 @@
                         android:src="@drawable/img1"
                         android:layout_marginEnd="8dp" />
 
-                    <EditText
-                        android:id="@+id/username_input"
+                    <TextView
+                        android:id="@+id/display_name_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="Username"
-                        android:background="@color/colorBackground"
-                        android:textColor="@color/oppositeOfBackground" />
+                        android:layout_marginEnd="8dp"
+                        android:text="Display Name"
+                        android:textColor="@color/oppositeOfBackground"
+                        android:textSize="16sp" />
 
                     <EditText
                         android:id="@+id/comment_input"
@@ -259,6 +260,7 @@
                         style="@style/NonSubscribeButton"
                         android:text="Submit" />
                 </LinearLayout>
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/comments_recycler_view"
