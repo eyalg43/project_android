@@ -27,10 +27,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class VideoScreenActivity extends AppCompatActivity {
 
@@ -41,6 +43,8 @@ public class VideoScreenActivity extends AppCompatActivity {
     private List<VideoComments> videoCommentsList;
     private CommentsAdapter commentsAdapter;
     private VideoData currentVideo;
+    private List<VideoData> originalVideoList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +52,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_video_screen);
 
         // Load and parse the JSON files
-        List<VideoData> videoDataList = loadVideoJSONFromRaw();
+        originalVideoList = loadVideoJSONFromRaw(); // Change videoDataList to originalVideoList
         videoCommentsList = loadCommentsJSONFromRaw();
 
         // Initialize comments RecyclerView with an empty list
@@ -57,19 +61,16 @@ public class VideoScreenActivity extends AppCompatActivity {
         commentsAdapter = new CommentsAdapter(Collections.emptyList());
         commentsRecyclerView.setAdapter(commentsAdapter);
 
-        if (videoDataList != null && !videoDataList.isEmpty()) {
+        // Initialize adapter and set it to RecyclerView
+        videoAdapter = new VideoAdapter(originalVideoList, this::playSelectedVideo); // Change videoDataList to originalVideoList
+        relatedVideosRecyclerView = findViewById(R.id.related_videos_recycler_view);
+        relatedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        relatedVideosRecyclerView.setAdapter(videoAdapter);
+
+        if (originalVideoList != null && !originalVideoList.isEmpty()) {
             // Display the first video's details
-            VideoData firstVideo = videoDataList.get(0);
+            VideoData firstVideo = originalVideoList.get(0); // Change videoDataList to originalVideoList
             displayVideoDetails(firstVideo);
-
-            // Setup related videos RecyclerView
-            relatedVideosRecyclerView = findViewById(R.id.related_videos_recycler_view);
-            relatedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-            // Initialize adapter and set it to RecyclerView
-            videoAdapter = new VideoAdapter(videoDataList, this::playSelectedVideo);
-            relatedVideosRecyclerView.setAdapter(videoAdapter);
-
 
             // Set up the show comments button
             Button showCommentsButton = findViewById(R.id.show_comments_button);
@@ -101,6 +102,7 @@ public class VideoScreenActivity extends AppCompatActivity {
             });
         }
     }
+
 
     private void addComment(String username, String commentText) {
         if (currentVideo != null) {
@@ -173,6 +175,9 @@ public class VideoScreenActivity extends AppCompatActivity {
         } else {
             Log.e("VideoScreenActivity", "commentsAdapter is null when trying to update comments.");
         }
+
+        // Update related videos
+        updateRelatedVideos(video);
     }
 
     private List<VideoData> loadVideoJSONFromRaw() {
@@ -201,6 +206,31 @@ public class VideoScreenActivity extends AppCompatActivity {
 
     private void playSelectedVideo(VideoData selectedVideo) {
         displayVideoDetails(selectedVideo);
+        resetScrollPosition();
+    }
+
+    private void updateRelatedVideos(VideoData currentVideo) {
+        if (videoAdapter != null) {
+            List<VideoData> filteredVideos = new ArrayList<>();
+
+            for (VideoData video : originalVideoList) { // Change videoAdapter.getVideoList() to originalVideoList
+                if (video.getId() != currentVideo.getId()) {
+                    filteredVideos.add(video);
+                }
+            }
+
+            // Update the adapter with the filtered list
+            videoAdapter.updateVideoList(filteredVideos);
+        } else {
+            Log.e(TAG, "videoAdapter is null when trying to update related videos.");
+        }
+    }
+
+
+
+    private void resetScrollPosition() {
+        // Reset the scroll position to the top
+        relatedVideosRecyclerView.scrollToPosition(0);
     }
 
     private int generateCommentId() {
