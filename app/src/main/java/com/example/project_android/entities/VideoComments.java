@@ -1,4 +1,6 @@
-package com.example.project_android;
+package com.example.project_android.entities;
+
+import com.example.project_android.entities.CommentData;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.example.project_android;
+package com.example.project_android.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.project_android.R;
+import com.example.project_android.entities.CommentData;
+
 import java.util.ArrayList;
 import java.util.List;
 

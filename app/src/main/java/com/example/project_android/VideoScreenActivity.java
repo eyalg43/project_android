@@ -14,6 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.project_android.adapters.CommentsAdapter;
+import com.example.project_android.adapters.VideoAdapter;
+import com.example.project_android.entities.VideoComments;
+import com.example.project_android.entities.VideoData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -115,12 +119,14 @@ public class VideoScreenActivity extends AppCompatActivity {
 
         // Load and display comments
         VideoComments commentsForVideo = findCommentsForVideo(video.getId());
-        if (commentsForVideo != null && commentsForVideo.getComments() != null) {
-            Log.d(TAG, "Updating comments for video id: " + video.getId());
-            commentsAdapter.updateComments(commentsForVideo.getComments());
+        if (commentsAdapter != null) {
+            if (commentsForVideo != null && commentsForVideo.getComments() != null) {
+                commentsAdapter.updateComments(commentsForVideo.getComments());
+            } else {
+                commentsAdapter.updateComments(Collections.emptyList());
+            }
         } else {
-            Log.d(TAG, "No comments found for video id: " + video.getId() + ". Setting empty list.");
-            commentsAdapter.updateComments(Collections.emptyList());
+            Log.e("VideoScreenActivity", "commentsAdapter is null when trying to update comments.");
         }
     }
 

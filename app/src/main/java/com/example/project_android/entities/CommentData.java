@@ -1,4 +1,4 @@
-package com.example.project_android;
+package com.example.project_android.entities;
 
 public class CommentData {
     private int id;
