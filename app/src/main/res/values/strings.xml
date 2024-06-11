@@ -25,4 +25,13 @@
     <string name="shorts_icon">Shorts Icon</string>
     <string name="home">Home</string>
     <string name="home_icon">Home Icon</string>
+    <string name="upload_my_video_to_vidtube">Upload My Video To VidTube</string>
+    <string name="upload_video_thumbnail">Upload Video Thumbnail</string>
+    <string name="upload_video_file">Upload Video File</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="please_fill_all_fields_to_upload">Please fill all fields to upload.</string>
+    <string name="video_thumbnail">Video Thumbnail</string>
+    <string name="upload_video">Upload Video</string>
+    <string name="video_successfully_uploaded">Video Successfully Uploaded.</string>
 </resources>
