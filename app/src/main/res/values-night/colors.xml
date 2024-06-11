@@ -9,5 +9,9 @@
     <color name="colorThemeButtonBackground">#B0C7DA</color>
     <color name="colorButtonText">#FFFFFF</color>
     <color name="colorHeaderBackground">#121212</color>
+    <color name="subscribeBackground">#FFFFFF</color>
+    <color name="subscribeTextColor">#000000</color>
+    <color name="nonSubscribeBackground">#696969</color>
+    <color name="nonSubscribeTextColor">#FFFFFF</color>
 </resources>
 

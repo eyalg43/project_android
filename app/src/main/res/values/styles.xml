@@ -12,8 +12,8 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
     <style name="NonSubscribeButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:backgroundTint">@color/light_gray</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:backgroundTint">@color/nonSubscribeBackground</item>
+        <item name="android:textColor">@color/nonSubscribeTextColor</item>
         <item name="cornerRadius">20dp</item>
         <item name="android:padding">10dp</item>
         <item name="android:paddingTop">5dp</item>
@@ -21,7 +21,7 @@
     </style>
 
     <style name="SubscribeButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:backgroundTint">@color/black</item>
+        <item name="android:backgroundTint">@color/subscribeBackground</item>
         <item name="android:textColor">@color/white</item>
         <item name="cornerRadius">20dp</item>
         <item name="android:padding">10dp</item>
