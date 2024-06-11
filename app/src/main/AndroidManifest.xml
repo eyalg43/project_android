@@ -20,7 +20,7 @@
         android:theme="@style/Theme.Project_android"
         tools:targetApi="31">
         <activity
-            android:name=".VideoScreenActivity"
+            android:name=".HomePage"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
