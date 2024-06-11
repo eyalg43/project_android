@@ -47,8 +47,6 @@ public class VideoScreenActivity extends AppCompatActivity {
     private List<VideoData> originalVideoList;
     private NestedScrollView nestedScrollView;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,42 +71,44 @@ public class VideoScreenActivity extends AppCompatActivity {
         relatedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         relatedVideosRecyclerView.setAdapter(videoAdapter);
 
-        if (originalVideoList != null && !originalVideoList.isEmpty()) {
-            // Display the first video's details
-            VideoData firstVideo = originalVideoList.get(0); // Change videoDataList to originalVideoList
-            displayVideoDetails(firstVideo);
-
-            // Set up the show comments button
-            Button showCommentsButton = findViewById(R.id.show_comments_button);
-            View commentsContainer = findViewById(R.id.comments_container);
-            Button hideCommentsButton = findViewById(R.id.close_comments_button);
-
-            showCommentsButton.setOnClickListener(v -> {
-                findViewById(R.id.content_container).setVisibility(View.GONE);
-                commentsContainer.setVisibility(View.VISIBLE);
-            });
-
-            hideCommentsButton.setOnClickListener(v -> {
-                findViewById(R.id.content_container).setVisibility(View.VISIBLE);
-                commentsContainer.setVisibility(View.GONE);
-            });
-
-            // Handle comment submission
-            Button submitCommentButton = findViewById(R.id.submit_comment_button);
-            EditText usernameInput = findViewById(R.id.username_input);
-            EditText commentInput = findViewById(R.id.comment_input);
-
-            submitCommentButton.setOnClickListener(v -> {
-                String commentText = commentInput.getText().toString().trim();
-                String username = usernameInput.getText().toString().trim();
-                if (!commentText.isEmpty() && !username.isEmpty()) {
-                    addComment(username, commentText);
-                    commentInput.setText("");
-                }
-            });
+        // Get the video ID from the intent
+        int videoId = getIntent().getIntExtra("video_id", -1);
+        if (videoId != -1) {
+            VideoData selectedVideo = findVideoById(videoId);
+            if (selectedVideo != null) {
+                displayVideoDetails(selectedVideo);
+            }
         }
-    }
 
+        // Set up the show comments button
+        Button showCommentsButton = findViewById(R.id.show_comments_button);
+        View commentsContainer = findViewById(R.id.comments_container);
+        Button hideCommentsButton = findViewById(R.id.close_comments_button);
+
+        showCommentsButton.setOnClickListener(v -> {
+            findViewById(R.id.content_container).setVisibility(View.GONE);
+            commentsContainer.setVisibility(View.VISIBLE);
+        });
+
+        hideCommentsButton.setOnClickListener(v -> {
+            findViewById(R.id.content_container).setVisibility(View.VISIBLE);
+            commentsContainer.setVisibility(View.GONE);
+        });
+
+        // Handle comment submission
+        Button submitCommentButton = findViewById(R.id.submit_comment_button);
+        EditText usernameInput = findViewById(R.id.username_input);
+        EditText commentInput = findViewById(R.id.comment_input);
+
+        submitCommentButton.setOnClickListener(v -> {
+            String commentText = commentInput.getText().toString().trim();
+            String username = usernameInput.getText().toString().trim();
+            if (!commentText.isEmpty() && !username.isEmpty()) {
+                addComment(username, commentText);
+                commentInput.setText("");
+            }
+        });
+    }
 
     private void addComment(String username, String commentText) {
         if (currentVideo != null) {
@@ -225,8 +225,6 @@ public class VideoScreenActivity extends AppCompatActivity {
         }
     }
 
-
-
     private void resetScrollPosition() {
         // Reset the scroll position to the top
         nestedScrollView.scrollTo(0, 0);
@@ -249,5 +247,14 @@ public class VideoScreenActivity extends AppCompatActivity {
         // Get the current time in "x hours ago" format
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
         return sdf.format(new Date());
+    }
+
+    private VideoData findVideoById(int id) {
+        for (VideoData video : originalVideoList) {
+            if (video.getId() == id) {
+                return video;
+            }
+        }
+        return null;
     }
 }

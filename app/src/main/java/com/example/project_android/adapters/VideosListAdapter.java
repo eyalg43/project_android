@@ -16,6 +16,21 @@ import java.util.List;
 
 public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.VideoViewHolder> {
 
+    public interface OnItemClickListener {
+        void onItemClick(VideoData video);
+    }
+
+    private final LayoutInflater mInflater;
+    private List<VideoData> videoData;
+    private Context context;
+    private final OnItemClickListener listener;
+
+    public VideosListAdapter(Context context, OnItemClickListener listener) {
+        this.mInflater = LayoutInflater.from(context);
+        this.context = context;
+        this.listener = listener;
+    }
+
     class VideoViewHolder extends RecyclerView.ViewHolder {
         private final TextView videoTitle;
         private final TextView videoAuthor;
@@ -33,15 +48,26 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
             videoAuthorImage = itemView.findViewById(R.id.videoAuthorImage);
             videoImage = itemView.findViewById(R.id.videoImage);
         }
-    }
 
-    private final LayoutInflater mInflater;
-    private List<VideoData> videoData;
-    private Context context;
+        public void bind(final VideoData video, final OnItemClickListener listener) {
+            videoTitle.setText(video.getTitle());
+            videoAuthor.setText(video.getAuthor());
+            videoViews.setText(video.getViews());
+            videoUploadTime.setText(video.getUploadTime());
 
-    public VideosListAdapter(Context context) {
-        this.mInflater = LayoutInflater.from(context);
-        this.context = context;
+            int authorImageResId = context.getResources().getIdentifier(video.getAuthorImage(), "drawable", context.getPackageName());
+            int imgResId = context.getResources().getIdentifier(video.getImg(), "drawable", context.getPackageName());
+
+            videoAuthorImage.setImageResource(authorImageResId);
+            videoImage.setImageResource(imgResId);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(video);
+                }
+            });
+        }
     }
 
     @Override
@@ -54,22 +80,13 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
     public void onBindViewHolder(VideoViewHolder holder, int position) {
         if (videoData != null) {
             VideoData current = videoData.get(position);
-            holder.videoTitle.setText(current.getTitle());
-            holder.videoAuthor.setText(current.getAuthor());
-            holder.videoViews.setText(current.getViews());
-            holder.videoUploadTime.setText(current.getUploadTime());
-
-            int authorImageResId = context.getResources().getIdentifier(current.getAuthorImage(), "drawable", context.getPackageName());
-            int imgResId = context.getResources().getIdentifier(current.getImg(), "drawable", context.getPackageName());
-
-            holder.videoAuthorImage.setImageResource(authorImageResId);
-            holder.videoImage.setImageResource(imgResId);
+            holder.bind(current, listener);
         } else {
             holder.videoTitle.setText("No VideoData");
         }
     }
 
-    public void setVideos(List<VideoData> videoData){
+    public void setVideos(List<VideoData> videoData) {
         this.videoData = videoData;
         notifyDataSetChanged();
     }

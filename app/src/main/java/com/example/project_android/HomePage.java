@@ -43,14 +43,20 @@ public class HomePage extends AppCompatActivity {
     private LinearLayout authButtonsContainer;
     private Button signOutButton;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
         RecyclerView listVideos = findViewById(R.id.listVideos);
-        adapter = new VideosListAdapter(this);
+        adapter = new VideosListAdapter(this, new VideosListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(VideoData video) {
+                Intent intent = new Intent(HomePage.this, VideoScreenActivity.class);
+                intent.putExtra("video_id", video.getId());
+                startActivity(intent);
+            }
+        });
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
 
