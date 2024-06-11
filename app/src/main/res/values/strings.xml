@@ -1,3 +1,28 @@
 <resources>
-    <string name="app_name">project_android</string>
+    <string name="app_name">VidTube</string>
+    <string name="video_image">Video Image</string>
+    <string name="author_image">Author Image</string>
+    <string name="video_title">Video Title</string>
+    <string name="channel_name">Channel Name</string>
+    <string name="space_details">\u00A0-\u00A0</string>
+    <string name="views">Views</string>
+    <string name="upload_time">Upload time</string>
+    <string name="menu_button">Menu Button</string>
+    <string name="search_button">Search Button</string>
+    <string name="theme_mode">Dark Mode</string>
+    <string name="toggle_theme_icon">Toggle Theme Icon</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_up_icon">Sign Up Icon</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_in_icon">Sign In Icon</string>
+    <string name="history">History</string>
+    <string name="history_icon">History Icon</string>
+    <string name="you">You</string>
+    <string name="you_icon">You Icon</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="subscriptions_icon">Subscriptions Icon</string>
+    <string name="shorts">Shorts</string>
+    <string name="shorts_icon">Shorts Icon</string>
+    <string name="home">Home</string>
+    <string name="home_icon">Home Icon</string>
 </resources>
