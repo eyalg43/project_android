@@ -131,6 +131,8 @@ public class UploadVideo extends AppCompatActivity {
             );
             VideosState.getInstance().addVideo(newVideo);
             Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(UploadVideo.this, HomePage.class);
+            startActivity(intent);
         }
     }
 }
