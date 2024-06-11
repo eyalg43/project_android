@@ -57,11 +57,12 @@
                 style="@style/CustomSearchView"
                 android:layout_width="355dp"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
                 android:visibility="gone"
+                android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="48dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/search_view_background"
@@ -93,223 +94,234 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/sidebar_logo"
-            android:layout_width="80dp"
-            android:layout_height="60dp"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/logovidtube"
-            android:scaleType="centerInside"
-            android:padding="8dp" />
-
-        <!-- Menu items with icons -->
-        <LinearLayout
-            android:id="@+id/menu_home"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="?attr/selectableItemBackground"
-            android:padding="16dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="Home icon"
-                android:src="@drawable/ic_home" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Home"
-                android:paddingStart="16dp"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/menu_shorts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="?attr/selectableItemBackground"
-            android:padding="16dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="Shorts"
-                android:src="@drawable/ic_shorts" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Shorts"
-                android:paddingStart="16dp"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/menu_subscriptions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="?attr/selectableItemBackground"
-            android:padding="16dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="Subscriptions Icon"
-                android:src="@drawable/ic_subscriptions" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Subscriptions"
-                android:paddingStart="16dp"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/menu_you"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="?attr/selectableItemBackground"
-            android:padding="16dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="You Icon"
-                android:src="@drawable/ic_you" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="You"
-                android:paddingStart="16dp"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/menu_history"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="?attr/selectableItemBackground"
-            android:padding="16dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="History icon"
-                android:src="@drawable/ic_history" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="History"
-                android:paddingStart="16dp"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="16dp"
-            android:background="@android:color/holo_red_dark" />
-
-        <!-- Sign In and Sign Up buttons -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="16dp">
+            android:layout_height="match_parent">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:backgroundTint="@color/colorButtonBackground">
+                android:orientation="vertical">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_sign_in"
-                    android:contentDescription="sign in"
-                    android:layout_marginEnd="8dp"/>
+                    android:id="@+id/sidebar_logo"
+                    android:layout_width="80dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/logovidtube"
+                    android:scaleType="centerInside"
+                    android:padding="8dp" />
 
-                <Button
-                    android:id="@+id/btn_sign_in"
-                    android:layout_width="wrap_content"
+                <!-- Menu items with icons -->
+                <LinearLayout
+                    android:id="@+id/menu_home"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sign In"
-                    android:textColor="@color/colorText"
-                    android:backgroundTint="@color/colorButtonBackground"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="16dp">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:backgroundTint="@color/colorButtonBackground"
-                android:layout_marginTop="8dp">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/home_icon"
+                        android:src="@drawable/ic_home" />
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_sign_up"
-                    android:contentDescription="sign up"
-                    android:layout_marginEnd="8dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/home"
+                        android:paddingStart="16dp"
+                        android:textSize="16sp" />
+                </LinearLayout>
 
-                <Button
-                    android:id="@+id/btn_sign_up"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/menu_shorts"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sign Up"
-                    android:textColor="@color/colorText"
-                    android:backgroundTint="@color/colorButtonBackground"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp" />
+                    android:orientation="horizontal"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/shorts_icon"
+                        android:src="@drawable/ic_shorts" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/shorts"
+                        android:paddingStart="16dp"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/menu_subscriptions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/subscriptions_icon"
+                        android:src="@drawable/ic_subscriptions" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/subscriptions"
+                        android:paddingStart="16dp"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/menu_you"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/you_icon"
+                        android:src="@drawable/ic_you" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/you"
+                        android:paddingStart="16dp"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/menu_history"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/history_icon"
+                        android:src="@drawable/ic_history" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/history"
+                        android:paddingStart="16dp"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@android:color/holo_red_dark" />
+
+                <!-- Sign In and Sign Up buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:paddingTop="16dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:backgroundTint="@color/colorButtonBackground">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_sign_in"
+                            android:contentDescription="@string/sign_in_icon"
+                            android:layout_marginEnd="8dp"/>
+
+                        <Button
+                            android:id="@+id/btn_sign_in"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sign_in"
+                            android:textColor="@color/colorText"
+                            android:backgroundTint="@color/colorButtonBackground"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:backgroundTint="@color/colorButtonBackground"
+                        android:layout_marginTop="8dp">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_sign_up"
+                            android:contentDescription="@string/sign_up_icon"
+                            android:layout_marginEnd="8dp"/>
+
+                        <Button
+                            android:id="@+id/btn_sign_up"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sign_up"
+                            android:textColor="@color/colorText"
+                            android:backgroundTint="@color/colorButtonBackground"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@android:color/holo_red_dark" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingTop="16dp"
+                    android:layout_marginTop="16dp">
+
+                    <ImageView
+                        android:id="@+id/toggle_mode_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_dark_mode"
+                        android:contentDescription="@string/toggle_theme_icon"
+                        android:layout_marginEnd="8dp"/>
+
+                    <Button
+                        android:id="@+id/btn_toggle_mode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/theme_mode"
+                        android:backgroundTint="@color/colorThemeButtonBackground"
+                        android:textColor="@color/colorText"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp" />
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="16dp"
-            android:background="@android:color/holo_red_dark" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:paddingTop="16dp"
-            android:layout_marginTop="16dp">
-
-            <ImageView
-                android:id="@+id/toggle_mode_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_dark_mode"
-                android:contentDescription="Toggle Dark Mode"
-                android:layout_marginEnd="8dp"/>
-
-            <Button
-                android:id="@+id/btn_toggle_mode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dark Mode"
-                android:backgroundTint="@color/colorButtonBackground"
-                android:textColor="@color/colorText"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp" />
-        </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

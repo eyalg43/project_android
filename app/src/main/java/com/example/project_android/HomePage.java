@@ -170,10 +170,8 @@ public class HomePage extends BaseActivity {
     private void updateModeButtonText() {
         int nightMode = AppCompatDelegate.getDefaultNightMode();
         if (nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
-            toggleModeButton.setText("Light Mode");
             toggleModeIcon.setImageResource(R.drawable.ic_light_mode);
         } else {
-            toggleModeButton.setText("Dark Mode");
             toggleModeIcon.setImageResource(R.drawable.ic_dark_mode);
         }
     }

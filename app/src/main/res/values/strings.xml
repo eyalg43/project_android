@@ -9,4 +9,20 @@
     <string name="upload_time">Upload time</string>
     <string name="menu_button">Menu Button</string>
     <string name="search_button">Search Button</string>
+    <string name="theme_mode">Dark Mode</string>
+    <string name="toggle_theme_icon">Toggle Theme Icon</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_up_icon">Sign Up Icon</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_in_icon">Sign In Icon</string>
+    <string name="history">History</string>
+    <string name="history_icon">History Icon</string>
+    <string name="you">You</string>
+    <string name="you_icon">You Icon</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="subscriptions_icon">Subscriptions Icon</string>
+    <string name="shorts">Shorts</string>
+    <string name="shorts_icon">Shorts Icon</string>
+    <string name="home">Home</string>
+    <string name="home_icon">Home Icon</string>
 </resources>

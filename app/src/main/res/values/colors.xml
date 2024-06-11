@@ -5,7 +5,8 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorText">#000000</color>
-    <color name="colorButtonBackground">#FF4081</color>
+    <color name="colorButtonBackground">#2187D8</color>
+    <color name="colorThemeButtonBackground">#67717A</color>
     <color name="colorButtonText">#FFFFFF</color>
     <color name="colorHeaderBackground">#FFFFFF</color>
 </resources>
