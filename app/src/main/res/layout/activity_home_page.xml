@@ -80,7 +80,7 @@
                 android:id="@+id/listVideos"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@android:color/darker_gray" />
+                android:background="@color/colorBackground" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 
@@ -315,6 +315,18 @@
                         android:textSize="16sp"
                         android:textColor="@color/colorText"
                         android:paddingTop="8dp" />
+
+                    <Button
+                        android:id="@+id/btn_upload_video"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Upload Video"
+                        android:backgroundTint="@color/colorButtonBackground"
+                        android:textColor="@color/colorText"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_marginTop="16dp"
+                        android:visibility="gone" />
 
                     <Button
                         android:id="@+id/btn_sign_out"

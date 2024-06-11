@@ -4,12 +4,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project_android.R;
+import com.example.project_android.UserState;
 import com.example.project_android.entities.VideoData;
 
 import java.util.List;
@@ -18,17 +20,8 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
 
     public interface OnItemClickListener {
         void onItemClick(VideoData video);
-    }
-
-    private final LayoutInflater mInflater;
-    private List<VideoData> videoData;
-    private Context context;
-    private final OnItemClickListener listener;
-
-    public VideosListAdapter(Context context, OnItemClickListener listener) {
-        this.mInflater = LayoutInflater.from(context);
-        this.context = context;
-        this.listener = listener;
+        void onEditClick(VideoData video);
+        void onDeleteClick(VideoData video);
     }
 
     class VideoViewHolder extends RecyclerView.ViewHolder {
@@ -38,6 +31,8 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
         private final TextView videoUploadTime;
         private final ImageView videoAuthorImage;
         private final ImageView videoImage;
+        private final Button editButton;
+        private final Button deleteButton;
 
         public VideoViewHolder(View itemView) {
             super(itemView);
@@ -47,27 +42,20 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
             videoUploadTime = itemView.findViewById(R.id.videoUploadTime);
             videoAuthorImage = itemView.findViewById(R.id.videoAuthorImage);
             videoImage = itemView.findViewById(R.id.videoImage);
+            editButton = itemView.findViewById(R.id.edit_button);
+            deleteButton = itemView.findViewById(R.id.delete_button);
         }
+    }
 
-        public void bind(final VideoData video, final OnItemClickListener listener) {
-            videoTitle.setText(video.getTitle());
-            videoAuthor.setText(video.getAuthor());
-            videoViews.setText(video.getViews());
-            videoUploadTime.setText(video.getUploadTime());
+    private final LayoutInflater mInflater;
+    private List<VideoData> videoData;
+    private Context context;
+    private OnItemClickListener onItemClickListener;
 
-            int authorImageResId = context.getResources().getIdentifier(video.getAuthorImage(), "drawable", context.getPackageName());
-            int imgResId = context.getResources().getIdentifier(video.getImg(), "drawable", context.getPackageName());
-
-            videoAuthorImage.setImageResource(authorImageResId);
-            videoImage.setImageResource(imgResId);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClick(video);
-                }
-            });
-        }
+    public VideosListAdapter(Context context, OnItemClickListener onItemClickListener) {
+        this.mInflater = LayoutInflater.from(context);
+        this.context = context;
+        this.onItemClickListener = onItemClickListener;
     }
 
     @Override
@@ -80,7 +68,51 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
     public void onBindViewHolder(VideoViewHolder holder, int position) {
         if (videoData != null) {
             VideoData current = videoData.get(position);
-            holder.bind(current, listener);
+            holder.videoTitle.setText(current.getTitle());
+            holder.videoAuthor.setText(current.getAuthor());
+            holder.videoViews.setText(current.getViews());
+            holder.videoUploadTime.setText(current.getUploadTime());
+
+            int authorImageResId = context.getResources().getIdentifier(current.getAuthorImage(), "drawable", context.getPackageName());
+            int imgResId = context.getResources().getIdentifier(current.getImg(), "drawable", context.getPackageName());
+
+            holder.videoAuthorImage.setImageResource(authorImageResId);
+            holder.videoImage.setImageResource(imgResId);
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onItemClick(current);
+                    }
+                }
+            });
+
+            if (UserState.isLoggedIn()) {
+                holder.editButton.setVisibility(View.VISIBLE);
+                holder.deleteButton.setVisibility(View.VISIBLE);
+            } else {
+                holder.editButton.setVisibility(View.GONE);
+                holder.deleteButton.setVisibility(View.GONE);
+            }
+
+            holder.editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onEditClick(current);
+                    }
+                }
+            });
+
+            holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onDeleteClick(current);
+                    }
+                }
+            });
         } else {
             holder.videoTitle.setText("No VideoData");
         }

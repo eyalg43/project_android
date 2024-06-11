@@ -12,7 +12,8 @@
     <color name="subscribeBackground">#FFFFFF</color>
     <color name="subscribeTextColor">#000000</color>
     <color name="nonSubscribeBackground">#222222</color>
-
     <color name="oppositeOfBackground">#FFFFFF</color>
+    <color name="editButtonColor">#075593</color>
+    <color name="deleteButtonColor">#450909</color>
 </resources>
 

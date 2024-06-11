@@ -42,6 +42,7 @@ public class HomePage extends AppCompatActivity {
     private LinearLayout profileContainer;
     private LinearLayout authButtonsContainer;
     private Button signOutButton;
+    private Button uploadVideoButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,18 @@ public class HomePage extends AppCompatActivity {
                 Intent intent = new Intent(HomePage.this, VideoScreenActivity.class);
                 intent.putExtra("video_id", video.getId());
                 startActivity(intent);
+            }
+
+            @Override
+            public void onEditClick(VideoData video) {
+                // Handle edit click
+            }
+
+            @Override
+            public void onDeleteClick(VideoData video) {
+                allVideos.remove(video);
+                adapter.setVideos(allVideos);
+                VideosState.getInstance().setVideoList(allVideos);
             }
         });
         listVideos.setAdapter(adapter);
@@ -163,6 +176,7 @@ public class HomePage extends AppCompatActivity {
         profileContainer = findViewById(R.id.profile_container);
         welcomeMessage = findViewById(R.id.welcome_message);
         signOutButton = findViewById(R.id.btn_sign_out);
+        uploadVideoButton = findViewById(R.id.btn_upload_video);
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,6 +200,16 @@ public class HomePage extends AppCompatActivity {
                 UserState.logout();
                 authButtonsContainer.setVisibility(View.VISIBLE);
                 profileContainer.setVisibility(View.GONE);
+                uploadVideoButton.setVisibility(View.GONE);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        uploadVideoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePage.this, UploadVideo.class);
+                startActivity(intent);
             }
         });
 
@@ -195,6 +219,7 @@ public class HomePage extends AppCompatActivity {
             if (loggedInUser != null) {
                 authButtonsContainer.setVisibility(View.GONE);
                 profileContainer.setVisibility(View.VISIBLE);
+                uploadVideoButton.setVisibility(View.VISIBLE);
                 welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
                 loadProfileImage(loggedInUser.getImageUri());
             }
