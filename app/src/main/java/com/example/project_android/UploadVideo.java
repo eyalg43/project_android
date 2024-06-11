@@ -11,9 +11,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.project_android.VideosState;
+import com.example.project_android.entities.VideoData;
 
 import java.io.IOException;
 
@@ -24,9 +27,9 @@ public class UploadVideo extends AppCompatActivity {
 
     private EditText editTextTitle;
     private EditText editTextDescription;
-    private Button buttonUploadThumbnail;
     private TextView textViewVideoDetails;
     private ImageView imageViewThumbnail;
+    private Button buttonUploadThumbnail;
     private Button buttonUploadVideo;
     private Button buttonSubmitVideo;
     private TextView textViewError;
@@ -75,12 +78,11 @@ public class UploadVideo extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_THUMBNAIL_GET);
     }
 
+
     private void openGalleryForVideo() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("video/*");
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, REQUEST_VIDEO_GET);
-        }
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, REQUEST_VIDEO_GET);
+
     }
 
     @Override
@@ -105,18 +107,30 @@ public class UploadVideo extends AppCompatActivity {
         }
     }
 
-
     private void submitVideo() {
         String title = editTextTitle.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
 
         if (title.isEmpty() || description.isEmpty() || selectedThumbnailUri == null || selectedVideoUri == null) {
+            textViewError.setText("Please fill all fields to upload.");
+            Log.d("UploadVideo", "Error: Please fill all fields to upload.");
             textViewError.setVisibility(View.VISIBLE);
-            textViewError.setText("Please fill all fields and upload thumbnail and video.");
         } else {
             textViewError.setVisibility(View.GONE);
-            // Proceed with video submission
-            // Implement video submission logic here
+            // Add new video to the state
+            VideoData newVideo = new VideoData(
+                    VideosState.getInstance().getVideoList().size() + 1, // Generate new ID
+                    title,
+                    description,
+                    "Current User", // Replace with actual user data
+                    "0 views",
+                    selectedThumbnailUri.toString(),
+                    selectedVideoUri.toString(),
+                    "Just now",
+                    "authorImageUri" // Replace with actual author image URI
+            );
+            VideosState.getInstance().addVideo(newVideo);
+            Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
         }
     }
 }

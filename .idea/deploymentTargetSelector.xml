@@ -7,10 +7,10 @@
       </SelectionState>
       <SelectionState runConfigName="MainActivity">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-06-09T20:44:17.545450600Z">
+        <DropdownSelection timestamp="2024-06-11T10:38:47.539054Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\omri\.android\avd\Pixel_2_API_30_test.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\omri\.android\avd\myNewDevice.avd" />
             </handle>
           </Target>
         </DropdownSelection>
