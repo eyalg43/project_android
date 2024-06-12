@@ -144,16 +144,17 @@ public class VideoScreenActivity extends AppCompatActivity {
             VideoComments videoComments = findCommentsForVideo(currentVideo.getId());
             if (videoComments != null) {
                 videoComments.getComments().add(newComment);
-                commentsAdapter.updateComments(videoComments.getComments());
+                commentsAdapter.updateComments(reverseComments(videoComments.getComments()));
             } else {
                 VideoComments newVideoComments = new VideoComments();
                 newVideoComments.setVideoId(String.valueOf(currentVideo.getId()));
                 newVideoComments.setComments(Collections.singletonList(newComment));
                 videoCommentsList.add(newVideoComments);
-                commentsAdapter.updateComments(newVideoComments.getComments());
+                commentsAdapter.updateComments(reverseComments(newVideoComments.getComments()));
             }
         }
     }
+
 
 
     private void displayVideoDetails(VideoData video) {
@@ -196,7 +197,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         VideoComments commentsForVideo = findCommentsForVideo(video.getId());
         if (commentsAdapter != null) {
             if (commentsForVideo != null && commentsForVideo.getComments() != null) {
-                commentsAdapter.updateComments(commentsForVideo.getComments());
+                commentsAdapter.updateComments(reverseComments(commentsForVideo.getComments()));
             } else {
                 commentsAdapter.updateComments(Collections.emptyList());
             }
@@ -207,6 +208,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         // Update related videos
         updateRelatedVideos(video);
     }
+
 
     private List<VideoComments> loadCommentsJSONFromRaw() {
         InputStream inputStream = getResources().openRawResource(R.raw.comments);
@@ -279,4 +281,11 @@ public class VideoScreenActivity extends AppCompatActivity {
         }
         return null;
     }
+
+    private List<CommentData> reverseComments(List<CommentData> comments) {
+        List<CommentData> reversedComments = new ArrayList<>(comments);
+        Collections.reverse(reversedComments);
+        return reversedComments;
+    }
+
 }

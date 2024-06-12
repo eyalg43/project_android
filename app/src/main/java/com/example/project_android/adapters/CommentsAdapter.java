@@ -88,8 +88,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     }
 
     private void showEditCommentDialog(CommentData commentData) {
-        // Show a dialog to edit the comment
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        // Show a dialog to edit the comment with a custom theme
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomDialogTheme);
         builder.setTitle("Edit Comment");
 
         // Set up the input
@@ -109,6 +109,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
         builder.show();
     }
+
 
     private void deleteComment(CommentData commentData) {
         commentsList.remove(commentData);
