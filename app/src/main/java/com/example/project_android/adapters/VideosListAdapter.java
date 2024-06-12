@@ -1,6 +1,7 @@
 package com.example.project_android.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.project_android.EditVideo;
 import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.VideoData;
@@ -60,6 +62,7 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
                 int resId = imageView.getContext().getResources().getIdentifier(path, "drawable", imageView.getContext().getPackageName());
                 if (resId != 0) {
                     imageView.setImageResource(resId);
+                    Log.d(TAG, "Loaded drawable resource: " + path);
                 } else if (path.startsWith("content://") || path.startsWith("file://")) {
                     // Load from URI
                     Uri uri = Uri.parse(path);
@@ -69,8 +72,13 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
                     if (inputStream != null) {
                         inputStream.close();
                     }
+                    Log.d(TAG, "Loaded image from URI: " + path);
+                } else {
+                    // Load from local file path
+                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    imageView.setImageBitmap(bitmap);
+                    Log.d(TAG, "Loaded image from local file path: " + path);
                 }
-                Log.d(TAG, "Loaded image from path: " + path);
             } catch (Exception e) {
                 Log.e(TAG, "Error loading image: " + e.getMessage());
             }

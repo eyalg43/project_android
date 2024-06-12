@@ -43,6 +43,27 @@ public class VideosState {
             return videoList.get(videoList.size() - 1).getId();
         }
     }
+
+    public void updateVideo(VideoData updatedVideo) {
+        for (int i = 0; i < videoList.size(); i++) {
+            if (videoList.get(i).getId() == updatedVideo.getId()) {
+                videoList.set(i, updatedVideo);
+                Log.d("VideosState", "Video updated successfully: " + updatedVideo.getTitle());
+                break;
+            }
+        }
+    }
+
+    public VideoData getVideoById(int id) {
+        for (VideoData video : videoList) {
+            if (video.getId() == id) {
+                return video;
+            }
+        }
+        return null; // Return null if no video is found with the given ID
+    }
+
+
 }
 
 

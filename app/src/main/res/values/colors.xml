@@ -24,4 +24,10 @@
     <color name="oppositeOfBackground">#000000</color>
     <color name="editButtonColor">#2A8BD8</color>
     <color name="deleteButtonColor">#A11E1E</color>
+    <color name="dialog_button_color">#000000</color>
+    <color name="like_green">#00FF00</color>
+    <color name="dislike_red">#FF0000</color>
+    <color name="dialog_background">#FFFFFF</color>
+    <color name="dialog_text">#000000</color>
+    <color name="editPageButtons">#C3C3C3</color>
 </resources>

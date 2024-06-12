@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.example.project_android.entities.CommentData;
+import com.example.project_android.entities.VideoComments;
 import com.example.project_android.entities.VideoData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -26,6 +28,12 @@ public class MainActivity extends AppCompatActivity {
         List<VideoData> videoList = loadVideosFromJson();
         VideosState.getInstance().setVideoList(videoList);
 
+        // Load comments from JSON and set them in the state
+        List<VideoComments> commentsList = loadCommentsJSONFromRaw();
+        for (VideoComments videoComments : commentsList) {
+            CommentState.getInstance(this).addCommentsForVideo(Integer.parseInt(videoComments.getVideoId()), videoComments.getComments());
+        }
+
         // Apply theme based on system settings
         applyTheme();
 
@@ -43,6 +51,14 @@ public class MainActivity extends AppCompatActivity {
         Gson gson = new Gson();
         Type videoListType = new TypeToken<List<VideoData>>() {}.getType();
         return gson.fromJson(reader, videoListType);
+    }
+
+    private List<VideoComments> loadCommentsJSONFromRaw() {
+        InputStream inputStream = getResources().openRawResource(R.raw.comments);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        Gson gson = new Gson();
+        Type commentsListType = new TypeToken<List<VideoComments>>() {}.getType();
+        return gson.fromJson(reader, commentsListType);
     }
 
     private void applyTheme() {

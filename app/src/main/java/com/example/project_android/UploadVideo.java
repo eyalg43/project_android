@@ -127,6 +127,11 @@ public class UploadVideo extends AppCompatActivity {
         } else {
             textViewError.setVisibility(View.GONE);
             int newVideoId = VideosState.getInstance().getLatestVideoId() + 1;
+
+            // Log the author image URI
+            String authorImageUri = UserState.getLoggedInUser().getImageUri();
+            Log.d("UploadVideo", "Author Image URI: " + authorImageUri);
+
             // Add new video to the state
             VideoData newVideo = new VideoData(
                     newVideoId, // Generate new ID
@@ -137,7 +142,7 @@ public class UploadVideo extends AppCompatActivity {
                     selectedThumbnailUri.toString(),
                     selectedVideoUri.toString(),
                     uploadTime,
-                    UserState.getLoggedInUser().getImageUri()
+                    authorImageUri
             );
             VideosState.getInstance().addVideo(newVideo);
             Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
@@ -145,6 +150,7 @@ public class UploadVideo extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
 
     private String getElapsedTime(long uploadTime) {
         long now = System.currentTimeMillis();

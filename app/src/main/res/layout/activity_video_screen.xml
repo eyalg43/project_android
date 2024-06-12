@@ -108,13 +108,25 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
 
-                        <ImageView
-                            android:id="@+id/author_image"
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/author_image_container"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            app:cardCornerRadius="20dp"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
+                            app:layout_constraintStart_toStartOf="parent">
+
+                            <ImageView
+                                android:id="@+id/author_image"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:adjustViewBounds="true"
+                                android:contentDescription="@string/author_image" />
+                        </androidx.cardview.widget.CardView>
 
                         <TextView
                             android:id="@+id/author_name"
@@ -126,7 +138,7 @@
                             android:paddingEnd="8dp"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@id/author_image"
+                            app:layout_constraintStart_toEndOf="@id/author_image_container"
                             app:layout_constraintEnd_toStartOf="@+id/subscribe_button"
                             app:layout_constraintHorizontal_bias="0" />
 
@@ -151,20 +163,22 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
 
-                        <com.google.android.material.button.MaterialButton
+                        <ImageButton
                             android:id="@+id/like_button"
-                            style="@style/NonSubscribeButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Like" />
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:src="@drawable/ic_like"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="8dp" />
 
-                        <com.google.android.material.button.MaterialButton
+                        <ImageButton
                             android:id="@+id/dislike_button"
-                            style="@style/NonSubscribeButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Dislike"
-                            android:layout_marginStart="8dp" />
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:src="@drawable/ic_dislike"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:layout_marginStart="8dp"
+                            android:padding="8dp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/share_button"
@@ -174,6 +188,7 @@
                             android:text="Share"
                             android:layout_marginStart="8dp" />
                     </LinearLayout>
+
 
                     <!-- Initially visible button to show comments -->
                     <com.google.android.material.button.MaterialButton
@@ -204,44 +219,70 @@
                 android:background="@color/colorBackground"
                 android:visibility="gone">
 
-                <Button
-                    android:backgroundTint="@color/colorBackground"
-                    android:textColor="@color/oppositeOfBackground"
-                    android:id="@+id/close_comments_button"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="X" />
+                    android:padding="8dp"
+                    android:background="@color/colorPrimary">
 
-                <TextView
-                    android:id="@+id/comments_section"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Comments:"
-                    android:textSize="16sp"
-                    android:textColor="@color/oppositeOfBackground" />
+                    <TextView
+                        android:id="@+id/comments_section"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Comments:"
+                        android:textSize="16sp"
+                        android:textColor="@color/oppositeOfBackground"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/close_comments_button"
+                        android:layout_marginEnd="8dp" />
+
+                    <Button
+                        android:backgroundTint="@color/colorPrimary"
+                        android:textColor="@color/oppositeOfBackground"
+                        android:id="@+id/close_comments_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="X"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <!-- New section for adding comments -->
                 <LinearLayout
+                    android:id="@+id/comment_input_section"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="8dp">
 
-                    <ImageView
-                        android:id="@+id/user_image_input"
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/user_image_container"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/img1"
-                        android:layout_marginEnd="8dp" />
+                        android:layout_marginEnd="8dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="0dp">
 
-                    <EditText
-                        android:id="@+id/username_input"
+                        <ImageView
+                            android:id="@+id/user_image_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/img1" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/display_name_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="Username"
-                        android:background="@color/colorBackground"
-                        android:textColor="@color/oppositeOfBackground" />
+                        android:layout_marginEnd="8dp"
+                        android:text="Display Name"
+                        android:textColor="@color/oppositeOfBackground"
+                        android:textSize="16sp" />
 
                     <EditText
                         android:id="@+id/comment_input"
@@ -259,6 +300,7 @@
                         style="@style/NonSubscribeButton"
                         android:text="Submit" />
                 </LinearLayout>
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/comments_recycler_view"

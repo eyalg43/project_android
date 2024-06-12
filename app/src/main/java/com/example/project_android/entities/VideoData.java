@@ -10,6 +10,8 @@ public class VideoData {
     private String video;
     private String uploadTime;
     private String authorImage;
+    private boolean isLiked;
+    private boolean isDisliked;
 
     public VideoData(int id, String title, String description, String author,
                      String views, String img, String video, String uploadTime, String authorImage) {
@@ -22,6 +24,8 @@ public class VideoData {
         this.video = video;
         this.uploadTime = uploadTime;
         this.authorImage = authorImage;
+        this.isLiked = false;
+        this.isDisliked = false;
     }
 
     public int getId() {
@@ -94,5 +98,21 @@ public class VideoData {
 
     public void setAuthorImage(String authorImage) {
         this.authorImage = authorImage;
+    }
+
+    public boolean isLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(boolean liked) {
+        isLiked = liked;
+    }
+
+    public boolean isDisliked() {
+        return isDisliked;
+    }
+
+    public void setDisliked(boolean disliked) {
+        isDisliked = disliked;
     }
 }
