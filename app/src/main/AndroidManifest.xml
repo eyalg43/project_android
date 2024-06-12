@@ -37,6 +37,9 @@
             android:name=".VideoScreenActivity"
             android:exported="true" />
         <activity
+            android:name=".EditVideo"
+            android:exported="true" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

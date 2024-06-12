@@ -63,7 +63,9 @@ public class HomePage extends AppCompatActivity {
 
             @Override
             public void onEditClick(VideoData video) {
-                // Handle edit click
+                Intent intent = new Intent(HomePage.this, EditVideo.class);
+                intent.putExtra("video_id", video.getId());
+                startActivity(intent);
             }
 
             @Override
@@ -72,6 +74,8 @@ public class HomePage extends AppCompatActivity {
                 adapter.setVideos(allVideos);
                 VideosState.getInstance().setVideoList(allVideos);
             }
+
+
         });
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
@@ -250,11 +254,15 @@ public class HomePage extends AppCompatActivity {
     private void updateVideos() {
         allVideos = VideosState.getInstance().getVideoList();
         if (allVideos != null) {
+            for (VideoData video : allVideos) {
+                Log.d("HomePage", "Video Author Image URI: " + video.getAuthorImage());
+            }
             adapter.setVideos(allVideos);
         } else {
             Log.e("HomePage", "Error getting videos");
         }
     }
+
 
     private void updateModeButtonText() {
         int nightMode = AppCompatDelegate.getDefaultNightMode();
