@@ -312,7 +312,7 @@
                             android:id="@+id/profile_image"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:contentDescription="Profile Image"
+                            android:contentDescription="@string/profile_image"
                             android:scaleType="centerCrop"
                             android:adjustViewBounds="true" />
 
@@ -339,14 +339,14 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_upload"
-                            android:contentDescription="Upload Icon"
+                            android:contentDescription="@string/upload_icon"
                             android:layout_marginEnd="8dp"/>
 
                         <Button
                             android:id="@+id/btn_upload_video"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Upload Video"
+                            android:text="@string/upload_video"
                             android:backgroundTint="@color/colorButtonBackground"
                             android:textColor="@color/colorText"
                             android:paddingLeft="16dp"
@@ -367,19 +367,18 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_sign_out"
-                            android:contentDescription="Sign Out Icon"
+                            android:contentDescription="@string/sign_out_icon"
                             android:layout_marginEnd="8dp"/>
 
                         <Button
                             android:id="@+id/btn_sign_out"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sign Out"
+                            android:text="@string/sign_out"
                             android:textColor="@color/colorText"
                             android:backgroundTint="@color/colorButtonBackground"
                             android:paddingLeft="16dp"
-                            android:paddingRight="16dp"
-                            android:onClick="signOutUser" />
+                            android:paddingRight="16dp" />
                     </LinearLayout>
                 </LinearLayout>
 
