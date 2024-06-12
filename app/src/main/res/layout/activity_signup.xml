@@ -8,22 +8,6 @@
     android:padding="16dp"
     tools:context=".SignupActivity">
 
-    <EditText
-        android:id="@+id/editTextUsername"
-        android:layout_width="0dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="444dp"
-        android:hint="@string/username"
-        android:inputType="text"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView2"
-        app:layout_constraintVertical_bias="0.0" />
-
     <Button
         android:id="@+id/buttonTakePhoto"
         android:layout_width="wrap_content"
@@ -37,32 +21,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewImageSuccess"
         app:layout_constraintVertical_bias="1.0" />
-
-    <EditText
-        android:id="@+id/editTextPassword"
-        android:layout_width="0dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="8dp"
-        android:hint="@string/password"
-        android:inputType="textPassword"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextUsername" />
-
-    <EditText
-        android:id="@+id/editTextConfirmPassword"
-        android:layout_width="0dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="4dp"
-        android:hint="@string/confirm_password"
-        android:inputType="textPassword"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
     <TextView
         android:id="@+id/textViewPasswordMatch"
@@ -92,7 +50,7 @@
     <EditText
         android:id="@+id/editTextDisplayName"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="60dp"
         android:layout_marginTop="4dp"
         android:hint="@string/display_name"
         android:inputType="text"
@@ -101,6 +59,62 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editTextConfirmPassword" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/sign_up_to_vidtube"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/editTextUsername"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/editTextUsername"
+        android:layout_width="377dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="444dp"
+        android:hint="@string/username"
+        android:inputType="text"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView2"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="381dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="8dp"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextUsername" />
+
+    <EditText
+        android:id="@+id/editTextConfirmPassword"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="4dp"
+        android:hint="@string/confirm_password"
+        android:inputType="textPassword"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
     <Button
         android:id="@+id/buttonUploadImage"
@@ -114,7 +128,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.79" />
+        app:layout_constraintVertical_bias="0.774" />
 
     <ImageView
         android:id="@+id/imageViewProfile"
@@ -129,11 +143,11 @@
 
     <TextView
         android:id="@+id/textViewPasswordRequirements"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="406dp"
+        android:layout_height="44dp"
         android:text="@string/password_must_have_at_least_8_characters_1_uppercase_1_lowercase_1_number_and_1_special_character"
         android:textColor="@android:color/holo_red_dark"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/buttonUploadImage"
         app:layout_constraintEnd_toEndOf="parent"
@@ -180,20 +194,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonUploadImage"
         app:layout_constraintVertical_bias="0.357" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/sign_up_to_vidtube"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/editTextUsername"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
-        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/imageView2"

@@ -150,7 +150,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_IMAGE_GET);
     }
 
@@ -217,6 +217,7 @@ public class SignupActivity extends AppCompatActivity {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
                     imageViewProfile.setImageBitmap(bitmap);
                     textViewImageError.setVisibility(View.GONE);
+                    Toast.makeText(SignupActivity.this, "Image uploaded successfully.", Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
                     Log.e("SignupActivity", "Error loading image: " + e.getMessage());
                 }
