@@ -54,3 +54,56 @@ After cloning the repository, open the project in Android Studio and run the app
 
 
 # 📷 Screenshots from the Android app:
+## Home Activity (and switching to dark mode):
+<img src="/Android-app-screenshots/Screenshot_1.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_2.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_3.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_4.png" alt="Example Image">
+
+## Log in Activity (and signing up):
+<img src="/Android-app-screenshots/Screenshot_5.png" alt="Example Image">
+
+## Sign-up Activity (and uploading image from camera):
+<img src="/Android-app-screenshots/Screenshot_6.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_7.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_8.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_9.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_10.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_11.png" alt="Example Image">
+
+## Watch-Video Activity:
+
+## Watch-Video Activity (Like, Dislike, Comments-post, edit, delete, like, dislike):
+<img src="/Android-app-screenshots/Screenshot_19.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_20.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_21.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_22.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_23.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_24.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_25.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_26.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_27.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_28.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_30.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_29.png" alt="Example Image">
+
+## Watch-Video Activity - Dark Mode:
+<img src="/Android-app-screenshots/Screenshot_18.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_36.png" alt="Example Image">
+
+## Upload-Video Activity:
+<img src="/Android-app-screenshots/Screenshot_12.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_13.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_14.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_15.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_16.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_17.png" alt="Example Image">
+
+## Edit-Video Activity (and editing a video):
+<img src="/Android-app-screenshots/Screenshot_31.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_32.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_33.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_34.png" alt="Example Image">
+
+## Edit-Video Activity - Dark Mode:
+<img src="/Android-app-screenshots/Screenshot_35.png" alt="Example Image">
