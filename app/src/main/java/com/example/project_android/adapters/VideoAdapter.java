@@ -1,6 +1,10 @@
 package com.example.project_android.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_android.R;
 import com.example.project_android.entities.VideoData;
 
+import java.io.InputStream;
 import java.util.List;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
@@ -20,6 +25,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     private List<VideoData> videoList;
     private Context context;
     private OnItemClickListener onItemClickListener;
+    private static final String TAG = "VideoAdapter";
+
 
     public interface OnItemClickListener {
         void onItemClick(VideoData videoData);
@@ -43,15 +50,20 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         VideoData videoData = videoList.get(position);
 
         holder.titleTextView.setText(videoData.getTitle());
-        holder.viewsTextView.setText(videoData.getViews());
-        holder.uploadTimeTextView.setText(videoData.getUploadTime());
+        holder.authorViewsUploadTimeTextView.setText(
+                context.getString(R.string.video_author_views_uploadtime,
+                        videoData.getAuthor(), videoData.getViews(), videoData.getUploadTime())
+        );
 
-        // Load image from drawable resources
-        int imageResource = context.getResources().getIdentifier(videoData.getImg(), "drawable", context.getPackageName());
-        holder.thumbnailImageView.setImageResource(imageResource);
+        // Load video thumbnail
+        loadImage(videoData.getImg(), holder.thumbnailImageView);
+
+        // Load author image
+        loadImage(videoData.getAuthorImage(), holder.authorImageView);
 
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(videoData));
     }
+
 
     @Override
     public int getItemCount() {
@@ -70,15 +82,43 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
         ImageView thumbnailImageView;
         TextView titleTextView;
-        TextView viewsTextView;
-        TextView uploadTimeTextView;
+        TextView authorViewsUploadTimeTextView;
+        ImageView authorImageView;
 
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             thumbnailImageView = itemView.findViewById(R.id.video_thumbnail);
             titleTextView = itemView.findViewById(R.id.video_title);
-            viewsTextView = itemView.findViewById(R.id.video_views);
-            uploadTimeTextView = itemView.findViewById(R.id.video_uploadtime);
+            authorViewsUploadTimeTextView = itemView.findViewById(R.id.video_author_views_uploadtime);
+            authorImageView = itemView.findViewById(R.id.author_image);
         }
     }
+    private void loadImage(String path, ImageView imageView) {
+        try {
+            // Check if the path is a drawable resource
+            int resId = imageView.getContext().getResources().getIdentifier(path, "drawable", imageView.getContext().getPackageName());
+            if (resId != 0) {
+                imageView.setImageResource(resId);
+                Log.d(TAG, "Loaded drawable resource: " + path);
+            } else if (path.startsWith("content://") || path.startsWith("file://")) {
+                // Load from URI
+                Uri uri = Uri.parse(path);
+                InputStream inputStream = imageView.getContext().getContentResolver().openInputStream(uri);
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                imageView.setImageBitmap(bitmap);
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                Log.d(TAG, "Loaded image from URI: " + path);
+            } else {
+                // Load from local file path
+                Bitmap bitmap = BitmapFactory.decodeFile(path);
+                imageView.setImageBitmap(bitmap);
+                Log.d(TAG, "Loaded image from local file path: " + path);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading image: " + e.getMessage());
+        }
+    }
+
 }

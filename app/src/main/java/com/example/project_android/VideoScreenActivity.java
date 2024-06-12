@@ -1,5 +1,7 @@
 package com.example.project_android;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -144,16 +146,17 @@ public class VideoScreenActivity extends AppCompatActivity {
             VideoComments videoComments = findCommentsForVideo(currentVideo.getId());
             if (videoComments != null) {
                 videoComments.getComments().add(newComment);
-                commentsAdapter.updateComments(videoComments.getComments());
+                commentsAdapter.updateComments(reverseComments(videoComments.getComments()));
             } else {
                 VideoComments newVideoComments = new VideoComments();
                 newVideoComments.setVideoId(String.valueOf(currentVideo.getId()));
                 newVideoComments.setComments(Collections.singletonList(newComment));
                 videoCommentsList.add(newVideoComments);
-                commentsAdapter.updateComments(newVideoComments.getComments());
+                commentsAdapter.updateComments(reverseComments(newVideoComments.getComments()));
             }
         }
     }
+
 
 
     private void displayVideoDetails(VideoData video) {
@@ -173,8 +176,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         authorTextView.setText(video.getAuthor());
 
         // Load author image
-        int imageResource = getResources().getIdentifier(video.getAuthorImage(), "drawable", getPackageName());
-        authorImageView.setImageResource(imageResource);
+        loadImage(video.getAuthorImage(), authorImageView);
 
         // Load video
         Uri videoUri = Uri.parse(video.getVideo());
@@ -196,7 +198,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         VideoComments commentsForVideo = findCommentsForVideo(video.getId());
         if (commentsAdapter != null) {
             if (commentsForVideo != null && commentsForVideo.getComments() != null) {
-                commentsAdapter.updateComments(commentsForVideo.getComments());
+                commentsAdapter.updateComments(reverseComments(commentsForVideo.getComments()));
             } else {
                 commentsAdapter.updateComments(Collections.emptyList());
             }
@@ -207,6 +209,36 @@ public class VideoScreenActivity extends AppCompatActivity {
         // Update related videos
         updateRelatedVideos(video);
     }
+
+    private void loadImage(String path, ImageView imageView) {
+        try {
+            // Check if the path is a drawable resource
+            int resId = getResources().getIdentifier(path, "drawable", getPackageName());
+            if (resId != 0) {
+                imageView.setImageResource(resId);
+                Log.d(TAG, "Loaded drawable resource: " + path);
+            } else if (path.startsWith("content://") || path.startsWith("file://")) {
+                // Load from URI
+                Uri uri = Uri.parse(path);
+                InputStream inputStream = getContentResolver().openInputStream(uri);
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                imageView.setImageBitmap(bitmap);
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                Log.d(TAG, "Loaded image from URI: " + path);
+            } else {
+                // Load from local file path
+                Bitmap bitmap = BitmapFactory.decodeFile(path);
+                imageView.setImageBitmap(bitmap);
+                Log.d(TAG, "Loaded image from local file path: " + path);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading image: " + e.getMessage());
+        }
+    }
+
+
 
     private List<VideoComments> loadCommentsJSONFromRaw() {
         InputStream inputStream = getResources().openRawResource(R.raw.comments);
@@ -279,4 +311,11 @@ public class VideoScreenActivity extends AppCompatActivity {
         }
         return null;
     }
+
+    private List<CommentData> reverseComments(List<CommentData> comments) {
+        List<CommentData> reversedComments = new ArrayList<>(comments);
+        Collections.reverse(reversedComments);
+        return reversedComments;
+    }
+
 }

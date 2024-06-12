@@ -73,4 +73,5 @@
     <string name="sign_out">Sign Out</string>
     <string name="upload_icon">Upload Icon</string>
     <string name="profile_image">Profile Image</string>
+    <string name="video_author_views_uploadtime">%1$s - %2$s views - %3$s</string>
 </resources>

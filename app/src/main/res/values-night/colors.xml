@@ -16,5 +16,6 @@
     <color name="editButtonColor">#075593</color>
     <color name="deleteButtonColor">#450909</color>
     <color name="editPageButtons">#24272B</color>
+    <color name="dialog_button_color">#FFFFFF</color>
 </resources>
 

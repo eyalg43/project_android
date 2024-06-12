@@ -2,7 +2,10 @@ package com.example.project_android.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +20,15 @@ import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.CommentData;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.CommentViewHolder> {
     private List<CommentData> commentsList;
     private Context context;
+    private static final String TAG = "CommentsAdapter";
+
 
     public CommentsAdapter(List<CommentData> commentsList) {
         // Ensure the commentsList is modifiable
@@ -45,15 +51,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
         holder.commentTextView.setText(comment.getText());
 
         // Load user image
-        String imgUri = comment.getImg();
-        if (imgUri != null && imgUri.startsWith("content://")) {
-            // If img is a URI, load it as such
-            holder.userImageView.setImageURI(Uri.parse(imgUri));
-        } else {
-            // Otherwise, treat it as a drawable resource
-            int imageResource = context.getResources().getIdentifier(comment.getImg(), "drawable", context.getPackageName());
-            holder.userImageView.setImageResource(imageResource);
-        }
+        loadImage(comment.getImg(), holder.userImageView);
 
         // Show/hide edit and delete buttons based on login status and comment ownership
         if (UserState.isLoggedIn() && UserState.getLoggedInUser().getDisplayName().equals(comment.getUsername())) {
@@ -75,6 +73,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
 
 
+
     @Override
     public int getItemCount() {
         return commentsList.size();
@@ -88,8 +87,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     }
 
     private void showEditCommentDialog(CommentData commentData) {
-        // Show a dialog to edit the comment
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        // Show a dialog to edit the comment with a custom theme
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomDialogTheme);
         builder.setTitle("Edit Comment");
 
         // Set up the input
@@ -109,6 +108,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
         builder.show();
     }
+
 
     private void deleteComment(CommentData commentData) {
         commentsList.remove(commentData);
@@ -133,4 +133,32 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             deleteButton = itemView.findViewById(R.id.delete_comment_button);
         }
     }
+    private void loadImage(String path, ImageView imageView) {
+        try {
+            // Check if the path is a drawable resource
+            int resId = imageView.getContext().getResources().getIdentifier(path, "drawable", imageView.getContext().getPackageName());
+            if (resId != 0) {
+                imageView.setImageResource(resId);
+                Log.d(TAG, "Loaded drawable resource: " + path);
+            } else if (path.startsWith("content://") || path.startsWith("file://")) {
+                // Load from URI
+                Uri uri = Uri.parse(path);
+                InputStream inputStream = imageView.getContext().getContentResolver().openInputStream(uri);
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                imageView.setImageBitmap(bitmap);
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                Log.d(TAG, "Loaded image from URI: " + path);
+            } else {
+                // Load from local file path
+                Bitmap bitmap = BitmapFactory.decodeFile(path);
+                imageView.setImageBitmap(bitmap);
+                Log.d(TAG, "Loaded image from local file path: " + path);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading image: " + e.getMessage());
+        }
+    }
+
 }
