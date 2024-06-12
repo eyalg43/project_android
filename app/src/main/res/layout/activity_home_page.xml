@@ -327,28 +327,61 @@
                         android:textColor="@color/colorText"
                         android:paddingTop="8dp" />
 
-                    <Button
-                        android:id="@+id/btn_upload_video"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Upload Video"
+                        android:orientation="horizontal"
+                        android:gravity="center"
                         android:backgroundTint="@color/colorButtonBackground"
-                        android:textColor="@color/colorText"
-                        android:paddingLeft="16dp"
-                        android:paddingRight="16dp"
-                        android:layout_marginTop="16dp"
-                        android:visibility="gone" />
+                        android:layout_marginTop="16dp">
 
-                    <Button
-                        android:id="@+id/btn_sign_out"
+                        <ImageView
+                            android:id="@+id/upload_icon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_upload"
+                            android:contentDescription="Upload Icon"
+                            android:layout_marginEnd="8dp"/>
+
+                        <Button
+                            android:id="@+id/btn_upload_video"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Upload Video"
+                            android:backgroundTint="@color/colorButtonBackground"
+                            android:textColor="@color/colorText"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sign Out"
-                        android:textColor="@color/colorText"
-                        android:backgroundTint="@color/colorButtonBackground"
-                        android:paddingLeft="16dp"
-                        android:paddingRight="16dp"
-                        android:onClick="signOutUser" />
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:backgroundTint="@color/colorButtonBackground">
+
+                        <ImageView
+                            android:id="@+id/exit_icon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_sign_out"
+                            android:contentDescription="Sign Out Icon"
+                            android:layout_marginEnd="8dp"/>
+
+                        <Button
+                            android:id="@+id/btn_sign_out"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sign Out"
+                            android:textColor="@color/colorText"
+                            android:backgroundTint="@color/colorButtonBackground"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            android:onClick="signOutUser" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <View
