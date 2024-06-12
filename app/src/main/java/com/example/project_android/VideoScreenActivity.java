@@ -296,9 +296,7 @@ public class VideoScreenActivity extends AppCompatActivity {
     }
 
     private String getCurrentTime() {
-        // Get the current time in "x hours ago" format
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
-        return sdf.format(new Date());
+        return "Just now";
     }
 
     private VideoData findVideoById(int id) {
