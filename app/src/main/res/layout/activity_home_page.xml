@@ -314,8 +314,7 @@
                             android:layout_height="match_parent"
                             android:contentDescription="Profile Image"
                             android:scaleType="centerCrop"
-                            android:padding="8dp"
-                            android:clipToOutline="true" />
+                            android:adjustViewBounds="true" />
 
                     </androidx.cardview.widget.CardView>
 

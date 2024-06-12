@@ -49,6 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="Title"
+            android:textSize="20sp"
             android:inputType="text"
             android:textColor="@color/colorText" />
 
@@ -56,6 +57,7 @@
             android:id="@+id/editTextDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="20sp"
             android:layout_marginTop="8dp"
             android:hint="Description"
             android:inputType="textMultiLine"
@@ -71,14 +73,28 @@
             android:scaleType="centerCrop"
             android:visibility="gone" />
 
-        <Button
-            android:id="@+id/buttonUploadThumbnail"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:backgroundTint="@color/colorBackground"
-            android:text="Upload Thumbnail"
-            android:textColor="@color/colorText" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Thumbnail Icon"
+                android:src="@drawable/ic_thumbnail" /> <!-- Replace with your thumbnail icon resource -->
+
+            <Button
+                android:id="@+id/buttonUploadThumbnail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/editPageButtons"
+                android:text="Upload Thumbnail"
+                android:textColor="@color/colorText" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/textViewVideoDetails"
@@ -89,32 +105,67 @@
             android:textColor="@color/colorText"
             android:visibility="gone" />
 
-        <Button
-            android:id="@+id/buttonUploadVideo"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:backgroundTint="@color/colorBackground"
-            android:text="Upload Video"
-            android:textColor="@color/colorText" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <Button
-            android:id="@+id/buttonSubmitVideo"
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Video Icon"
+                android:src="@drawable/ic_video_upload" /> <!-- Replace with your video icon resource -->
+
+            <Button
+                android:id="@+id/buttonUploadVideo"
+                android:layout_width="187dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/editPageButtons"
+                android:text="Upload Video"
+                android:textColor="@color/colorText" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:backgroundTint="@color/editButtonColor"
-            android:text="Update Video"
-            android:textColor="@color/colorText" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <Button
-            android:id="@+id/buttonCancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@color/deleteButtonColor"
-            android:text="Cancel"
-            android:textColor="@color/colorText" />
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Submit Icon"
+                android:src="@drawable/ic_submit" /> <!-- Replace with your submit icon resource -->
+
+            <Button
+                android:id="@+id/buttonSubmitVideo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/editButtonColor"
+                android:text="Update Video"
+                android:textColor="@color/colorText" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Cancel Icon"
+                android:src="@drawable/ic_cancel"
+                android:layout_marginStart="16dp"/> <!-- Replace with your cancel icon resource -->
+
+            <Button
+                android:id="@+id/buttonCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/deleteButtonColor"
+                android:text="Cancel"
+                android:textColor="@color/colorText" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/textViewError"
