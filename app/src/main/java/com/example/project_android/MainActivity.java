@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.VideoComments;
 import com.example.project_android.entities.VideoData;
 import com.google.gson.Gson;
@@ -25,13 +24,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Load videos from JSON and set them in the state
-        List<VideoData> videoList = loadVideosFromJson();
-        VideosState.getInstance().setVideoList(videoList);
+        if (VideosState.getInstance().getVideoList().isEmpty()) {
+            List<VideoData> videoList = loadVideosFromJson();
+            VideosState.getInstance().setVideoList(videoList);
+        }
 
-        // Load comments from JSON and set them in the state
-        List<VideoComments> commentsList = loadCommentsJSONFromRaw();
-        for (VideoComments videoComments : commentsList) {
-            CommentState.getInstance(this).addCommentsForVideo(Integer.parseInt(videoComments.getVideoId()), videoComments.getComments());
+        // Initialize CommentState
+        CommentState commentState = CommentState.getInstance(this);
+
+        // Load initial comments from JSON if the state is empty
+        if (commentState.getAllComments().isEmpty()) {
+            List<VideoComments> commentsList = loadCommentsJSONFromRaw();
+            for (VideoComments videoComments : commentsList) {
+                commentState.addCommentsForVideo(Integer.parseInt(videoComments.getVideoId()), videoComments.getComments());
+            }
         }
 
         // Apply theme based on system settings

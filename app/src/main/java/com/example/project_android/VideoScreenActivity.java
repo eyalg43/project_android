@@ -25,12 +25,8 @@ import com.example.project_android.adapters.CommentsAdapter;
 import com.example.project_android.adapters.VideoAdapter;
 import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.VideoData;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.Gson;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -300,9 +296,7 @@ public class VideoScreenActivity extends AppCompatActivity {
     }
 
     private String getCurrentTime() {
-        // Get the current time in "x hours ago" format
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
-        return sdf.format(new Date());
+        return "Just now";
     }
 
     private VideoData findVideoById(int id) {

@@ -1,15 +1,13 @@
 package com.example.project_android;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
-
 import com.example.project_android.entities.CommentData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,19 +15,16 @@ public class CommentState {
 
     private static CommentState instance;
     private Map<Integer, List<CommentData>> commentDataMap;
-    private SharedPreferences sharedPreferences;
     private Gson gson;
 
-    private CommentState(Context context) {
+    private CommentState() {
         commentDataMap = new HashMap<>();
-        sharedPreferences = context.getSharedPreferences("comments_prefs", Context.MODE_PRIVATE);
         gson = new Gson();
-        loadCommentsFromPrefs();
     }
 
     public static CommentState getInstance(Context context) {
         if (instance == null) {
-            instance = new CommentState(context);
+            instance = new CommentState();
         }
         return instance;
     }
@@ -40,7 +35,6 @@ public class CommentState {
 
     public void updateCommentsForVideo(int videoId, List<CommentData> comments) {
         commentDataMap.put(videoId, comments);
-        saveCommentsToPrefs();
     }
 
     public CommentData getCommentData(int id) {
@@ -56,7 +50,6 @@ public class CommentState {
 
     public void addCommentsForVideo(int videoId, List<CommentData> comments) {
         commentDataMap.put(videoId, comments);
-        saveCommentsToPrefs();
     }
 
     public void updateCommentData(CommentData updatedCommentData) {
@@ -77,7 +70,13 @@ public class CommentState {
         int videoId = getVideoIdForComment(commentId);
         if (videoId != -1) {
             List<CommentData> comments = commentDataMap.get(videoId);
-            comments.removeIf(comment -> comment.getId() == commentId);
+            for (Iterator<CommentData> iterator = comments.iterator(); iterator.hasNext(); ) {
+                CommentData comment = iterator.next();
+                if (comment.getId() == commentId) {
+                    iterator.remove();
+                    break;
+                }
+            }
             updateCommentsForVideo(videoId, comments); // Ensure state is updated
         }
     }
@@ -95,20 +94,5 @@ public class CommentState {
 
     public Map<Integer, List<CommentData>> getAllComments() {
         return commentDataMap;
-    }
-
-    private void saveCommentsToPrefs() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        String json = gson.toJson(commentDataMap);
-        editor.putString("comments_data", json);
-        editor.apply();
-    }
-
-    private void loadCommentsFromPrefs() {
-        String json = sharedPreferences.getString("comments_data", null);
-        if (json != null) {
-            Type type = new TypeToken<Map<Integer, List<CommentData>>>() {}.getType();
-            commentDataMap = gson.fromJson(json, type);
-        }
     }
 }
