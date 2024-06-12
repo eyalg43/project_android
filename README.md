@@ -72,6 +72,7 @@ After cloning the repository, open the project in Android Studio and run the app
 <img src="/Android-app-screenshots/Screenshot_11.png" alt="Example Image">
 
 ## Watch-Video Activity:
+<img src="/Android-app-screenshots/Screenshot_37.png" alt="Example Image">
 
 ## Watch-Video Activity (Like, Dislike, Comments-post, edit, delete, like, dislike):
 <img src="/Android-app-screenshots/Screenshot_19.png" alt="Example Image">
