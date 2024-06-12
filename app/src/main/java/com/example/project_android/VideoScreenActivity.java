@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
@@ -25,7 +26,7 @@ import com.example.project_android.adapters.VideoAdapter;
 import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.VideoComments;
 import com.example.project_android.entities.VideoData;
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import java.io.InputStream;
@@ -50,6 +51,7 @@ public class VideoScreenActivity extends AppCompatActivity {
     private VideoData currentVideo;
     private List<VideoData> originalVideoList;
     private NestedScrollView nestedScrollView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +134,56 @@ public class VideoScreenActivity extends AppCompatActivity {
                 Toast.makeText(VideoScreenActivity.this, "You need to be logged in to comment.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Initialize like and dislike buttons
+        ImageButton likeButton = findViewById(R.id.like_button);
+        ImageButton dislikeButton = findViewById(R.id.dislike_button);
+
+        likeButton.setOnClickListener(v -> handleLikeDislike(true));
+        dislikeButton.setOnClickListener(v -> handleLikeDislike(false));
+    }
+
+    private void handleLikeDislike(boolean isLike) {
+        if (currentVideo != null) {
+            if (isLike) {
+                if (currentVideo.isLiked()) {
+                    currentVideo.setLiked(false);
+                } else {
+                    currentVideo.setLiked(true);
+                    currentVideo.setDisliked(false);
+                }
+            } else {
+                if (currentVideo.isDisliked()) {
+                    currentVideo.setDisliked(false);
+                } else {
+                    currentVideo.setDisliked(true);
+                    currentVideo.setLiked(false);
+                }
+            }
+
+            // Update the video state
+            VideosState.getInstance().updateVideo(currentVideo);
+
+            // Update button colors
+            updateLikeDislikeButtonColors();
+        }
+    }
+
+    private void updateLikeDislikeButtonColors() {
+        ImageButton likeButton = findViewById(R.id.like_button);
+        ImageButton dislikeButton = findViewById(R.id.dislike_button);
+
+        if (currentVideo.isLiked()) {
+            likeButton.setColorFilter(getResources().getColor(R.color.like_green));
+        } else {
+            likeButton.setColorFilter(null);
+        }
+
+        if (currentVideo.isDisliked()) {
+            dislikeButton.setColorFilter(getResources().getColor(R.color.dislike_red));
+        } else {
+            dislikeButton.setColorFilter(null);
+        }
     }
 
     private void addComment(String displayName, String commentText, String userImage) {
@@ -208,6 +260,9 @@ public class VideoScreenActivity extends AppCompatActivity {
 
         // Update related videos
         updateRelatedVideos(video);
+
+        // Update the like and dislike button colors
+        updateLikeDislikeButtonColors();
     }
 
     private void loadImage(String path, ImageView imageView) {

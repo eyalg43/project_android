@@ -162,20 +162,22 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
 
-                        <com.google.android.material.button.MaterialButton
+                        <ImageButton
                             android:id="@+id/like_button"
-                            style="@style/NonSubscribeButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Like" />
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:src="@drawable/ic_like"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="8dp" />
 
-                        <com.google.android.material.button.MaterialButton
+                        <ImageButton
                             android:id="@+id/dislike_button"
-                            style="@style/NonSubscribeButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Dislike"
-                            android:layout_marginStart="8dp" />
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:src="@drawable/ic_dislike"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:layout_marginStart="8dp"
+                            android:padding="8dp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/share_button"
@@ -185,6 +187,7 @@
                             android:text="Share"
                             android:layout_marginStart="8dp" />
                     </LinearLayout>
+
 
                     <!-- Initially visible button to show comments -->
                     <com.google.android.material.button.MaterialButton
