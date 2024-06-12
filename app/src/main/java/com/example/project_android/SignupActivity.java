@@ -125,7 +125,6 @@ public class SignupActivity extends AppCompatActivity {
                 }
 
                 // Add user to in-memory state
-                String imageUri = selectedImageUri != null ? selectedImageUri.toString() : "";  // Save image URI or path
                 UserState.addUser(username, password, displayName, imageUri);
 
                 // Proceed with signup logic
