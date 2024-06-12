@@ -25,12 +25,8 @@ import com.example.project_android.adapters.CommentsAdapter;
 import com.example.project_android.adapters.VideoAdapter;
 import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.VideoData;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.Gson;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
