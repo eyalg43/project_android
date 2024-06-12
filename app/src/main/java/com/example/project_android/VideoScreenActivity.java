@@ -23,7 +23,7 @@ import com.example.project_android.adapters.VideoAdapter;
 import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.VideoComments;
 import com.example.project_android.entities.VideoData;
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import java.io.InputStream;
