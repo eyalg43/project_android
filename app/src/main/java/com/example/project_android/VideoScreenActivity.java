@@ -7,8 +7,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,8 +23,8 @@ import com.example.project_android.adapters.VideoAdapter;
 import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.VideoComments;
 import com.example.project_android.entities.VideoData;
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -71,6 +73,25 @@ public class VideoScreenActivity extends AppCompatActivity {
         relatedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         relatedVideosRecyclerView.setAdapter(videoAdapter);
 
+        // Initialize the comment input section
+        LinearLayout commentInputSection = findViewById(R.id.comment_input_section);
+        ImageView userImageInput = findViewById(R.id.user_image_input);
+        TextView displayNameTextView = findViewById(R.id.display_name_text_view);
+        EditText commentInput = findViewById(R.id.comment_input);
+        Button submitCommentButton = findViewById(R.id.submit_comment_button);
+
+        if (UserState.isLoggedIn()) {
+            commentInputSection.setVisibility(View.VISIBLE);
+            User loggedInUser = UserState.getLoggedInUser();
+            displayNameTextView.setText(loggedInUser.getDisplayName());
+
+            // Load user image
+            Uri imageUri = Uri.parse(loggedInUser.getImageUri());
+            userImageInput.setImageURI(imageUri);
+        } else {
+            commentInputSection.setVisibility(View.GONE);
+        }
+
         // Get the video ID from the intent
         int videoId = getIntent().getIntExtra("video_id", -1);
         if (videoId != -1) {
@@ -96,29 +117,29 @@ public class VideoScreenActivity extends AppCompatActivity {
         });
 
         // Handle comment submission
-        Button submitCommentButton = findViewById(R.id.submit_comment_button);
-        EditText usernameInput = findViewById(R.id.username_input);
-        EditText commentInput = findViewById(R.id.comment_input);
-
         submitCommentButton.setOnClickListener(v -> {
-            String commentText = commentInput.getText().toString().trim();
-            String username = usernameInput.getText().toString().trim();
-            if (!commentText.isEmpty() && !username.isEmpty()) {
-                addComment(username, commentText);
-                commentInput.setText("");
+            if (UserState.isLoggedIn()) {
+                String commentText = commentInput.getText().toString().trim();
+                String displayName = UserState.getLoggedInUser().getDisplayName();
+                String userImage = UserState.getLoggedInUser().getImageUri();
+                if (!commentText.isEmpty()) {
+                    addComment(displayName, commentText, userImage);
+                    commentInput.setText("");
+                }
+            } else {
+                Toast.makeText(VideoScreenActivity.this, "You need to be logged in to comment.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void addComment(String username, String commentText) {
+    private void addComment(String displayName, String commentText, String userImage) {
         if (currentVideo != null) {
-            // Assuming static profile picture for now
             CommentData newComment = new CommentData();
             newComment.setId(generateCommentId());
             newComment.setText(commentText);
-            newComment.setUsername(username);
+            newComment.setUsername(displayName);
             newComment.setDate(getCurrentTime());
-            newComment.setImg("img1");
+            newComment.setImg(userImage);
 
             VideoComments videoComments = findCommentsForVideo(currentVideo.getId());
             if (videoComments != null) {
@@ -133,6 +154,7 @@ public class VideoScreenActivity extends AppCompatActivity {
             }
         }
     }
+
 
     private void displayVideoDetails(VideoData video) {
         currentVideo = video;
