@@ -6,6 +6,8 @@ public class CommentData {
     private String username;
     private String date;
     private String img;
+    private boolean isLiked;
+    private boolean isDisliked;
 
     // Default constructor
     public CommentData() {
@@ -18,6 +20,8 @@ public class CommentData {
         this.username = username;
         this.date = date;
         this.img = img;
+        this.isLiked = false;
+        this.isDisliked = false;
     }
 
     // Getters and Setters
@@ -59,5 +63,21 @@ public class CommentData {
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    public boolean isLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(boolean liked) {
+        isLiked = liked;
+    }
+
+    public boolean isDisliked() {
+        return isDisliked;
+    }
+
+    public void setDisliked(boolean disliked) {
+        isDisliked = disliked;
     }
 }
