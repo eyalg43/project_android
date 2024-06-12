@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
         return gson.fromJson(reader, videoListType);
     }
 
+
+
     private void applyTheme() {
         if ((getResources().getConfiguration().uiMode &
                 android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
