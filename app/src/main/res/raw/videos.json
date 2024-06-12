@@ -17,7 +17,7 @@
     "author": "LeKing James",
     "views": "517K",
     "img": "lebronpic",
-    "video": "android.resource://com.example.project_android/raw/funnyvid",
+    "video": "android.resource://com.example.project_android/raw/lebrondunk",
     "uploadTime": "2 hours ago",
     "authorImage": "img2"
   },
@@ -67,12 +67,12 @@
   },
   {
     "id": "7",
-    "title": "Anthony Edwards can't believe he missed a shot",
-    "description": "Anthony is an up and coming NBA star, watch him react to a missed shot.",
+    "title": "Anthony Edwards crazy dunk!",
+    "description": "Anthony is an up and coming NBA star.",
     "author": "NBA",
     "views": "2M",
     "img": "anthony",
-    "video": "android.resource://com.example.project_android/raw/funnyvid",
+    "video": "android.resource://com.example.project_android/raw/antedwards",
     "uploadTime": "2 hours ago",
     "authorImage": "img6"
   },
@@ -100,12 +100,12 @@
   },
   {
     "id": "10",
-    "title": "30 second animation",
+    "title": "10 second animation",
     "author": "Animate Central",
     "views": "1.9M",
     "description": "A video showcasing the best Animation of 2023. You won't believe how cool it is!",
     "img": "animationpic",
-    "video": "android.resource://com.example.project_android/raw/funnyvid",
+    "video": "android.resource://com.example.project_android/raw/animation",
     "uploadTime": "4 hours ago",
     "authorImage": "img10"
   }
