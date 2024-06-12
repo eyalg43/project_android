@@ -124,12 +124,12 @@ public class UploadVideo extends AppCompatActivity {
                     newVideoId, // Generate new ID
                     title,
                     description,
-                    "Current User", // Replace with actual user data
+                    UserState.getLoggedInUser().getUsername(),
                     "1 views",
                     selectedThumbnailUri.toString(),
                     selectedVideoUri.toString(),
                     uploadTime,
-                    "authorImageUri" // Replace with actual author image URI
+                    UserState.getLoggedInUser().getImageUri()
             );
             VideosState.getInstance().addVideo(newVideo);
             Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
