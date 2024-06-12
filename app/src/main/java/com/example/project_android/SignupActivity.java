@@ -129,7 +129,8 @@ public class SignupActivity extends AppCompatActivity {
 
                 // Proceed with signup logic
                 Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
-                finish();  // Go back to the previous activity (login screen)
+                Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -180,7 +181,6 @@ public class SignupActivity extends AppCompatActivity {
         try {
             Intent takePictureIntent = new Intent();
             takePictureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-//            startActivity(takePictureIntent);
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         } catch (Exception e) {
             Log.e("SignupActivity", "Error opening camera: " + e.getMessage());
