@@ -11,11 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.project_android.CommentState;
 import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.CommentData;
@@ -28,7 +31,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     private List<CommentData> commentsList;
     private Context context;
     private static final String TAG = "CommentsAdapter";
-
 
     public CommentsAdapter(List<CommentData> commentsList) {
         // Ensure the commentsList is modifiable
@@ -62,17 +64,15 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             holder.deleteButton.setVisibility(View.GONE);
         }
 
-        holder.editButton.setOnClickListener(v -> {
-            showEditCommentDialog(comment);
-        });
+        holder.editButton.setOnClickListener(v -> showEditCommentDialog(comment));
+        holder.deleteButton.setOnClickListener(v -> deleteComment(comment));
 
-        holder.deleteButton.setOnClickListener(v -> {
-            deleteComment(comment);
-        });
+        holder.likeButton.setOnClickListener(v -> handleLikeDislike(comment, true, holder));
+        holder.dislikeButton.setOnClickListener(v -> handleLikeDislike(comment, false, holder));
+
+        // Update button colors based on comment state
+        updateLikeDislikeButtonColors(comment, holder);
     }
-
-
-
 
     @Override
     public int getItemCount() {
@@ -87,13 +87,15 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     }
 
     private void showEditCommentDialog(CommentData commentData) {
-        // Show a dialog to edit the comment with a custom theme
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomDialogTheme);
+        // Create the dialog builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit Comment");
 
         // Set up the input
         final EditText input = new EditText(context);
         input.setText(commentData.getText());
+        input.setTextColor(context.getResources().getColor(R.color.dialog_text));
+        input.setBackgroundColor(context.getResources().getColor(R.color.dialog_background));
         builder.setView(input);
 
         // Set up the buttons
@@ -101,18 +103,64 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             String newCommentText = input.getText().toString().trim();
             if (!newCommentText.isEmpty()) {
                 commentData.setText(newCommentText);
+                CommentState.getInstance(context).updateCommentData(commentData);
                 notifyDataSetChanged();
             }
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
-        builder.show();
-    }
+        // Show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
+        // Set button colors
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        if (positiveButton != null && negativeButton != null) {
+            positiveButton.setTextColor(context.getResources().getColor(R.color.dialog_text));
+            negativeButton.setTextColor(context.getResources().getColor(R.color.dialog_text));
+        }
+    }
 
     private void deleteComment(CommentData commentData) {
         commentsList.remove(commentData);
+        CommentState.getInstance(context).deleteCommentData(commentData.getId());
         notifyDataSetChanged();
+    }
+
+    private void handleLikeDislike(CommentData commentData, boolean isLike, CommentViewHolder holder) {
+        if (isLike) {
+            if (commentData.isLiked()) {
+                commentData.setLiked(false);
+            } else {
+                commentData.setLiked(true);
+                commentData.setDisliked(false);
+            }
+        } else {
+            if (commentData.isDisliked()) {
+                commentData.setDisliked(false);
+            } else {
+                commentData.setDisliked(true);
+                commentData.setLiked(false);
+            }
+        }
+
+        CommentState.getInstance(context).updateCommentData(commentData);
+        updateLikeDislikeButtonColors(commentData, holder);
+    }
+
+    private void updateLikeDislikeButtonColors(CommentData commentData, CommentViewHolder holder) {
+        if (commentData.isLiked()) {
+            holder.likeButton.setColorFilter(context.getResources().getColor(R.color.like_green));
+        } else {
+            holder.likeButton.setColorFilter(null);
+        }
+
+        if (commentData.isDisliked()) {
+            holder.dislikeButton.setColorFilter(context.getResources().getColor(R.color.dislike_red));
+        } else {
+            holder.dislikeButton.setColorFilter(null);
+        }
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {
@@ -122,6 +170,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
         ImageView userImageView;
         Button editButton;
         Button deleteButton;
+        ImageButton likeButton;
+        ImageButton dislikeButton;
 
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -131,8 +181,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             userImageView = itemView.findViewById(R.id.comment_user_image);
             editButton = itemView.findViewById(R.id.edit_comment_button);
             deleteButton = itemView.findViewById(R.id.delete_comment_button);
+            likeButton = itemView.findViewById(R.id.like_comment_button);
+            dislikeButton = itemView.findViewById(R.id.dislike_comment_button);
         }
     }
+
     private void loadImage(String path, ImageView imageView) {
         try {
             // Check if the path is a drawable resource
@@ -160,5 +213,4 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             Log.e(TAG, "Error loading image: " + e.getMessage());
         }
     }
-
 }
