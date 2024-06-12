@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_android.adapters.CommentsAdapter;
 import com.example.project_android.adapters.VideoAdapter;
 import com.example.project_android.entities.CommentData;
-import com.example.project_android.entities.VideoComments;
 import com.example.project_android.entities.VideoData;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -38,7 +37,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 public class VideoScreenActivity extends AppCompatActivity {
 
@@ -46,21 +44,22 @@ public class VideoScreenActivity extends AppCompatActivity {
 
     private RecyclerView relatedVideosRecyclerView;
     private VideoAdapter videoAdapter;
-    private List<VideoComments> videoCommentsList;
     private CommentsAdapter commentsAdapter;
     private VideoData currentVideo;
     private List<VideoData> originalVideoList;
     private NestedScrollView nestedScrollView;
-
+    private CommentState commentState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_screen);
 
+        // Initialize CommentState
+        commentState = CommentState.getInstance(this);
+
         // Load and parse the JSON files
-        originalVideoList = VideosState.getInstance().getVideoList(); // Change videoDataList to originalVideoList
-        videoCommentsList = loadCommentsJSONFromRaw();
+        originalVideoList = VideosState.getInstance().getVideoList();
 
         // Initialize NestedScrollView
         nestedScrollView = findViewById(R.id.nested_scroll_view);
@@ -72,7 +71,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         commentsRecyclerView.setAdapter(commentsAdapter);
 
         // Initialize adapter and set it to RecyclerView
-        videoAdapter = new VideoAdapter(originalVideoList, this::playSelectedVideo); // Change videoDataList to originalVideoList
+        videoAdapter = new VideoAdapter(originalVideoList, this::playSelectedVideo);
         relatedVideosRecyclerView = findViewById(R.id.related_videos_recycler_view);
         relatedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         relatedVideosRecyclerView.setAdapter(videoAdapter);
@@ -195,21 +194,17 @@ public class VideoScreenActivity extends AppCompatActivity {
             newComment.setDate(getCurrentTime());
             newComment.setImg(userImage);
 
-            VideoComments videoComments = findCommentsForVideo(currentVideo.getId());
-            if (videoComments != null) {
-                videoComments.getComments().add(newComment);
-                commentsAdapter.updateComments(reverseComments(videoComments.getComments()));
-            } else {
-                VideoComments newVideoComments = new VideoComments();
-                newVideoComments.setVideoId(String.valueOf(currentVideo.getId()));
-                newVideoComments.setComments(Collections.singletonList(newComment));
-                videoCommentsList.add(newVideoComments);
-                commentsAdapter.updateComments(reverseComments(newVideoComments.getComments()));
+            List<CommentData> comments = commentState.getCommentsForVideo(currentVideo.getId());
+            if (comments == null) {
+                comments = new ArrayList<>();
+                commentState.addCommentsForVideo(currentVideo.getId(), comments);
             }
+            comments.add(newComment);
+            commentState.updateCommentsForVideo(currentVideo.getId(), comments);
+
+            commentsAdapter.updateComments(reverseComments(comments));
         }
     }
-
-
 
     private void displayVideoDetails(VideoData video) {
         currentVideo = video;
@@ -247,15 +242,11 @@ public class VideoScreenActivity extends AppCompatActivity {
         videoView.start();
 
         // Load and display comments
-        VideoComments commentsForVideo = findCommentsForVideo(video.getId());
-        if (commentsAdapter != null) {
-            if (commentsForVideo != null && commentsForVideo.getComments() != null) {
-                commentsAdapter.updateComments(reverseComments(commentsForVideo.getComments()));
-            } else {
-                commentsAdapter.updateComments(Collections.emptyList());
-            }
+        List<CommentData> commentsForVideo = commentState.getCommentsForVideo(video.getId());
+        if (commentsForVideo != null) {
+            commentsAdapter.updateComments(reverseComments(commentsForVideo));
         } else {
-            Log.e("VideoScreenActivity", "commentsAdapter is null when trying to update comments.");
+            commentsAdapter.updateComments(Collections.emptyList());
         }
 
         // Update related videos
@@ -293,60 +284,16 @@ public class VideoScreenActivity extends AppCompatActivity {
         }
     }
 
-
-
-    private List<VideoComments> loadCommentsJSONFromRaw() {
-        InputStream inputStream = getResources().openRawResource(R.raw.comments);
-        InputStreamReader reader = new InputStreamReader(inputStream);
-        Type listType = new TypeToken<List<VideoComments>>() {}.getType();
-        return new Gson().fromJson(reader, listType);
-    }
-
-    private VideoComments findCommentsForVideo(int videoId) {
-        String videoIdStr = String.valueOf(videoId);
-        for (VideoComments videoComments : videoCommentsList) {
-            if (videoComments.getVideoId().equals(videoIdStr)) {
-                return videoComments;
-            }
-        }
-        return null;
-    }
-
-    private void playSelectedVideo(VideoData selectedVideo) {
-        displayVideoDetails(selectedVideo);
-        resetScrollPosition();
-    }
-
-    private void updateRelatedVideos(VideoData currentVideo) {
-        if (videoAdapter != null) {
-            List<VideoData> filteredVideos = new ArrayList<>();
-
-            for (VideoData video : originalVideoList) { // Change videoAdapter.getVideoList() to originalVideoList
-                if (video.getId() != currentVideo.getId()) {
-                    filteredVideos.add(video);
-                }
-            }
-
-            // Update the adapter with the filtered list
-            videoAdapter.updateVideoList(filteredVideos);
-        } else {
-            Log.e(TAG, "videoAdapter is null when trying to update related videos.");
-        }
-    }
-
-    private void resetScrollPosition() {
-        // Reset the scroll position to the top
-        nestedScrollView.scrollTo(0, 0);
-    }
-
     private int generateCommentId() {
         // Generate a unique comment ID
         int maxId = 0;
-        for (VideoComments videoComments : videoCommentsList) {
-            for (CommentData comment : videoComments.getComments()) {
-                if (comment.getId() > maxId) {
-                    maxId = comment.getId();
-                }
+        List<CommentData> allComments = new ArrayList<>();
+        for (List<CommentData> comments : commentState.getAllComments().values()) {
+            allComments.addAll(comments);
+        }
+        for (CommentData comment : allComments) {
+            if (comment.getId() > maxId) {
+                maxId = comment.getId();
             }
         }
         return maxId + 1;
@@ -373,4 +320,29 @@ public class VideoScreenActivity extends AppCompatActivity {
         return reversedComments;
     }
 
+    private void playSelectedVideo(VideoData selectedVideo) {
+        displayVideoDetails(selectedVideo);
+        resetScrollPosition();
+    }
+
+    private void updateRelatedVideos(VideoData currentVideo) {
+        if (videoAdapter != null) {
+            List<VideoData> filteredVideos = new ArrayList<>();
+
+            for (VideoData video : originalVideoList) {
+                if (video.getId() != currentVideo.getId()) {
+                    filteredVideos.add(video);
+                }
+            }
+
+            videoAdapter.updateVideoList(filteredVideos);
+        } else {
+            Log.e(TAG, "videoAdapter is null when trying to update related videos.");
+        }
+    }
+
+    private void resetScrollPosition() {
+        // Reset the scroll position to the top
+        nestedScrollView.scrollTo(0, 0);
+    }
 }

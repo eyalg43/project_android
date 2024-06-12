@@ -124,6 +124,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
+                                android:adjustViewBounds="true"
                                 android:contentDescription="@string/author_image" />
                         </androidx.cardview.widget.CardView>
 
@@ -257,12 +258,22 @@
                     android:orientation="horizontal"
                     android:padding="8dp">
 
-                    <ImageView
-                        android:id="@+id/user_image_input"
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/user_image_container"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/img1"
-                        android:layout_marginEnd="8dp" />
+                        android:layout_marginEnd="8dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="0dp">
+
+                        <ImageView
+                            android:id="@+id/user_image_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/img1" />
+                    </androidx.cardview.widget.CardView>
 
                     <TextView
                         android:id="@+id/display_name_text_view"

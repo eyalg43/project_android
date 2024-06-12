@@ -87,13 +87,15 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     }
 
     private void showEditCommentDialog(CommentData commentData) {
-        // Show a dialog to edit the comment with a custom theme
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomDialogTheme);
+        // Create the dialog builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit Comment");
 
         // Set up the input
         final EditText input = new EditText(context);
         input.setText(commentData.getText());
+        input.setTextColor(context.getResources().getColor(R.color.dialog_text));
+        input.setBackgroundColor(context.getResources().getColor(R.color.dialog_background));
         builder.setView(input);
 
         // Set up the buttons
@@ -101,20 +103,28 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             String newCommentText = input.getText().toString().trim();
             if (!newCommentText.isEmpty()) {
                 commentData.setText(newCommentText);
-                CommentState.getInstance().updateCommentData(commentData);
+                CommentState.getInstance(context).updateCommentData(commentData);
                 notifyDataSetChanged();
             }
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
-        builder.show();
+        // Show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Set button colors
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        if (positiveButton != null && negativeButton != null) {
+            positiveButton.setTextColor(context.getResources().getColor(R.color.dialog_text));
+            negativeButton.setTextColor(context.getResources().getColor(R.color.dialog_text));
+        }
     }
 
     private void deleteComment(CommentData commentData) {
         commentsList.remove(commentData);
-        CommentState.getInstance().getCommentData(commentData.getId()).setLiked(false);
-        CommentState.getInstance().getCommentData(commentData.getId()).setDisliked(false);
-        CommentState.getInstance().updateCommentData(commentData);
+        CommentState.getInstance(context).deleteCommentData(commentData.getId());
         notifyDataSetChanged();
     }
 
@@ -135,7 +145,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             }
         }
 
-        CommentState.getInstance().updateCommentData(commentData);
+        CommentState.getInstance(context).updateCommentData(commentData);
         updateLikeDislikeButtonColors(commentData, holder);
     }
 
