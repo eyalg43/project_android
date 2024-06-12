@@ -33,6 +33,7 @@ public class UploadVideo extends AppCompatActivity {
     private Button buttonUploadVideo;
     private Button buttonSubmitVideo;
     private TextView textViewError;
+    private Button buttonCancel;
 
     private Uri selectedThumbnailUri;
     private Uri selectedVideoUri;
@@ -50,6 +51,7 @@ public class UploadVideo extends AppCompatActivity {
         textViewError = findViewById(R.id.textViewError);
         imageViewThumbnail = findViewById(R.id.imageViewThumbnail);
         textViewVideoDetails = findViewById(R.id.textViewVideoDetails);
+        Button buttonCancel = findViewById(R.id.buttonCancel);
 
         buttonUploadThumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +73,15 @@ public class UploadVideo extends AppCompatActivity {
                 submitVideo();
             }
         });
+
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
+
 
     private void openGalleryForThumbnail() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -101,8 +111,7 @@ public class UploadVideo extends AppCompatActivity {
                 }
             } else if (requestCode == REQUEST_VIDEO_GET) {
                 selectedVideoUri = uri;
-                textViewVideoDetails.setText("Video File Successfully Loaded");
-                textViewVideoDetails.setVisibility(View.VISIBLE);
+                Toast.makeText(this, "Video File Successfully Loaded.", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -113,9 +122,8 @@ public class UploadVideo extends AppCompatActivity {
         String uploadTime = getElapsedTime(System.currentTimeMillis());
 
         if (title.isEmpty() || description.isEmpty() || selectedThumbnailUri == null || selectedVideoUri == null) {
-            textViewError.setText("Please fill all fields to upload.");
+            Toast.makeText(this, "Please fill all fields to upload.", Toast.LENGTH_SHORT).show();
             Log.d("UploadVideo", "Error: Please fill all fields to upload.");
-            textViewError.setVisibility(View.VISIBLE);
         } else {
             textViewError.setVisibility(View.GONE);
             int newVideoId = VideosState.getInstance().getLatestVideoId() + 1;

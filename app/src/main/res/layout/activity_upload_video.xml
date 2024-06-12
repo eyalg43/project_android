@@ -40,7 +40,7 @@
         android:layout_marginTop="20dp"
         android:backgroundTint="#818B8E"
         android:text="@string/upload_video_thumbnail"
-        android:textColor="@android:color/white"
+        android:textColor="@color/colorText"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,33 +63,44 @@
 
     <Button
         android:id="@+id/buttonUploadVideo"
-        android:layout_width="265dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="104dp"
+        android:layout_width="228dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="108dp"
         android:backgroundTint="#818B8E"
         android:text="@string/upload_video_file"
-        android:textColor="@android:color/white"
+        android:textColor="@color/colorText"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonUploadThumbnail" />
 
     <Button
         android:id="@+id/buttonSubmitVideo"
-        android:layout_width="354dp"
-        android:layout_height="65dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="316dp"
+        android:layout_height="61dp"
         android:backgroundTint="@android:color/holo_blue_dark"
         android:text="@string/upload_my_video_to_vidtube"
-        android:textColor="@android:color/white"
+        android:textColor="@color/colorText"
         android:textSize="22sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/buttonCancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.48"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonUploadVideo"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.851" />
+
+    <Button
+        android:id="@+id/buttonCancel"
+        android:layout_width="196dp"
+        android:layout_height="54dp"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:text="Cancel"
+        android:textColor="@color/colorText"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textViewVideoDetails"
@@ -122,16 +133,20 @@
 
     <TextView
         android:id="@+id/textViewPageTitle"
-        android:layout_width="243dp"
-        android:layout_height="66dp"
+        android:layout_width="283dp"
+        android:layout_height="51dp"
+        android:drawableLeft="@drawable/ic_upload"
+        android:drawablePadding="8dp"
         android:text="@string/upload_video"
+        android:textColor="@color/colorText"
         android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/editTextTitle"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.535"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.574" />
+        app:layout_constraintVertical_bias="0.346" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

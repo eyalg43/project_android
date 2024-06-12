@@ -40,6 +40,8 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
+                    Toast.makeText(LoginActivity.this, "Logged in successfully!", Toast.LENGTH_SHORT).show();
+
                     finish();
                 } else {
                     // Failed login
