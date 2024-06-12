@@ -1,7 +1,7 @@
 # VidTube-Android app
 
 The VidTube app is a video sharing app, made for allowing users across the world to upload and share their video content, comment their thoughts and interact with each other.
-this Readme file contains an overview of the Android app and its features, along with a guide on how to run it on your machine.
+This Readme file contains an overview of the Android app and its features, along with a guide on how to run it on your machine.
 
 ## How To Run
 In order to run the Android app, start by cloning the repository to Android Studio, you can do this by opening the terminal and entering this command:
