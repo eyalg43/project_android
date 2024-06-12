@@ -24,8 +24,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Load videos from JSON and set them in the state
-        List<VideoData> videoList = loadVideosFromJson();
-        VideosState.getInstance().setVideoList(videoList);
+        if (VideosState.getInstance().getVideoList().isEmpty()) {
+            List<VideoData> videoList = loadVideosFromJson();
+            VideosState.getInstance().setVideoList(videoList);
+        }
 
         // Initialize CommentState
         CommentState commentState = CommentState.getInstance(this);
