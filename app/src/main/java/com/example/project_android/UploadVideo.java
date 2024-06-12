@@ -124,7 +124,7 @@ public class UploadVideo extends AppCompatActivity {
                     newVideoId, // Generate new ID
                     title,
                     description,
-                    UserState.getLoggedInUser().getUsername(),
+                    UserState.getLoggedInUser().getDisplayName(),
                     "1 views",
                     selectedThumbnailUri.toString(),
                     selectedVideoUri.toString(),
