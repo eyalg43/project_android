@@ -1,6 +1,10 @@
 package com.example.project_android.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +18,12 @@ import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.VideoData;
 
+import java.io.InputStream;
 import java.util.List;
 
 public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.VideoViewHolder> {
+
+    private static final String TAG = "VideosListAdapter";
 
     public interface OnItemClickListener {
         void onItemClick(VideoData video);
@@ -44,6 +51,29 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
             videoImage = itemView.findViewById(R.id.videoImage);
             editButton = itemView.findViewById(R.id.edit_button);
             deleteButton = itemView.findViewById(R.id.delete_button);
+        }
+
+        // Load image from local path, URI, or drawable resource
+        private void loadImage(String path, ImageView imageView) {
+            try {
+                // Check if the path is a drawable resource
+                int resId = imageView.getContext().getResources().getIdentifier(path, "drawable", imageView.getContext().getPackageName());
+                if (resId != 0) {
+                    imageView.setImageResource(resId);
+                } else if (path.startsWith("content://") || path.startsWith("file://")) {
+                    // Load from URI
+                    Uri uri = Uri.parse(path);
+                    InputStream inputStream = imageView.getContext().getContentResolver().openInputStream(uri);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    imageView.setImageBitmap(bitmap);
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                }
+                Log.d(TAG, "Loaded image from path: " + path);
+            } catch (Exception e) {
+                Log.e(TAG, "Error loading image: " + e.getMessage());
+            }
         }
     }
 
@@ -73,11 +103,11 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
             holder.videoViews.setText(current.getViews());
             holder.videoUploadTime.setText(current.getUploadTime());
 
-            int authorImageResId = context.getResources().getIdentifier(current.getAuthorImage(), "drawable", context.getPackageName());
-            int imgResId = context.getResources().getIdentifier(current.getImg(), "drawable", context.getPackageName());
+            // Load author image
+            holder.loadImage(current.getAuthorImage(), holder.videoAuthorImage);
 
-            holder.videoAuthorImage.setImageResource(authorImageResId);
-            holder.videoImage.setImageResource(imgResId);
+            // Load video thumbnail
+            holder.loadImage(current.getImg(), holder.videoImage);
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
