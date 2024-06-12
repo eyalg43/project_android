@@ -1,7 +1,8 @@
 package com.example.project_android;
 
-import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +25,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.project_android.adapters.VideosListAdapter;
 import com.example.project_android.entities.VideoData;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +63,9 @@ public class HomePage extends AppCompatActivity {
 
             @Override
             public void onEditClick(VideoData video) {
-                // Handle edit click
+                Intent intent = new Intent(HomePage.this, EditVideo.class);
+                intent.putExtra("video_id", video.getId());
+                startActivity(intent);
             }
 
             @Override
@@ -69,6 +74,8 @@ public class HomePage extends AppCompatActivity {
                 adapter.setVideos(allVideos);
                 VideosState.getInstance().setVideoList(allVideos);
             }
+
+
         });
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
@@ -221,7 +228,9 @@ public class HomePage extends AppCompatActivity {
                 profileContainer.setVisibility(View.VISIBLE);
                 uploadVideoButton.setVisibility(View.VISIBLE);
                 welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
-                loadProfileImage(loggedInUser.getImageUri());
+
+                // Load the profile image from the app's internal storage
+                loadImageFromLocalPath(loggedInUser.getImageUri(), profileImage);
             }
         }
     }
@@ -245,11 +254,15 @@ public class HomePage extends AppCompatActivity {
     private void updateVideos() {
         allVideos = VideosState.getInstance().getVideoList();
         if (allVideos != null) {
+            for (VideoData video : allVideos) {
+                Log.d("HomePage", "Video Author Image URI: " + video.getAuthorImage());
+            }
             adapter.setVideos(allVideos);
         } else {
             Log.e("HomePage", "Error getting videos");
         }
     }
+
 
     private void updateModeButtonText() {
         int nightMode = AppCompatDelegate.getDefaultNightMode();
@@ -260,15 +273,12 @@ public class HomePage extends AppCompatActivity {
         }
     }
 
-    private void loadProfileImage(String imageUriString) {
+    private void loadImageFromLocalPath(String path, ImageView imageView) {
         try {
-            Uri imageUri = Uri.parse(imageUriString);
-            ContentResolver resolver = getContentResolver();
-            InputStream inputStream = resolver.openInputStream(imageUri);
-            profileImage.setImageBitmap(android.graphics.BitmapFactory.decodeStream(inputStream));
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            imageView.setImageBitmap(bitmap);
         } catch (Exception e) {
-            Log.e("HomePage", "Failed to load profile image: " + e.getMessage());
-            profileImage.setImageResource(R.drawable.img2); // fallback to a default image
+            Log.e("HomePage", "Error loading image: " + e.getMessage());
         }
     }
 }

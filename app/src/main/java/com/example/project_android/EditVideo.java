@@ -15,12 +15,11 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.project_android.VideosState;
 import com.example.project_android.entities.VideoData;
 
 import java.io.IOException;
 
-public class UploadVideo extends AppCompatActivity {
+public class EditVideo extends AppCompatActivity {
 
     private static final int REQUEST_THUMBNAIL_GET = 1;
     private static final int REQUEST_VIDEO_GET = 2;
@@ -36,11 +35,12 @@ public class UploadVideo extends AppCompatActivity {
 
     private Uri selectedThumbnailUri;
     private Uri selectedVideoUri;
+    private VideoData videoData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_upload_video);
+        setContentView(R.layout.activity_edit_page);
 
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextDescription = findViewById(R.id.editTextDescription);
@@ -50,6 +50,25 @@ public class UploadVideo extends AppCompatActivity {
         textViewError = findViewById(R.id.textViewError);
         imageViewThumbnail = findViewById(R.id.imageViewThumbnail);
         textViewVideoDetails = findViewById(R.id.textViewVideoDetails);
+
+        Intent intent = getIntent();
+        int videoId = intent.getIntExtra("video_id", -1);
+        if (videoId != -1) {
+            videoData = VideosState.getInstance().getVideoById(videoId);
+            if (videoData != null) {
+                editTextTitle.setText(videoData.getTitle());
+                editTextDescription.setText(videoData.getDescription());
+                selectedThumbnailUri = Uri.parse(videoData.getImg());
+                selectedVideoUri = Uri.parse(videoData.getVideo());
+                try {
+                    Bitmap thumbnailBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedThumbnailUri);
+                    imageViewThumbnail.setImageBitmap(thumbnailBitmap);
+                } catch (IOException e) {
+                    Log.e("EditVideoActivity", "Error loading thumbnail: " + e.getMessage());
+                }
+                textViewVideoDetails.setText("Video File Successfully Loaded");
+            }
+        }
 
         buttonUploadThumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,9 +87,20 @@ public class UploadVideo extends AppCompatActivity {
         buttonSubmitVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitVideo();
+                updateVideo();
             }
         });
+
+        Button buttonCancel = findViewById(R.id.buttonCancel);
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate back to HomePage
+                Intent intent = new Intent(EditVideo.this, HomePage.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     private void openGalleryForThumbnail() {
@@ -78,11 +108,9 @@ public class UploadVideo extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_THUMBNAIL_GET);
     }
 
-
     private void openGalleryForVideo() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_VIDEO_GET);
-
     }
 
     @Override
@@ -97,7 +125,7 @@ public class UploadVideo extends AppCompatActivity {
                     imageViewThumbnail.setImageBitmap(thumbnailBitmap);
                     imageViewThumbnail.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
-                    Log.e("UploadVideo", "Error loading thumbnail: " + e.getMessage());
+                    Log.e("EditVideoActivity", "Error loading thumbnail: " + e.getMessage());
                 }
             } else if (requestCode == REQUEST_VIDEO_GET) {
                 selectedVideoUri = uri;
@@ -107,55 +135,25 @@ public class UploadVideo extends AppCompatActivity {
         }
     }
 
-    private void submitVideo() {
+    private void updateVideo() {
         String title = editTextTitle.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
-        String uploadTime = getElapsedTime(System.currentTimeMillis());
 
         if (title.isEmpty() || description.isEmpty() || selectedThumbnailUri == null || selectedVideoUri == null) {
             textViewError.setText("Please fill all fields to upload.");
-            Log.d("UploadVideo", "Error: Please fill all fields to upload.");
+            Log.d("EditVideoActivity", "Error: Please fill all fields to upload.");
             textViewError.setVisibility(View.VISIBLE);
         } else {
             textViewError.setVisibility(View.GONE);
-            int newVideoId = VideosState.getInstance().getLatestVideoId() + 1;
+            videoData.setTitle(title);
+            videoData.setDescription(description);
+            videoData.setImg(selectedThumbnailUri.toString());
+            videoData.setVideo(selectedVideoUri.toString());
 
-            // Log the author image URI
-            String authorImageUri = UserState.getLoggedInUser().getImageUri();
-            Log.d("UploadVideo", "Author Image URI: " + authorImageUri);
-
-            // Add new video to the state
-            VideoData newVideo = new VideoData(
-                    newVideoId, // Generate new ID
-                    title,
-                    description,
-                    UserState.getLoggedInUser().getDisplayName(),
-                    "1 views",
-                    selectedThumbnailUri.toString(),
-                    selectedVideoUri.toString(),
-                    uploadTime,
-                    authorImageUri
-            );
-            VideosState.getInstance().addVideo(newVideo);
-            Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(UploadVideo.this, HomePage.class);
+            VideosState.getInstance().updateVideo(videoData);
+            Toast.makeText(this, "Video successfully updated.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(EditVideo.this, HomePage.class);
             startActivity(intent);
-        }
-    }
-
-
-    private String getElapsedTime(long uploadTime) {
-        long now = System.currentTimeMillis();
-        long diff = now - uploadTime;
-
-        if (diff < 60000) {
-            return "just now";
-        } else if (diff < 3600000) {
-            return (diff / 60000) + " minutes ago";
-        } else if (diff < 86400000) {
-            return (diff / 3600000) + " hours ago";
-        } else {
-            return (diff / 86400000) + " days ago";
         }
     }
 }
