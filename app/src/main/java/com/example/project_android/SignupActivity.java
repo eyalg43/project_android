@@ -180,8 +180,8 @@ public class SignupActivity extends AppCompatActivity {
         try {
             Intent takePictureIntent = new Intent();
             takePictureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivity(takePictureIntent);
-//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+//            startActivity(takePictureIntent);
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         } catch (Exception e) {
             Log.e("SignupActivity", "Error opening camera: " + e.getMessage());
         }
