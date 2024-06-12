@@ -10,9 +10,9 @@ In order to run the Android app, start by cloning the repository to Android Stud
 After cloning the repository, open the project in Android Studio and run the app on an emulator or a physical device.
 
 ## Android App Features:
-* After running the app, the emulator (or device if ran on a physical device) will open and you will be brought to the Home Activity
+* After running the app, the emulator (or device if ran on a physical device) will open and you will be brought to the **Home Activity**
 
-* The Home Activity contains many exciting features such as:
+* The **Home Activity** contains many exciting features such as:
     * A video list displaying some of the videos on the platform
     * A search bar where you can filter videos by title
     * A side menu where you have the ability to sign in (or sign up and then sign in) which unlocks more features such as:
@@ -22,7 +22,7 @@ After cloning the repository, open the project in Android Studio and run the app
         * Commenting on a video (in the watch-video Activity).
     * Dark mode, which works across the entire app, this can be accessed and toggled via the side menu.
 
-* The Watch-Video Activity contains even more great functionality:
+* The **Watch-Video** Activity contains even more great functionality:
     * The video itself with Pause, Play and a time line to jump ahead or back.
     * Interesting details about the video such as the author, author image, views, how long ago the video was uploaded, the description etc.
     * A list under the video with lots of recommended videos for you to watch and enjoy, each better than the last.
@@ -31,23 +31,22 @@ After cloning the repository, open the project in Android Studio and run the app
       where you can like or dislike other peoples' comments, post a comment on your behalf with your Display name and profile picture,
       and also delete and edit comments (again, you must be logged in to edit and delete).
 
-* The Upload-Video Activity:
+* The **Upload-Video** Activity:
     * Here you can share your video content with the world!
     * Choose a catchy title, informative description, an eye catching thumbnail and then select the video you want to share.
       click 'Upload To Vidtube' and your video can be seen on VidTube!
     * Your new video will be posted under your Display name and your profile picture.
     * Having second thoughts? don't worry, just click the 'cancel' button and you will be brought back to the Home Activity!
 
-* The Edit-Video Activity:
+* The **Edit-Video** Activity:
     * We believe in second chances! Here you can edit videos, and change their title, description, thumbnail or the video itself.
     * Having second thoughts? don't worry, just click the 'cancel' button and you will be brought back to the Home Activity!
 
-* The Sign-in Activity:
+* The **Sign-in** Activity:
     * Sign in with your Username and password (make sure your account exists first) to unlock features such as commenting, editing, deleting and uploading videos and many more!
     * Don't have an account? No worries! click the "Don't have an account? Sign up here." text and you will be brought to the Sign-up Activity, where you can create an account.
-    * Don't want to sign in? click the VidTube logo and you will be brought back to the Home Activity.
 
-* The Sign-up Activity:
+* The **Sign-up** Activity:
     * Sign up by choosing your own Username, Display name, profile picture and password (and Verifying your password) to create your very own VidTube account and unlock features such as commenting, editing, deleting and uploading videos and many more!
     * You can upload a profile picture from your phone, or take a picture using your phone camera using the "Take photo" button.
     * Make sure your password fits the criteria and that your password and verification password match, or else you wont be allowed to sign up.
