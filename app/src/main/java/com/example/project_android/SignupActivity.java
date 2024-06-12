@@ -23,9 +23,13 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.io.InputStream;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -112,6 +116,14 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
+                // Copy the image to the app's internal storage
+                String imageUri = copyImageToInternalStorage(selectedImageUri);
+                if (imageUri == null) {
+                    textViewImageError.setVisibility(View.VISIBLE);
+                    textViewImageError.setText("Error saving profile picture.");
+                    return;
+                }
+
                 // Add user to in-memory state
                 String imageUri = selectedImageUri != null ? selectedImageUri.toString() : "";  // Save image URI or path
                 UserState.addUser(username, password, displayName, imageUri);
@@ -150,7 +162,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_IMAGE_GET);
     }
 
@@ -230,6 +242,25 @@ public class SignupActivity extends AppCompatActivity {
                 selectedImageUri = getImageUriFromBitmap(bitmap);
                 textViewImageError.setVisibility(View.GONE);
             }
+        }
+    }
+
+    private String copyImageToInternalStorage(Uri imageUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+
+            File directory = getFilesDir();
+            File file = new File(directory, "profile_image_" + System.currentTimeMillis() + ".png");
+
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.close();
+
+            return file.getAbsolutePath();
+        } catch (IOException e) {
+            Log.e("SignupActivity", "Error saving image: " + e.getMessage());
+            return null;
         }
     }
 

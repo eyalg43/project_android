@@ -34,4 +34,15 @@ public class VideosState {
         videoList.add(videoData);
         Log.d("VideosState", "Video added successfully: " + videoData.getTitle());
     }
+
+    // Method to get the latest video ID
+    public int getLatestVideoId() {
+        if (videoList.isEmpty()) {
+            return 0; // Assuming IDs start from 1
+        } else {
+            return videoList.get(videoList.size() - 1).getId();
+        }
+    }
 }
+
+

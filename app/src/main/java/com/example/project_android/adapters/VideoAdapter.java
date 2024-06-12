@@ -58,6 +58,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         return videoList.size();
     }
 
+    public void updateVideoList(List<VideoData> newVideoList) {
+        this.videoList = newVideoList;
+        notifyDataSetChanged();
+    }
+
+    public List<VideoData> getVideoList() {
+        return videoList;
+    }
+
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
         ImageView thumbnailImageView;
         TextView titleTextView;

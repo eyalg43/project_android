@@ -110,6 +110,7 @@ public class UploadVideo extends AppCompatActivity {
     private void submitVideo() {
         String title = editTextTitle.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
+        String uploadTime = getElapsedTime(System.currentTimeMillis());
 
         if (title.isEmpty() || description.isEmpty() || selectedThumbnailUri == null || selectedVideoUri == null) {
             textViewError.setText("Please fill all fields to upload.");
@@ -117,20 +118,38 @@ public class UploadVideo extends AppCompatActivity {
             textViewError.setVisibility(View.VISIBLE);
         } else {
             textViewError.setVisibility(View.GONE);
+            int newVideoId = VideosState.getInstance().getLatestVideoId() + 1;
             // Add new video to the state
             VideoData newVideo = new VideoData(
-                    VideosState.getInstance().getVideoList().size() + 1, // Generate new ID
+                    newVideoId, // Generate new ID
                     title,
                     description,
                     "Current User", // Replace with actual user data
-                    "0 views",
+                    "1 views",
                     selectedThumbnailUri.toString(),
                     selectedVideoUri.toString(),
-                    "Just now",
+                    uploadTime,
                     "authorImageUri" // Replace with actual author image URI
             );
             VideosState.getInstance().addVideo(newVideo);
             Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(UploadVideo.this, HomePage.class);
+            startActivity(intent);
+        }
+    }
+
+    private String getElapsedTime(long uploadTime) {
+        long now = System.currentTimeMillis();
+        long diff = now - uploadTime;
+
+        if (diff < 60000) {
+            return "just now";
+        } else if (diff < 3600000) {
+            return (diff / 60000) + " minutes ago";
+        } else if (diff < 86400000) {
+            return (diff / 3600000) + " hours ago";
+        } else {
+            return (diff / 86400000) + " days ago";
         }
     }
 }

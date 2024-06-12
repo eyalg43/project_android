@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/colorBackground"
     tools:context=".VideoScreenActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -32,7 +32,8 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        android:id="@+id/nested_scroll_view">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,11 +58,22 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/oppositeOfBackground"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginTop="8dp" />
+
+                    <TextView
+                        android:id="@+id/video_description"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/oppositeOfBackground"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@id/video_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <LinearLayout
                         android:id="@+id/views_uploadtime_container"
@@ -69,7 +81,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="start"
-                        app:layout_constraintTop_toBottomOf="@id/video_title"
+                        app:layout_constraintTop_toBottomOf="@id/video_description"
                         app:layout_constraintStart_toStartOf="parent">
 
                         <TextView
@@ -109,7 +121,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
-                            android:textColor="@color/black"
+                            android:textColor="@color/oppositeOfBackground"
                             android:paddingStart="8dp"
                             android:paddingEnd="8dp"
                             app:layout_constraintTop_toTopOf="parent"
@@ -163,17 +175,6 @@
                             android:layout_marginStart="8dp" />
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/video_description"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="@color/black"
-                        android:layout_marginTop="8dp"
-                        app:layout_constraintTop_toBottomOf="@id/action_buttons_container"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
-
                     <!-- Initially visible button to show comments -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/show_comments_button"
@@ -182,7 +183,7 @@
                         android:layout_height="wrap_content"
                         android:text="Comments"
                         android:layout_marginTop="8dp"
-                        app:layout_constraintTop_toBottomOf="@id/video_description"
+                        app:layout_constraintTop_toBottomOf="@id/action_buttons_container"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -200,12 +201,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:visibility="gone">
 
                 <Button
-                    android:backgroundTint="@color/white"
-                    android:textColor="@color/black"
+                    android:backgroundTint="@color/colorBackground"
+                    android:textColor="@color/oppositeOfBackground"
                     android:id="@+id/close_comments_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -217,7 +218,47 @@
                     android:layout_height="wrap_content"
                     android:text="Comments:"
                     android:textSize="16sp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/oppositeOfBackground" />
+
+                <!-- New section for adding comments -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:id="@+id/user_image_input"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/img1"
+                        android:layout_marginEnd="8dp" />
+
+                    <EditText
+                        android:id="@+id/username_input"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Username"
+                        android:background="@color/colorBackground"
+                        android:textColor="@color/oppositeOfBackground" />
+
+                    <EditText
+                        android:id="@+id/comment_input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Add a comment"
+                        android:background="@color/colorBackground"
+                        android:textColor="@color/oppositeOfBackground" />
+
+                    <Button
+                        android:id="@+id/submit_comment_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/NonSubscribeButton"
+                        android:text="Submit" />
+                </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/comments_recycler_view"
@@ -225,8 +266,8 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="8dp"
                     android:layout_weight="1" />
-
             </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

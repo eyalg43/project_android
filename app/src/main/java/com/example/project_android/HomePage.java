@@ -1,5 +1,9 @@
 package com.example.project_android;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -9,7 +13,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,23 +24,28 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project_android.adapters.VideosListAdapter;
 import com.example.project_android.entities.VideoData;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomePage extends BaseActivity {
+public class HomePage extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private VideosListAdapter adapter;
     private List<VideoData> allVideos;
     private DrawerLayout drawerLayout;
     private Button toggleModeButton;
     private ImageView toggleModeIcon;
+    private Button signInButton;
+    private Button signUpButton;
+    private ImageView profileImage;
+    private TextView welcomeMessage;
+    private LinearLayout profileContainer;
+    private LinearLayout authButtonsContainer;
+    private Button signOutButton;
+    private Button uploadVideoButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +53,26 @@ public class HomePage extends BaseActivity {
         setContentView(R.layout.activity_home_page);
 
         RecyclerView listVideos = findViewById(R.id.listVideos);
-        adapter = new VideosListAdapter(this);
+        adapter = new VideosListAdapter(this, new VideosListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(VideoData video) {
+                Intent intent = new Intent(HomePage.this, VideoScreenActivity.class);
+                intent.putExtra("video_id", video.getId());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onEditClick(VideoData video) {
+                // Handle edit click
+            }
+
+            @Override
+            public void onDeleteClick(VideoData video) {
+                allVideos.remove(video);
+                adapter.setVideos(allVideos);
+                VideosState.getInstance().setVideoList(allVideos);
+            }
+        });
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
 
@@ -53,23 +83,17 @@ public class HomePage extends BaseActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        List<VideoData> videos = loadVideosFromJson();
-                        if (videos != null) {
-                            adapter.setVideos(videos);
-                        } else {
-                            Log.e("HomePage", "Failed to load videos from JSON");
-                        }
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 }, 2000);
             }
         });
 
-        allVideos = loadVideosFromJson();
+        allVideos = VideosState.getInstance().getVideoList();
         if (allVideos != null) {
             adapter.setVideos(allVideos);
         } else {
-            Log.e("HomePage", "Failed to load videos from JSON");
+            Log.e("HomePage", "Error getting videos");
         }
         swipeRefreshLayout.setRefreshing(false);
 
@@ -147,14 +171,64 @@ public class HomePage extends BaseActivity {
                 recreate();
             }
         });
-    }
 
-    private List<VideoData> loadVideosFromJson() {
-        InputStream inputStream = getResources().openRawResource(R.raw.videos);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        Gson gson = new Gson();
-        Type videoListType = new TypeToken<List<VideoData>>() {}.getType();
-        return gson.fromJson(reader, videoListType);
+        signInButton = findViewById(R.id.btn_sign_in);
+        signUpButton = findViewById(R.id.btn_sign_up);
+        authButtonsContainer = findViewById(R.id.auth_buttons_container);
+        profileImage = findViewById(R.id.profile_image);
+        profileContainer = findViewById(R.id.profile_container);
+        welcomeMessage = findViewById(R.id.welcome_message);
+        signOutButton = findViewById(R.id.btn_sign_out);
+        uploadVideoButton = findViewById(R.id.btn_upload_video);
+
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePage.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePage.this, SignupActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserState.logout();
+                authButtonsContainer.setVisibility(View.VISIBLE);
+                profileContainer.setVisibility(View.GONE);
+                uploadVideoButton.setVisibility(View.GONE);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        uploadVideoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePage.this, UploadVideo.class);
+                startActivity(intent);
+            }
+        });
+
+        // Check if user is logged in
+        if (UserState.isLoggedIn()) {
+            User loggedInUser = UserState.getLoggedInUser();
+            if (loggedInUser != null) {
+                authButtonsContainer.setVisibility(View.GONE);
+                profileContainer.setVisibility(View.VISIBLE);
+                uploadVideoButton.setVisibility(View.VISIBLE);
+                welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
+
+                // Load the profile image from the app's internal storage
+                loadImageFromLocalPath(loggedInUser.getImageUri(), profileImage);
+            }
+        }
     }
 
     private void filterVideos(String text) {
@@ -167,12 +241,36 @@ public class HomePage extends BaseActivity {
         adapter.setVideos(filteredList);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateVideos();
+    }
+
+    private void updateVideos() {
+        allVideos = VideosState.getInstance().getVideoList();
+        if (allVideos != null) {
+            adapter.setVideos(allVideos);
+        } else {
+            Log.e("HomePage", "Error getting videos");
+        }
+    }
+
     private void updateModeButtonText() {
         int nightMode = AppCompatDelegate.getDefaultNightMode();
         if (nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             toggleModeIcon.setImageResource(R.drawable.ic_light_mode);
         } else {
             toggleModeIcon.setImageResource(R.drawable.ic_dark_mode);
+        }
+    }
+
+    private void loadImageFromLocalPath(String path, ImageView imageView) {
+        try {
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            imageView.setImageBitmap(bitmap);
+        } catch (Exception e) {
+            Log.e("HomePage", "Error loading image: " + e.getMessage());
         }
     }
 }

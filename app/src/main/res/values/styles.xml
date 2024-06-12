@@ -13,7 +13,7 @@
     </style>
     <style name="NonSubscribeButton" parent="Widget.MaterialComponents.Button">
         <item name="android:backgroundTint">@color/nonSubscribeBackground</item>
-        <item name="android:textColor">@color/nonSubscribeTextColor</item>
+        <item name="android:textColor">@color/oppositeOfBackground</item>
         <item name="cornerRadius">20dp</item>
         <item name="android:padding">10dp</item>
         <item name="android:paddingTop">5dp</item>

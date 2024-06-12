@@ -11,7 +11,9 @@
     <color name="colorHeaderBackground">#121212</color>
     <color name="subscribeBackground">#FFFFFF</color>
     <color name="subscribeTextColor">#000000</color>
-    <color name="nonSubscribeBackground">#696969</color>
-    <color name="nonSubscribeTextColor">#FFFFFF</color>
+    <color name="nonSubscribeBackground">#222222</color>
+    <color name="oppositeOfBackground">#FFFFFF</color>
+    <color name="editButtonColor">#075593</color>
+    <color name="deleteButtonColor">#450909</color>
 </resources>
 
