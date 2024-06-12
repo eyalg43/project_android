@@ -43,12 +43,18 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         VideoData videoData = videoList.get(position);
 
         holder.titleTextView.setText(videoData.getTitle());
-        holder.viewsTextView.setText(videoData.getViews());
-        holder.uploadTimeTextView.setText(videoData.getUploadTime());
+        holder.authorViewsUploadTimeTextView.setText(
+                context.getString(R.string.video_author_views_uploadtime,
+                        videoData.getAuthor(), videoData.getViews(), videoData.getUploadTime())
+        );
 
-        // Load image from drawable resources
+        // Load video thumbnail
         int imageResource = context.getResources().getIdentifier(videoData.getImg(), "drawable", context.getPackageName());
         holder.thumbnailImageView.setImageResource(imageResource);
+
+        // Load author image
+        int authorImageResource = context.getResources().getIdentifier(videoData.getAuthorImage(), "drawable", context.getPackageName());
+        holder.authorImageView.setImageResource(authorImageResource);
 
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(videoData));
     }
@@ -70,15 +76,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
         ImageView thumbnailImageView;
         TextView titleTextView;
-        TextView viewsTextView;
-        TextView uploadTimeTextView;
+        TextView authorViewsUploadTimeTextView;
+        ImageView authorImageView;
 
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             thumbnailImageView = itemView.findViewById(R.id.video_thumbnail);
             titleTextView = itemView.findViewById(R.id.video_title);
-            viewsTextView = itemView.findViewById(R.id.video_views);
-            uploadTimeTextView = itemView.findViewById(R.id.video_uploadtime);
+            authorViewsUploadTimeTextView = itemView.findViewById(R.id.video_author_views_uploadtime);
+            authorImageView = itemView.findViewById(R.id.author_image);
         }
     }
 }
