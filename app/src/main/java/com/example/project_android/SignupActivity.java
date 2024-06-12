@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -89,16 +90,16 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Save image to internal storage
-                String imagePath = saveImageToInternalStorage(selectedImageUri);
-                if (imagePath == null) {
+                // Copy the image to the app's internal storage
+                String imageUri = copyImageToInternalStorage(selectedImageUri);
+                if (imageUri == null) {
                     textViewImageError.setVisibility(View.VISIBLE);
-                    textViewImageError.setText("Failed to save profile picture.");
+                    textViewImageError.setText("Error saving profile picture.");
                     return;
                 }
 
                 // Add user to in-memory state
-                UserState.addUser(username, password, displayName, imagePath);
+                UserState.addUser(username, password, displayName, imageUri);
 
                 // Proceed with signup logic
                 Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
@@ -135,6 +136,7 @@ public class SignupActivity extends AppCompatActivity {
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//        intent.setType("image/*");
         startActivityForResult(intent, REQUEST_IMAGE_GET);
     }
 
@@ -160,11 +162,6 @@ public class SignupActivity extends AppCompatActivity {
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
                     imageViewProfile.setImageBitmap(bitmap);
-                    imageViewProfile.setVisibility(View.VISIBLE);  // Show the ImageView
-
-                    TextView textViewImageSuccess = findViewById(R.id.textViewImageSuccess);
-                    textViewImageSuccess.setVisibility(View.VISIBLE);  // Show success message
-
                 } catch (IOException e) {
                     Log.e("SignupActivity", "Error loading image: " + e.getMessage());
                 }
@@ -172,7 +169,7 @@ public class SignupActivity extends AppCompatActivity {
         }
     }
 
-    private String saveImageToInternalStorage(Uri imageUri) {
+    private String copyImageToInternalStorage(Uri imageUri) {
         try {
             InputStream inputStream = getContentResolver().openInputStream(imageUri);
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);

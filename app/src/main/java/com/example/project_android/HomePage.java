@@ -3,6 +3,7 @@ package com.example.project_android;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -25,6 +26,8 @@ import com.example.project_android.adapters.VideosListAdapter;
 import com.example.project_android.entities.VideoData;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -221,7 +224,9 @@ public class HomePage extends AppCompatActivity {
                 profileContainer.setVisibility(View.VISIBLE);
                 uploadVideoButton.setVisibility(View.VISIBLE);
                 welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
-                loadProfileImage(loggedInUser.getImageUri());
+
+                // Load the profile image from the app's internal storage
+                loadImageFromLocalPath(loggedInUser.getImageUri(), profileImage);
             }
         }
     }
@@ -260,17 +265,12 @@ public class HomePage extends AppCompatActivity {
         }
     }
 
-    private void loadProfileImage(String imagePath) {
-        if (imagePath != null && !imagePath.isEmpty()) {
-            File imgFile = new File(imagePath);
-            if (imgFile.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                profileImage.setImageBitmap(bitmap);
-            } else {
-                profileImage.setImageResource(R.drawable.img2); // fallback to a default image
-            }
-        } else {
-            profileImage.setImageResource(R.drawable.img2); // fallback to a default image
+    private void loadImageFromLocalPath(String path, ImageView imageView) {
+        try {
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            imageView.setImageBitmap(bitmap);
+        } catch (Exception e) {
+            Log.e("HomePage", "Error loading image: " + e.getMessage());
         }
     }
 }
