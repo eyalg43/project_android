@@ -94,8 +94,8 @@ After cloning the repository, open the project in Android Studio and run the app
 
 ## Upload-Video Activity:
 <img src="/Android-app-screenshots/Screenshot_12.png" alt="Example Image">
-<img src="/Android-app-screenshots/Screenshot_13.png" alt="Example Image">
-<img src="/Android-app-screenshots/Screenshot_14.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_40.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_41.png" alt="Example Image">
 <img src="/Android-app-screenshots/Screenshot_15.png" alt="Example Image">
 <img src="/Android-app-screenshots/Screenshot_16.png" alt="Example Image">
 <img src="/Android-app-screenshots/Screenshot_17.png" alt="Example Image">
