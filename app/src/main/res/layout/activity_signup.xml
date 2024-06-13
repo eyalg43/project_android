@@ -1,3 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -15,7 +20,7 @@
         android:layout_below="@id/buttonUploadImage"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="1dp"
-        android:text="Take Photo"
+        android:text="@string/take_photo"
         app:layout_constraintBottom_toTopOf="@+id/buttonSignup"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -209,3 +214,4 @@
         app:srcCompat="@drawable/logo_vidtube1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

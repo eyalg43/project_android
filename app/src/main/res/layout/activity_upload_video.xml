@@ -35,7 +35,7 @@
 
     <Button
         android:id="@+id/buttonUploadThumbnail"
-        android:layout_width="323dp"
+        android:layout_width="270dp"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"
         android:backgroundTint="#818B8E"
@@ -63,21 +63,22 @@
 
     <Button
         android:id="@+id/buttonUploadVideo"
-        android:layout_width="228dp"
-        android:layout_height="49dp"
-        android:layout_marginTop="108dp"
+        android:layout_width="270dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="116dp"
         android:backgroundTint="#818B8E"
         android:text="@string/upload_video_file"
         android:textColor="@color/colorText"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonUploadThumbnail" />
 
     <Button
         android:id="@+id/buttonSubmitVideo"
-        android:layout_width="316dp"
-        android:layout_height="61dp"
+        android:layout_width="315dp"
+        android:layout_height="65dp"
         android:backgroundTint="@android:color/holo_blue_dark"
         android:text="@string/upload_my_video_to_vidtube"
         android:textColor="@color/colorText"
@@ -92,11 +93,11 @@
     <Button
         android:id="@+id/buttonCancel"
         android:layout_width="196dp"
-        android:layout_height="54dp"
+        android:layout_height="48dp"
         android:backgroundTint="@android:color/holo_red_dark"
         android:text="Cancel"
         android:textColor="@color/colorText"
-        android:textSize="22sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.52"
