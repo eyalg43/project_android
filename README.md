@@ -10,6 +10,9 @@ In order to run the Android app, start by cloning the repository to Android Stud
 
 After cloning the repository, open the project in Android Studio and run the app on an emulator or a physical device.
 
+## Our work process:
+We started off the same way we started the Web project, we watched Hemi's videos on the moodle tם help us build a basis of knowledge for the project, and then we continued on our own. Each of us had a responsibility for a different part of the project, Omri's part was the sign-in, sign-up and upload video pages, Max's part was the home page and Eyal's responsibility was the video page. Each of us finished his part and we connected the pages together, this was a bit harder than the Web project but we managed to figure it out. After finishing it we tested the logic of the app and fixed bugs until there were no more issues. While working on the app we used Jira to keep track of our tasks and it helped us keep our work organized.
+
 ## Android App Features:
 * After running the app, the emulator (or device if ran on a physical device) will open and you will be brought to the **Home Activity**
 
