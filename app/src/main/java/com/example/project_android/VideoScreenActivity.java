@@ -24,15 +24,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_android.adapters.CommentsAdapter;
 import com.example.project_android.adapters.VideoAdapter;
 import com.example.project_android.entities.CommentData;
+import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
 
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class VideoScreenActivity extends AppCompatActivity {
 

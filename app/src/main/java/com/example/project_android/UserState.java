@@ -2,6 +2,8 @@ package com.example.project_android;
 
 import android.util.Log;
 
+import com.example.project_android.entities.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
