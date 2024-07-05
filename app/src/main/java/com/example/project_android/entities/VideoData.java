@@ -1,6 +1,11 @@
 package com.example.project_android.entities;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity
 public class VideoData {
+    @PrimaryKey
     private int id;
     private String title;
     private String description;

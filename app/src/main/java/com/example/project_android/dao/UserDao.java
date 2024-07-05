@@ -27,14 +27,18 @@ public interface UserDao {
     void deleteUser(User user);
 
     // Fetch a user by ID
-    @Query("SELECT * FROM user WHERE id = :userId")
+    @Query("SELECT * FROM users WHERE id = :userId")
     LiveData<User> getUserById(String userId);
 
     // Fetch a user by Username
-    @Query("SELECT * FROM user WHERE username = :username")
+    @Query("SELECT * FROM users WHERE username = :username")
     LiveData<User> getUserByUsername(String username);
 
+    // Fetch a user by Username and Password
+    @Query("SELECT * FROM users WHERE username = :username AND password = :password")
+    LiveData<User> getUserByUsernameAndPassword(String username, String password);
+
     // Fetch all users
-    @Query("SELECT * FROM user")
+    @Query("SELECT * FROM users")
     LiveData<List<User>> getAllUsers();
 }

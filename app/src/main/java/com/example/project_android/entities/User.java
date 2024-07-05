@@ -1,6 +1,13 @@
 package com.example.project_android.entities;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "users")
 public class User {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
     private String username;
     private String password;
     private String displayName;
@@ -13,6 +20,13 @@ public class User {
         this.imageUri = imageUri;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public String getUsername() {
         return username;
     }

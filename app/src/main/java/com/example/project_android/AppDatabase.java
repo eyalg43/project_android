@@ -9,10 +9,10 @@ import com.example.project_android.dao.UserDao;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
 
-@Database(entities = {VideoData.class, User.class} , version = 1)
+@Database(entities = {VideoData.class, User.class} , version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;
-    public abstract VideoDao videoDao();
+//    public abstract VideoDao videoDao();
     public abstract UserDao userDao();
 
     public static synchronized AppDatabase getInstance(Context context) {

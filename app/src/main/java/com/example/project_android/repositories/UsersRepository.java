@@ -53,6 +53,10 @@ public class UsersRepository {
         return userDao.getUserByUsername(username);
     }
 
+    public LiveData<User> getUserByUsernameAndPassword(String username, String password) {
+        return userDao.getUserByUsernameAndPassword(username, password);
+    }
+
     public LiveData<List<User>> getAllUsers() {
         return userDao.getAllUsers();
     }
