@@ -16,12 +16,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.project_android.CommentState;
 import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.CommentData;
+import com.example.project_android.viewmodels.CommentViewModel;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -31,16 +33,18 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     private List<CommentData> commentsList;
     private Context context;
     private static final String TAG = "CommentsAdapter";
+    private CommentViewModel commentViewModel;
 
-    public CommentsAdapter(List<CommentData> commentsList) {
-        // Ensure the commentsList is modifiable
+    public CommentsAdapter(Context context, List<CommentData> commentsList) {
+        this.context = context;
         this.commentsList = new ArrayList<>(commentsList);
+        commentViewModel = new ViewModelProvider((ViewModelStoreOwner) context).get(CommentViewModel.class);
+
     }
 
     @NonNull
     @Override
     public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        context = parent.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.item_comment, parent, false);
         return new CommentViewHolder(view);
     }
@@ -80,7 +84,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     }
 
     public void updateComments(List<CommentData> newComments) {
-        // Ensure the newComments list is modifiable
         commentsList.clear();
         commentsList.addAll(new ArrayList<>(newComments));
         notifyDataSetChanged();
@@ -103,7 +106,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             String newCommentText = input.getText().toString().trim();
             if (!newCommentText.isEmpty()) {
                 commentData.setText(newCommentText);
-                CommentState.getInstance(context).updateCommentData(commentData);
+                commentViewModel.updateComment(commentData); // Use ViewModel to update comment
                 notifyDataSetChanged();
             }
         });
@@ -124,7 +127,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
     private void deleteComment(CommentData commentData) {
         commentsList.remove(commentData);
-        CommentState.getInstance(context).deleteCommentData(commentData.getId());
+        commentViewModel.deleteComment(commentData); // Use ViewModel to delete comment
         notifyDataSetChanged();
     }
 
@@ -145,7 +148,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             }
         }
 
-        CommentState.getInstance(context).updateCommentData(commentData);
+        commentViewModel.updateComment(commentData); // Use ViewModel to update comment
         updateLikeDislikeButtonColors(commentData, holder);
     }
 

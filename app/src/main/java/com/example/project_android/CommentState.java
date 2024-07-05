@@ -3,9 +3,7 @@ package com.example.project_android;
 import android.content.Context;
 import com.example.project_android.entities.CommentData;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +35,7 @@ public class CommentState {
         commentDataMap.put(videoId, comments);
     }
 
-    public CommentData getCommentData(int id) {
+    public CommentData getCommentData(String id) {
         for (List<CommentData> comments : commentDataMap.values()) {
             for (CommentData comment : comments) {
                 if (comment.getId() == id) {
@@ -66,7 +64,7 @@ public class CommentState {
         }
     }
 
-    public void deleteCommentData(int commentId) {
+    public void deleteCommentData(String commentId) {
         int videoId = getVideoIdForComment(commentId);
         if (videoId != -1) {
             List<CommentData> comments = commentDataMap.get(videoId);
@@ -81,7 +79,7 @@ public class CommentState {
         }
     }
 
-    private int getVideoIdForComment(int commentId) {
+    private int getVideoIdForComment(String commentId) {
         for (Map.Entry<Integer, List<CommentData>> entry : commentDataMap.entrySet()) {
             for (CommentData comment : entry.getValue()) {
                 if (comment.getId() == commentId) {

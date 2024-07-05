@@ -1,5 +1,7 @@
 package com.example.project_android.api;
 
+import androidx.room.Query;
+
 import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
@@ -24,25 +26,25 @@ public interface ApiService {
     @PATCH("videos/{id}/dislike")
     Call<Void> dislikeVideo(@Path("id") int videoId);
 
-    @GET("comments")
-    Call<List<CommentData>> getComments();
+    @GET("api/comments")
+    Call<List<CommentData>> getComments(int videoId);
 
-    @POST("comments")
+    @POST("api/comments")
     Call<CommentData> createComment(@Body CommentData comment);
 
     @GET("comments/{id}")
     Call<CommentData> getComment(@Path("id") int commentId);
 
-    @PATCH("users/{id}/comments")
-    Call<CommentData> updateComment(@Path("id") int userId, @Body CommentData comment);
+    @PATCH("api/users/{id}/comments")
+    Call<CommentData> updateComment(@Path("id") String id, @Body CommentData comment);
 
-    @DELETE("users/{id}/comments")
-    Call<Void> deleteComment(@Path("id") int userId);
+    @DELETE("api/users/{id}/comments")
+    Call<Void> deleteComment(@Path("id") String id);
 
-    @PATCH("{id}/like")
+    @PATCH("api/{id}/like")
     Call<Void> likeComment(@Path("id") int commentId);
 
-    @PATCH("{id}/dislike")
+    @PATCH("api/{id}/dislike")
     Call<Void> dislikeComment(@Path("id") int commentId);
 
     // Video-related endpoints
