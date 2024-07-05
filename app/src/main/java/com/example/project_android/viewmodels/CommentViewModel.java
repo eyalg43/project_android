@@ -20,7 +20,7 @@ public class CommentViewModel extends AndroidViewModel {
         commentRepository = new CommentRepository(application);
     }
 
-    public LiveData<List<CommentData>> getComments(int videoId) {
+    public LiveData<List<CommentData>> getComments(String videoId) {
         comments = commentRepository.getComments(videoId);
         return comments;
     }

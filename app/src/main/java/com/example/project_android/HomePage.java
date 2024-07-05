@@ -14,9 +14,12 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -24,6 +27,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.project_android.adapters.VideosListAdapter;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
+import com.example.project_android.viewmodels.VideoViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +47,7 @@ public class HomePage extends AppCompatActivity {
     private LinearLayout authButtonsContainer;
     private Button signOutButton;
     private Button uploadVideoButton;
+    private VideoViewModel videoViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +72,8 @@ public class HomePage extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(VideoData video) {
-                allVideos.remove(video);
-                adapter.setVideos(allVideos);
-                VideosState.getInstance().setVideoList(allVideos);
+                videoViewModel.delete(video);
             }
-
-
         });
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
@@ -84,19 +85,27 @@ public class HomePage extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        videoViewModel.fetchVideosFromServer();
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 }, 2000);
             }
         });
 
-        allVideos = VideosState.getInstance().getVideoList();
-        if (allVideos != null) {
-            adapter.setVideos(allVideos);
-        } else {
-            Log.e("HomePage", "Error getting videos");
-        }
-        swipeRefreshLayout.setRefreshing(false);
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+        videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
+            @Override
+            public void onChanged(@Nullable List<VideoData> videoDataList) {
+                if (videoDataList != null) {
+                    adapter.setVideos(videoDataList);
+                    Log.d("HomePage", "Loaded " + videoDataList.size() + " videos from Room.");
+                } else {
+                    Log.e("HomePage", "No videos found in Room database.");
+                }
+            }
+        });
+
+        videoViewModel.fetchVideosFromServer();
 
         ImageButton searchButton = findViewById(R.id.search_button);
         final SearchView searchView = findViewById(R.id.searchView);
@@ -249,7 +258,7 @@ public class HomePage extends AppCompatActivity {
     }
 
     private void updateVideos() {
-        allVideos = VideosState.getInstance().getVideoList();
+        allVideos = adapter.getVideos();
         if (allVideos != null) {
             for (VideoData video : allVideos) {
                 Log.d("HomePage", "Video Author Image URI: " + video.getAuthorImage());
@@ -259,7 +268,6 @@ public class HomePage extends AppCompatActivity {
             Log.e("HomePage", "Error getting videos");
         }
     }
-
 
     private void updateModeButtonText() {
         int nightMode = AppCompatDelegate.getDefaultNightMode();

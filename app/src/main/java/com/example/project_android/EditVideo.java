@@ -52,8 +52,8 @@ public class EditVideo extends AppCompatActivity {
         textViewVideoDetails = findViewById(R.id.textViewVideoDetails);
 
         Intent intent = getIntent();
-        int videoId = intent.getIntExtra("video_id", -1);
-        if (videoId != -1) {
+        String videoId = intent.getStringExtra("videoId");
+        if (videoId != null) {
             videoData = VideosState.getInstance().getVideoById(videoId);
             if (videoData != null) {
                 editTextTitle.setText(videoData.getTitle());

@@ -7,6 +7,9 @@ import android.content.Context;
 
 import androidx.room.TypeConverters;
 
+import com.example.project_android.dao.CommentDao;
+import com.example.project_android.dao.UserDao;
+import com.example.project_android.dao.VideoDao;
 import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;

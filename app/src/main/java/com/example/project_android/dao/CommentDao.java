@@ -14,7 +14,7 @@ import java.util.List;
 public interface CommentDao {
 
     @Query("SELECT * FROM comments WHERE videoId = :videoId")
-    List<CommentData> getCommentsForVideo(int videoId);
+    List<CommentData> getCommentsForVideo(String videoId);
 
     @Insert
     void insertComment(CommentData comment);

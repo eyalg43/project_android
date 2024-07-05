@@ -1,7 +1,19 @@
 package com.example.project_android.entities;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.example.project_android.Converters;
+
+import java.util.List;
+
+@Entity(tableName = "VideoData")
 public class VideoData {
-    private int id;
+    @PrimaryKey
+    @NonNull
+    private String _id;
     private String title;
     private String description;
     private String author;
@@ -10,12 +22,15 @@ public class VideoData {
     private String video;
     private String uploadTime;
     private String authorImage;
-    private boolean isLiked;
-    private boolean isDisliked;
 
-    public VideoData(int id, String title, String description, String author,
-                     String views, String img, String video, String uploadTime, String authorImage) {
-        this.id = id;
+    @TypeConverters(Converters.class)
+    private List<String> likes;
+
+    @TypeConverters(Converters.class)
+    private List<String> dislikes;
+    public VideoData(@NonNull String _id, String title, String description, String author,
+                     String views, String img, String video, String uploadTime, String authorImage, List<String> likes, List<String> dislikes) {
+        this._id = _id;
         this.title = title;
         this.description = description;
         this.author = author;
@@ -24,16 +39,16 @@ public class VideoData {
         this.video = video;
         this.uploadTime = uploadTime;
         this.authorImage = authorImage;
-        this.isLiked = false;
-        this.isDisliked = false;
+        this.likes = likes;
+        this.dislikes = dislikes;
     }
 
-    public int getId() {
-        return id;
+    public String getId() {
+        return _id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(@NonNull String _id) {
+        this._id = _id;
     }
 
     public String getTitle() {
@@ -100,19 +115,19 @@ public class VideoData {
         this.authorImage = authorImage;
     }
 
-    public boolean isLiked() {
-        return isLiked;
+    public List<String> getLikes() {
+        return likes;
     }
 
-    public void setLiked(boolean liked) {
-        isLiked = liked;
+    public void setLikes(List<String> likes) {
+        this.likes = likes;
     }
 
-    public boolean isDisliked() {
-        return isDisliked;
+    public List<String> getDislikes() {
+        return dislikes;
     }
 
-    public void setDisliked(boolean disliked) {
-        isDisliked = disliked;
+    public void setDislikes(List<String> dislikes) {
+        this.dislikes = dislikes;
     }
 }

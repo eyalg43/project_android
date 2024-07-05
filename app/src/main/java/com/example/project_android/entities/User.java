@@ -1,6 +1,13 @@
 package com.example.project_android.entities;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "users")
 public class User {
+    @PrimaryKey
+    @NonNull
     private String username;
     private String password;
     private String displayName;

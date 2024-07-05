@@ -21,7 +21,7 @@ public class CommentData {
     private String img;
     private boolean isLiked;
     private boolean isDisliked;
-    private int videoId;
+    private String videoId;
 
     @TypeConverters(Converters.class)
     private List<String> likes;
@@ -34,7 +34,7 @@ public class CommentData {
     }
 
     // Constructor with parameters
-    public CommentData(@NonNull String id, String text, String username, String displayName, String date, String img, int videoId, List<String> likes, List<String> dislikes) {
+    public CommentData(@NonNull String id, String text, String username, String displayName, String date, String img, String videoId, List<String> likes, List<String> dislikes) {
         this.id = id;
         this.text = text;
         this.username = username;
@@ -114,11 +114,11 @@ public class CommentData {
         isDisliked = disliked;
     }
 
-    public int getVideoId() {
+    public String getVideoId() {
         return videoId;
     }
 
-    public void setVideoId(int videoId) {
+    public void setVideoId(String videoId) {
         this.videoId = videoId;
     }
 

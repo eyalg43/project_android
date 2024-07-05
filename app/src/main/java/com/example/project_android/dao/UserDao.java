@@ -1,4 +1,4 @@
-package dao;
+package com.example.project_android.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -27,10 +27,10 @@ public interface UserDao {
     void deleteUser(User user);
 
     // Fetch a user by ID
-    @Query("SELECT * FROM user WHERE id = :userId")
+    /*@Query("SELECT * FROM user WHERE id = :userId")
     LiveData<User> getUserById(String userId);
 
     // Fetch all users
     @Query("SELECT * FROM user")
-    LiveData<List<User>> getAllUsers();
+    LiveData<List<User>> getAllUsers();*/
 }

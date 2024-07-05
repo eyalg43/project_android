@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.project_android.EditVideo;
+//import com.example.project_android.EditVideo;
 import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.VideoData;

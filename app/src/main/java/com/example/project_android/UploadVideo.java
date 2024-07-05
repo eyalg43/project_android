@@ -17,8 +17,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.project_android.VideosState;
 import com.example.project_android.entities.VideoData;
+import com.example.project_android.viewmodels.VideoViewModel;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class UploadVideo extends AppCompatActivity {
 
@@ -37,11 +39,14 @@ public class UploadVideo extends AppCompatActivity {
 
     private Uri selectedThumbnailUri;
     private Uri selectedVideoUri;
+    private VideoViewModel videoViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_video);
+
+        videoViewModel = new VideoViewModel(getApplication());
 
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextDescription = findViewById(R.id.editTextDescription);
@@ -126,7 +131,6 @@ public class UploadVideo extends AppCompatActivity {
             Log.d("UploadVideo", "Error: Please fill all fields to upload.");
         } else {
             textViewError.setVisibility(View.GONE);
-            int newVideoId = VideosState.getInstance().getLatestVideoId() + 1;
 
             // Log the author image URI
             String authorImageUri = UserState.getLoggedInUser().getImageUri();
@@ -134,7 +138,7 @@ public class UploadVideo extends AppCompatActivity {
 
             // Add new video to the state
             VideoData newVideo = new VideoData(
-                    newVideoId, // Generate new ID
+                    null, // Generate new ID
                     title,
                     description,
                     UserState.getLoggedInUser().getDisplayName(),
@@ -142,7 +146,9 @@ public class UploadVideo extends AppCompatActivity {
                     selectedThumbnailUri.toString(),
                     selectedVideoUri.toString(),
                     uploadTime,
-                    authorImageUri
+                    authorImageUri,
+                    new ArrayList<String>(),
+                    new ArrayList<String>()
             );
             VideosState.getInstance().addVideo(newVideo);
             Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();

@@ -17,8 +17,6 @@ import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-
-
 public interface ApiService {
     @PATCH("videos/{id}/like")
     Call<Void> likeVideo(@Path("id") int videoId);
@@ -27,7 +25,7 @@ public interface ApiService {
     Call<Void> dislikeVideo(@Path("id") int videoId);
 
     @GET("api/comments")
-    Call<List<CommentData>> getComments(int videoId);
+    Call<List<CommentData>> getComments(String videoId);
 
     @POST("api/comments")
     Call<CommentData> createComment(@Body CommentData comment);
@@ -61,7 +59,7 @@ public interface ApiService {
     Call<List<VideoData>> getVideosByAuthor(@Path("id") String userId);
 
     @POST("api/users/{id}/videos")
-    Call<VideoData> createVideo(@Path("id") String userId, @Body VideoData videoData);
+    Call<VideoData> createVideo(@Body VideoData videoData);
 
     @PATCH("api/users/{id}/videos/{pid}")
     Call<VideoData> updateVideo(@Path("id") String userId, @Path("pid") int videoId, @Body VideoData videoData);

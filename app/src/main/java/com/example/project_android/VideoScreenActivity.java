@@ -136,11 +136,11 @@ public class VideoScreenActivity extends AppCompatActivity {
         ImageButton likeButton = findViewById(R.id.like_button);
         ImageButton dislikeButton = findViewById(R.id.dislike_button);
 
-        likeButton.setOnClickListener(v -> handleLikeDislike(true));
-        dislikeButton.setOnClickListener(v -> handleLikeDislike(false));
+        /*likeButton.setOnClickListener(v -> handleLikeDislike(true));!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        dislikeButton.setOnClickListener(v -> handleLikeDislike(false));!!!!!!!!!!!!!!!!!!!!!!!*/
     }
 
-    private void handleLikeDislike(boolean isLike) {
+    /*private void handleLikeDislike(boolean isLike) {
         if (currentVideo != null) {
             if (isLike) {
                 if (currentVideo.isLiked()) {
@@ -164,9 +164,9 @@ public class VideoScreenActivity extends AppCompatActivity {
             // Update button colors
             updateLikeDislikeButtonColors();
         }
-    }
+    }*/
 
-    private void updateLikeDislikeButtonColors() {
+    /*private void updateLikeDislikeButtonColors() {
         ImageButton likeButton = findViewById(R.id.like_button);
         ImageButton dislikeButton = findViewById(R.id.dislike_button);
 
@@ -181,7 +181,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         } else {
             dislikeButton.setColorFilter(null);
         }
-    }
+    }*/
 
     private void addComment(String displayName, String commentText, String userImage) {
         if (currentVideo != null) {
@@ -240,10 +240,10 @@ public class VideoScreenActivity extends AppCompatActivity {
         updateRelatedVideos(video);
 
         // Update the like and dislike button colors
-        updateLikeDislikeButtonColors();
+        //updateLikeDislikeButtonColors();!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 
-    private void observeComments(int videoId) {
+    private void observeComments(String videoId) {
         commentViewModel.getComments(videoId).observe(this, new Observer<List<CommentData>>() {
             @Override
             public void onChanged(List<CommentData> comments) {
@@ -290,7 +290,7 @@ public class VideoScreenActivity extends AppCompatActivity {
 
     private VideoData findVideoById(int id) {
         for (VideoData video : originalVideoList) {
-            if (video.getId() == id) {
+            if (video.getId().equals(id)) {
                 return video;
             }
         }

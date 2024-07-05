@@ -28,7 +28,7 @@ public class CommentRepository {
         apiService = RetrofitClient.getApiService();
     }
 
-    public LiveData<List<CommentData>> getComments(int videoId) {
+    public LiveData<List<CommentData>> getComments(String videoId) {
         MutableLiveData<List<CommentData>> comments = new MutableLiveData<>();
         apiService.getComments(videoId).enqueue(new Callback<List<CommentData>>() {
             @Override
