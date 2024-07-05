@@ -18,6 +18,8 @@ import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +28,7 @@ import com.example.project_android.adapters.VideoAdapter;
 import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
+import com.example.project_android.viewmodels.CommentViewModel;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -42,15 +45,15 @@ public class VideoScreenActivity extends AppCompatActivity {
     private VideoData currentVideo;
     private List<VideoData> originalVideoList;
     private NestedScrollView nestedScrollView;
-    private CommentState commentState;
+    private CommentViewModel commentViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_screen);
 
-        // Initialize CommentState
-        commentState = CommentState.getInstance(this);
+        // Initialize CommentViewModel
+        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
 
         // Load and parse the JSON files
         originalVideoList = VideosState.getInstance().getVideoList();
@@ -61,7 +64,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         // Initialize comments RecyclerView with an empty list
         RecyclerView commentsRecyclerView = findViewById(R.id.comments_recycler_view);
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        commentsAdapter = new CommentsAdapter(Collections.emptyList());
+        commentsAdapter = new CommentsAdapter(this, Collections.emptyList());
         commentsRecyclerView.setAdapter(commentsAdapter);
 
         // Initialize adapter and set it to RecyclerView
@@ -95,6 +98,7 @@ public class VideoScreenActivity extends AppCompatActivity {
             VideoData selectedVideo = findVideoById(videoId);
             if (selectedVideo != null) {
                 displayVideoDetails(selectedVideo);
+                observeComments(selectedVideo.getId());
             }
         }
 
@@ -182,21 +186,15 @@ public class VideoScreenActivity extends AppCompatActivity {
     private void addComment(String displayName, String commentText, String userImage) {
         if (currentVideo != null) {
             CommentData newComment = new CommentData();
-            newComment.setId(generateCommentId());
+            // No need to set the ID manually, MongoDB will handle it
             newComment.setText(commentText);
-            newComment.setUsername(displayName);
+            newComment.setUsername(UserState.getLoggedInUser().getUsername());
+            newComment.setDisplayName(displayName);
             newComment.setDate(getCurrentTime());
             newComment.setImg(userImage);
+            newComment.setVideoId(currentVideo.getId());
 
-            List<CommentData> comments = commentState.getCommentsForVideo(currentVideo.getId());
-            if (comments == null) {
-                comments = new ArrayList<>();
-                commentState.addCommentsForVideo(currentVideo.getId(), comments);
-            }
-            comments.add(newComment);
-            commentState.updateCommentsForVideo(currentVideo.getId(), comments);
-
-            commentsAdapter.updateComments(reverseComments(comments));
+            commentViewModel.createComment(newComment); // Use ViewModel to handle comment creation
         }
     }
 
@@ -236,18 +234,26 @@ public class VideoScreenActivity extends AppCompatActivity {
         videoView.start();
 
         // Load and display comments
-        List<CommentData> commentsForVideo = commentState.getCommentsForVideo(video.getId());
-        if (commentsForVideo != null) {
-            commentsAdapter.updateComments(reverseComments(commentsForVideo));
-        } else {
-            commentsAdapter.updateComments(Collections.emptyList());
-        }
+        observeComments(video.getId());
 
         // Update related videos
         updateRelatedVideos(video);
 
         // Update the like and dislike button colors
         updateLikeDislikeButtonColors();
+    }
+
+    private void observeComments(int videoId) {
+        commentViewModel.getComments(videoId).observe(this, new Observer<List<CommentData>>() {
+            @Override
+            public void onChanged(List<CommentData> comments) {
+                if (comments != null) {
+                    commentsAdapter.updateComments(reverseComments(comments));
+                } else {
+                    commentsAdapter.updateComments(Collections.emptyList());
+                }
+            }
+        });
     }
 
     private void loadImage(String path, ImageView imageView) {
@@ -276,21 +282,6 @@ public class VideoScreenActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "Error loading image: " + e.getMessage());
         }
-    }
-
-    private int generateCommentId() {
-        // Generate a unique comment ID
-        int maxId = 0;
-        List<CommentData> allComments = new ArrayList<>();
-        for (List<CommentData> comments : commentState.getAllComments().values()) {
-            allComments.addAll(comments);
-        }
-        for (CommentData comment : allComments) {
-            if (comment.getId() > maxId) {
-                maxId = comment.getId();
-            }
-        }
-        return maxId + 1;
     }
 
     private String getCurrentTime() {
