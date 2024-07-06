@@ -125,7 +125,7 @@ public class SignupActivity extends AppCompatActivity {
                 }
 
                 // Add user to in-memory state
-                UserState.addUser(username, password, displayName, imageUri);
+                //UserState.addUser(username, password, displayName, imageUri);
 
                 // Proceed with signup logic
                 Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();

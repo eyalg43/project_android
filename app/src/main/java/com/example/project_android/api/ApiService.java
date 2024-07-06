@@ -3,6 +3,7 @@ package com.example.project_android.api;
 import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
+import com.google.gson.JsonElement;
 
 import java.util.List;
 
@@ -91,4 +92,7 @@ public interface ApiService {
 
     @PATCH("api/users/{id}")
     Call<User> updateUser(@Header("Authorization") String token, @Path("id") String userId, @Body User user);
+
+    @POST("api/tokens")
+    Call<JsonElement> generateToken(@Body User user);
 }

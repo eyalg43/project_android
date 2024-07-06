@@ -201,7 +201,7 @@ public class HomePage extends AppCompatActivity {
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserState.logout();
+                UserState.logOut();
                 authButtonsContainer.setVisibility(View.VISIBLE);
                 profileContainer.setVisibility(View.GONE);
                 uploadVideoButton.setVisibility(View.GONE);
