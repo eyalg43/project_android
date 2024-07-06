@@ -12,7 +12,6 @@
         android:layout_height="200dp"
         android:contentDescription="@string/video_title"
         android:scaleType="centerCrop"
-        android:src="@drawable/img1"
         app:layout_constraintBottom_toTopOf="@id/video_info_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -72,12 +72,7 @@ public class UploadVideo extends AppCompatActivity {
             }
         });
 
-        buttonSubmitVideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submitVideo();
-            }
-        });
+
 
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,41 +116,7 @@ public class UploadVideo extends AppCompatActivity {
         }
     }
 
-    private void submitVideo() {
-        String title = editTextTitle.getText().toString().trim();
-        String description = editTextDescription.getText().toString().trim();
-        String uploadTime = getElapsedTime(System.currentTimeMillis());
 
-        if (title.isEmpty() || description.isEmpty() || selectedThumbnailUri == null || selectedVideoUri == null) {
-            Toast.makeText(this, "Please fill all fields to upload.", Toast.LENGTH_SHORT).show();
-            Log.d("UploadVideo", "Error: Please fill all fields to upload.");
-        } else {
-            textViewError.setVisibility(View.GONE);
-
-            // Log the author image URI
-            String authorImageUri = UserState.getLoggedInUser().getImageUri();
-            Log.d("UploadVideo", "Author Image URI: " + authorImageUri);
-
-            // Add new video to the state
-            VideoData newVideo = new VideoData(
-                    null, // Generate new ID
-                    title,
-                    description,
-                    UserState.getLoggedInUser().getDisplayName(),
-                    "1 views",
-                    selectedThumbnailUri.toString(),
-                    selectedVideoUri.toString(),
-                    uploadTime,
-                    authorImageUri,
-                    new ArrayList<String>(),
-                    new ArrayList<String>()
-            );
-            VideosState.getInstance().addVideo(newVideo);
-            Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(UploadVideo.this, HomePage.class);
-            startActivity(intent);
-        }
-    }
 
 
     private String getElapsedTime(long uploadTime) {

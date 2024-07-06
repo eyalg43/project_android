@@ -13,7 +13,6 @@ import java.util.List;
 
 public class CommentViewModel extends AndroidViewModel {
     private CommentRepository commentRepository;
-    private LiveData<List<CommentData>> comments;
 
     public CommentViewModel(@NonNull Application application) {
         super(application);
@@ -21,8 +20,7 @@ public class CommentViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<CommentData>> getComments(String videoId) {
-        comments = commentRepository.getComments(videoId);
-        return comments;
+        return commentRepository.getComments(videoId);
     }
 
     public void createComment(CommentData commentData) {

@@ -18,26 +18,35 @@ public class VideoData {
     private String description;
     private String author;
     private String views;
-    private String img;
-    private String video;
+    private String imgPath; // Path to image file
+    private String videoPath; // Path to video file
     private String uploadTime;
-    private String authorImage;
+    private String authorImagePath; // Path to author image file
 
     @TypeConverters(Converters.class)
     private List<String> likes;
 
     @TypeConverters(Converters.class)
     private List<String> dislikes;
+
+    private String img; // Base64 encoded image data
+    private String video; // Base64 encoded video data
+    private String authorImage; // Base64 encoded author image data
+
     public VideoData(@NonNull String _id, String title, String description, String author,
-                     String views, String img, String video, String uploadTime, String authorImage, List<String> likes, List<String> dislikes) {
+                     String views, String imgPath, String videoPath, String uploadTime, String authorImagePath,
+                     String img, String video, String authorImage, List<String> likes, List<String> dislikes) {
         this._id = _id;
         this.title = title;
         this.description = description;
         this.author = author;
         this.views = views;
+        this.imgPath = imgPath;
+        this.videoPath = videoPath;
+        this.uploadTime = uploadTime;
+        this.authorImagePath = authorImagePath;
         this.img = img;
         this.video = video;
-        this.uploadTime = uploadTime;
         this.authorImage = authorImage;
         this.likes = likes;
         this.dislikes = dislikes;
@@ -83,6 +92,38 @@ public class VideoData {
         this.views = views;
     }
 
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
+    }
+
+    public String getVideoPath() {
+        return videoPath;
+    }
+
+    public void setVideoPath(String videoPath) {
+        this.videoPath = videoPath;
+    }
+
+    public String getUploadTime() {
+        return uploadTime;
+    }
+
+    public void setUploadTime(String uploadTime) {
+        this.uploadTime = uploadTime;
+    }
+
+    public String getAuthorImagePath() {
+        return authorImagePath;
+    }
+
+    public void setAuthorImagePath(String authorImagePath) {
+        this.authorImagePath = authorImagePath;
+    }
+
     public String getImg() {
         return img;
     }
@@ -97,14 +138,6 @@ public class VideoData {
 
     public void setVideo(String video) {
         this.video = video;
-    }
-
-    public String getUploadTime() {
-        return uploadTime;
-    }
-
-    public void setUploadTime(String uploadTime) {
-        this.uploadTime = uploadTime;
     }
 
     public String getAuthorImage() {
@@ -131,3 +164,5 @@ public class VideoData {
         this.dislikes = dislikes;
     }
 }
+
+
