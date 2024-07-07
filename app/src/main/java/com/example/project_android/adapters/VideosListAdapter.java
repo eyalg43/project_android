@@ -8,15 +8,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project_android.R;
+import com.example.project_android.UserState;
 import com.example.project_android.entities.VideoData;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.List;
 
 public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.VideoViewHolder> {
@@ -36,8 +39,8 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
         private final TextView videoUploadTime;
         private final ImageView videoAuthorImage;
         private final ImageView videoImage;
-        private final View editButton;
-        private final View deleteButton;
+        private final Button editButton;
+        private final Button deleteButton;
 
         public VideoViewHolder(View itemView) {
             super(itemView);
@@ -51,39 +54,53 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
             deleteButton = itemView.findViewById(R.id.delete_button);
         }
 
-        private void loadImage(String base64Str, ImageView imageView) {
-            try {
-                if (base64Str != null && !base64Str.isEmpty()) {
-                    byte[] decodedString = Base64.decode(base64Str.split(",")[1], Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    imageView.setImageBitmap(decodedByte);
-                } else {
-
+        private void loadImage(String data, ImageView imageView) {
+            if (data.startsWith("data:image/")) {
+                // Base64 encoded image
+                String base64Image = data.split(",")[1];
+                byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                imageView.setImageBitmap(decodedByte);
+                Log.d(TAG, "Loaded base64 image");
+            } else {
+                try {
+                    // Check if the path is a drawable resource
+                    int resId = imageView.getContext().getResources().getIdentifier(data, "drawable", imageView.getContext().getPackageName());
+                    if (resId != 0) {
+                        imageView.setImageResource(resId);
+                        Log.d(TAG, "Loaded drawable resource: " + data);
+                    } else {
+                        // Load from local file path
+                        Bitmap bitmap = BitmapFactory.decodeFile(data);
+                        imageView.setImageBitmap(bitmap);
+                        Log.d(TAG, "Loaded image from local file path: " + data);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error loading image: " + e.getMessage());
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "Error loading image: " + e.getMessage());
             }
         }
     }
 
     private final LayoutInflater mInflater;
     private List<VideoData> videoData;
+    private Context context;
     private OnItemClickListener onItemClickListener;
 
     public VideosListAdapter(Context context, OnItemClickListener onItemClickListener) {
         this.mInflater = LayoutInflater.from(context);
+        this.context = context;
         this.onItemClickListener = onItemClickListener;
     }
 
-    @NonNull
     @Override
-    public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = mInflater.inflate(R.layout.video_layout, parent, false);
         return new VideoViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
+    public void onBindViewHolder(VideoViewHolder holder, int position) {
         if (videoData != null) {
             VideoData current = videoData.get(position);
             holder.videoTitle.setText(current.getTitle());
@@ -105,6 +122,14 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
                     }
                 }
             });
+
+            if (UserState.isLoggedIn()) {
+                holder.editButton.setVisibility(View.VISIBLE);
+                holder.deleteButton.setVisibility(View.VISIBLE);
+            } else {
+                holder.editButton.setVisibility(View.GONE);
+                holder.deleteButton.setVisibility(View.GONE);
+            }
 
             holder.editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -135,6 +160,12 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return videoData != null ? videoData.size() : 0;
+        if (videoData != null)
+            return videoData.size();
+        else return 0;
+    }
+
+    public List<VideoData> getVideos() {
+        return videoData;
     }
 }

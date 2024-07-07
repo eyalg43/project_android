@@ -45,7 +45,7 @@ public class UserState {
         return loggedInUser != null;
     }
 
-    public static void logout() {
+    public static void logOut() {
         loggedInUser = null;
     }
 

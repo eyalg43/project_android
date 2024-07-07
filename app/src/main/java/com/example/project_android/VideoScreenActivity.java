@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +34,7 @@ import com.example.project_android.viewmodels.VideoViewModel;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,19 +47,22 @@ public class VideoScreenActivity extends AppCompatActivity {
     private VideoAdapter videoAdapter;
     private CommentsAdapter commentsAdapter;
     private VideoData currentVideo;
-    private List<VideoData> originalVideoList = Collections.emptyList(); // Initialize to an empty list
+    private List<VideoData> originalVideoList;
     private NestedScrollView nestedScrollView;
-    private CommentViewModel commentViewModel;
     private VideoViewModel videoViewModel;
+
+    private CommentViewModel commentViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_screen);
 
-        // Initialize ViewModels
-        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
+        // Initialize VideoViewModel
         videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+
+        // Initialize CommentViewModel
+        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
 
         // Initialize NestedScrollView
         nestedScrollView = findViewById(R.id.nested_scroll_view);
@@ -70,28 +73,11 @@ public class VideoScreenActivity extends AppCompatActivity {
         commentsAdapter = new CommentsAdapter(this, Collections.emptyList());
         commentsRecyclerView.setAdapter(commentsAdapter);
 
-        // Initialize adapter with an empty list and set it to RecyclerView
-        videoAdapter = new VideoAdapter(originalVideoList, this::playSelectedVideo);
+        // Initialize adapter and set it to RecyclerView
+        videoAdapter = new VideoAdapter(new ArrayList<>(), this::playSelectedVideo);
         relatedVideosRecyclerView = findViewById(R.id.related_videos_recycler_view);
         relatedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         relatedVideosRecyclerView.setAdapter(videoAdapter);
-
-        // Observe video list
-        videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
-            @Override
-            public void onChanged(List<VideoData> videos) {
-                originalVideoList = videos;
-                videoAdapter.updateVideoList(videos); // Update the adapter's video list
-                String videoId = getIntent().getStringExtra("video_id");
-                if (videoId != null) {
-                    VideoData selectedVideo = findVideoById(videoId);
-                    if (selectedVideo != null) {
-                        displayVideoDetails(selectedVideo);
-                        observeComments(selectedVideo.getId());
-                    }
-                }
-            }
-        });
 
         // Initialize the comment input section
         LinearLayout commentInputSection = findViewById(R.id.comment_input_section);
@@ -110,6 +96,25 @@ public class VideoScreenActivity extends AppCompatActivity {
             userImageInput.setImageURI(imageUri);
         } else {
             commentInputSection.setVisibility(View.GONE);
+        }
+
+        // Get the video ID from the intent
+        String videoId = getIntent().getStringExtra("video_id");
+        Log.d(TAG, "Received video ID: " + videoId); // Log received video ID
+        if (videoId != null) {
+            videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
+                @Override
+                public void onChanged(List<VideoData> videos) {
+                    if (videos != null) {
+                        originalVideoList = videos;
+                        VideoData selectedVideo = findVideoById(videoId);
+                        if (selectedVideo != null) {
+                            displayVideoDetails(selectedVideo);
+                            observeComments(selectedVideo.getId()); // Uncomment if you add comments feature back
+                        }
+                    }
+                }
+            });
         }
 
         // Set up the show comments button
@@ -196,6 +201,7 @@ public class VideoScreenActivity extends AppCompatActivity {
     private void addComment(String displayName, String commentText, String userImage) {
         if (currentVideo != null) {
             CommentData newComment = new CommentData();
+            // No need to set the ID manually, MongoDB will handle it
             newComment.setText(commentText);
             newComment.setUsername(UserState.getLoggedInUser().getUsername());
             newComment.setDisplayName(displayName);
@@ -203,7 +209,7 @@ public class VideoScreenActivity extends AppCompatActivity {
             newComment.setImg(userImage);
             newComment.setVideoId(currentVideo.getId());
 
-            commentViewModel.createComment(newComment);
+            commentViewModel.createComment(newComment); // Use ViewModel to handle comment creation
         }
     }
 
@@ -223,25 +229,65 @@ public class VideoScreenActivity extends AppCompatActivity {
         descriptionTextView.setText(video.getDescription());
         authorTextView.setText(video.getAuthor());
 
+        // Load author image
         loadImage(video.getAuthorImage(), authorImageView);
-        loadVideo(video.getVideo(), videoView);
 
-        MediaController mediaController = new MediaController(this);
-        mediaController.setAnchorView(videoView);
-        videoView.setMediaController(mediaController);
+        // Load video
+        if (video.getVideo().startsWith("data:video")) {
+            // Base64 encoded video
+            String base64Video = video.getVideo().split(",")[1];
+            byte[] decodedBytes = android.util.Base64.decode(base64Video, android.util.Base64.DEFAULT);
 
-        videoView.setOnPreparedListener(mp -> {
+            // Create a temporary file to store the decoded video
+            try {
+                File tempFile = File.createTempFile("video", "mp4", getCacheDir());
+                FileOutputStream fos = new FileOutputStream(tempFile);
+                fos.write(decodedBytes);
+                fos.close();
+
+                Uri videoUri = Uri.fromFile(tempFile);
+                videoView.setVideoURI(videoUri);
+
+                // Add media controls to the VideoView
+                MediaController mediaController = new MediaController(this);
+                mediaController.setAnchorView(videoView);
+                videoView.setMediaController(mediaController);
+
+                videoView.setOnPreparedListener(mp -> {
+                    mediaController.setAnchorView(videoView);
+                    videoView.start();
+                });
+
+                videoView.start();
+            } catch (IOException e) {
+                Log.e(TAG, "Error loading video: " + e.getMessage());
+            }
+        } else {
+            Uri videoUri = Uri.parse(video.getVideo());
+            videoView.setVideoURI(videoUri);
+
+            // Add media controls to the VideoView
+            MediaController mediaController = new MediaController(this);
             mediaController.setAnchorView(videoView);
+            videoView.setMediaController(mediaController);
+
+            videoView.setOnPreparedListener(mp -> {
+                mediaController.setAnchorView(videoView);
+                videoView.start();
+            });
+
             videoView.start();
-        });
+        }
 
-        videoView.start();
-
+        // Load and display comments
         observeComments(video.getId());
-        updateRelatedVideos(video);
-        //updateLikeDislikeButtonColors();!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    }
 
+        // Update related videos
+        updateRelatedVideos(video);
+
+        // Update the like and dislike button colors
+        //updateLikeDislikeButtonColors();
+    }
     private void observeComments(String videoId) {
         commentViewModel.getComments(videoId).observe(this, comments -> {
             if (comments != null) {
@@ -252,33 +298,40 @@ public class VideoScreenActivity extends AppCompatActivity {
         });
     }
 
-    private void loadImage(String base64Str, ImageView imageView) {
+    private void loadImage(String path, ImageView imageView) {
         try {
-            if (base64Str != null && !base64Str.isEmpty()) {
-                byte[] decodedString = Base64.decode(base64Str.split(",")[1], Base64.DEFAULT);
+            if (path.startsWith("data:image")) {
+                // Base64 encoded image
+                String base64Image = path.split(",")[1];
+                byte[] decodedString = android.util.Base64.decode(base64Image, android.util.Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 imageView.setImageBitmap(decodedByte);
+                Log.d(TAG, "Loaded base64 image.");
+            } else {
+                // Check if the path is a drawable resource
+                int resId = getResources().getIdentifier(path, "drawable", getPackageName());
+                if (resId != 0) {
+                    imageView.setImageResource(resId);
+                    Log.d(TAG, "Loaded drawable resource: " + path);
+                } else if (path.startsWith("content://") || path.startsWith("file://")) {
+                    // Load from URI
+                    Uri uri = Uri.parse(path);
+                    InputStream inputStream = getContentResolver().openInputStream(uri);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    imageView.setImageBitmap(bitmap);
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    Log.d(TAG, "Loaded image from URI: " + path);
+                } else {
+                    // Load from local file path
+                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    imageView.setImageBitmap(bitmap);
+                    Log.d(TAG, "Loaded image from local file path: " + path);
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "Error loading image: " + e.getMessage());
-        }
-    }
-
-    private void loadVideo(String base64Str, VideoView videoView) {
-        try {
-            if (base64Str != null && !base64Str.isEmpty()) {
-                byte[] decodedString = Base64.decode(base64Str.split(",")[1], Base64.DEFAULT);
-                File tempFile = File.createTempFile("temp_video", ".mp4", videoView.getContext().getCacheDir());
-                FileOutputStream fos = new FileOutputStream(tempFile);
-                fos.write(decodedString);
-                fos.close();
-
-                videoView.setVideoURI(Uri.fromFile(tempFile));
-            } else {
-                videoView.setVisibility(View.GONE);
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "Error loading video: " + e.getMessage());
         }
     }
 
@@ -289,7 +342,7 @@ public class VideoScreenActivity extends AppCompatActivity {
     private VideoData findVideoById(String id) {
         if (originalVideoList != null) {
             for (VideoData video : originalVideoList) {
-                if (video.getId().equals(id)) {
+                if (video.getId() != null && video.getId().equals(id)) {
                     return video;
                 }
             }
@@ -311,11 +364,13 @@ public class VideoScreenActivity extends AppCompatActivity {
     private void updateRelatedVideos(VideoData currentVideo) {
         if (videoAdapter != null) {
             List<VideoData> filteredVideos = new ArrayList<>();
+
             for (VideoData video : originalVideoList) {
                 if (!video.getId().equals(currentVideo.getId())) {
                     filteredVideos.add(video);
                 }
             }
+
             videoAdapter.updateVideoList(filteredVideos);
         } else {
             Log.e(TAG, "videoAdapter is null when trying to update related videos.");
@@ -323,6 +378,7 @@ public class VideoScreenActivity extends AppCompatActivity {
     }
 
     private void resetScrollPosition() {
+        // Reset the scroll position to the top
         nestedScrollView.scrollTo(0, 0);
     }
 }

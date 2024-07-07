@@ -27,7 +27,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     private OnItemClickListener onItemClickListener;
     private static final String TAG = "VideoAdapter";
 
-
     public interface OnItemClickListener {
         void onItemClick(VideoData videoData);
     }
@@ -64,7 +63,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(videoData));
     }
 
-
     @Override
     public int getItemCount() {
         return videoList.size();
@@ -93,32 +91,41 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             authorImageView = itemView.findViewById(R.id.author_image);
         }
     }
+
     private void loadImage(String path, ImageView imageView) {
         try {
-            // Check if the path is a drawable resource
-            int resId = imageView.getContext().getResources().getIdentifier(path, "drawable", imageView.getContext().getPackageName());
-            if (resId != 0) {
-                imageView.setImageResource(resId);
-                Log.d(TAG, "Loaded drawable resource: " + path);
-            } else if (path.startsWith("content://") || path.startsWith("file://")) {
-                // Load from URI
-                Uri uri = Uri.parse(path);
-                InputStream inputStream = imageView.getContext().getContentResolver().openInputStream(uri);
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                imageView.setImageBitmap(bitmap);
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                Log.d(TAG, "Loaded image from URI: " + path);
+            if (path.startsWith("data:image")) {
+                // Base64 encoded image
+                String base64Image = path.split(",")[1];
+                byte[] decodedString = android.util.Base64.decode(base64Image, android.util.Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                imageView.setImageBitmap(decodedByte);
+                Log.d(TAG, "Loaded base64 image.");
             } else {
-                // Load from local file path
-                Bitmap bitmap = BitmapFactory.decodeFile(path);
-                imageView.setImageBitmap(bitmap);
-                Log.d(TAG, "Loaded image from local file path: " + path);
+                // Check if the path is a drawable resource
+                int resId = imageView.getContext().getResources().getIdentifier(path, "drawable", imageView.getContext().getPackageName());
+                if (resId != 0) {
+                    imageView.setImageResource(resId);
+                    Log.d(TAG, "Loaded drawable resource: " + path);
+                } else if (path.startsWith("content://") || path.startsWith("file://")) {
+                    // Load from URI
+                    Uri uri = Uri.parse(path);
+                    InputStream inputStream = imageView.getContext().getContentResolver().openInputStream(uri);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    imageView.setImageBitmap(bitmap);
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    Log.d(TAG, "Loaded image from URI: " + path);
+                } else {
+                    // Load from local file path
+                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    imageView.setImageBitmap(bitmap);
+                    Log.d(TAG, "Loaded image from local file path: " + path);
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "Error loading image: " + e.getMessage());
         }
     }
-
 }
