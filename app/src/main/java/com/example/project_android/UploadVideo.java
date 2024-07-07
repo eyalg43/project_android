@@ -17,8 +17,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.project_android.VideosState;
 import com.example.project_android.entities.VideoData;
+import com.example.project_android.viewmodels.VideoViewModel;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class UploadVideo extends AppCompatActivity {
 
@@ -37,7 +39,6 @@ public class UploadVideo extends AppCompatActivity {
     private Uri selectedThumbnailUri;
     private Uri selectedVideoUri;
     private Bitmap selectedThumbnailBitmap;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +138,7 @@ public class UploadVideo extends AppCompatActivity {
 
             // Add new video to the state
             VideoData newVideo = new VideoData(
-                    newVideoId, // Generate new ID
+                    null,
                     title,
                     description,
                     author,
@@ -145,7 +146,9 @@ public class UploadVideo extends AppCompatActivity {
                     thumbnailBase64,
                     videoUriString,
                     uploadTime,
-                    authorImageBase64
+                    authorImageBase64,
+                    new List<String>(),
+                    new List<String>()
             );
             // VideosState.getInstance().addVideo(newVideo);
             // uploadVideoToServer(newVideo);

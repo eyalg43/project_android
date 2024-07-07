@@ -3,7 +3,9 @@ package com.example.project_android;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import androidx.room.TypeConverter;
 
 import java.io.ByteArrayOutputStream;
@@ -22,5 +24,30 @@ public class Converters {
         byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
     }
-}
 
+    @TypeConverter
+    public String fromList(List<String> list) {
+        if (list == null || list.isEmpty()) {
+            return "";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String s : list) {
+            if (s != null && !s.isEmpty()) {
+                stringBuilder.append(s).append(",");
+            }
+        }
+        // Check if stringBuilder length is greater than zero before removing the last comma
+        if (stringBuilder.length() > 0) {
+            stringBuilder.setLength(stringBuilder.length() - 1);
+        }
+        return stringBuilder.toString();
+    }
+
+    @TypeConverter
+    public List<String> fromString(String value) {
+        if (value == null || value.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(Arrays.asList(value.split(",")));
+    }
+}

@@ -1,5 +1,7 @@
 package com.example.project_android.api;
 
+import androidx.room.Query;
+
 import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
@@ -16,8 +18,6 @@ import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-
-
 public interface ApiService {
     @PATCH("videos/{id}/like")
     Call<Void> likeVideo(@Path("id") int videoId);
@@ -25,25 +25,25 @@ public interface ApiService {
     @PATCH("videos/{id}/dislike")
     Call<Void> dislikeVideo(@Path("id") int videoId);
 
-    @GET("comments")
-    Call<List<CommentData>> getComments();
+    @GET("api/comments")
+    Call<List<CommentData>> getComments(String videoId);
 
-    @POST("comments")
+    @POST("api/comments")
     Call<CommentData> createComment(@Body CommentData comment);
 
     @GET("comments/{id}")
     Call<CommentData> getComment(@Path("id") int commentId);
 
-    @PATCH("users/{id}/comments")
-    Call<CommentData> updateComment(@Path("id") int userId, @Body CommentData comment);
+    @PATCH("api/users/{id}/comments")
+    Call<CommentData> updateComment(@Path("id") String id, @Body CommentData comment);
 
-    @DELETE("users/{id}/comments")
-    Call<Void> deleteComment(@Path("id") int userId);
+    @DELETE("api/users/{id}/comments")
+    Call<Void> deleteComment(@Path("id") String id);
 
-    @PATCH("{id}/like")
+    @PATCH("api/{id}/like")
     Call<Void> likeComment(@Path("id") int commentId);
 
-    @PATCH("{id}/dislike")
+    @PATCH("api/{id}/dislike")
     Call<Void> dislikeComment(@Path("id") int commentId);
 
     // Video-related endpoints
@@ -60,7 +60,7 @@ public interface ApiService {
     Call<List<VideoData>> getVideosByAuthor(@Path("id") String userId);
 
     @POST("api/users/{id}/videos")
-    Call<VideoData> createVideo(@Path("id") String userId, @Body VideoData videoData);
+    Call<VideoData> createVideo(@Body VideoData videoData);
 
     @PATCH("api/users/{id}/videos/{pid}")
     Call<VideoData> updateVideo(@Path("id") String userId, @Path("pid") int videoId, @Body VideoData videoData);
