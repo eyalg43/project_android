@@ -1,26 +1,21 @@
 package com.example.project_android;
 
 import androidx.room.TypeConverter;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class Converters {
-
     @TypeConverter
-    public String fromList(List<String> list) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String s : list) {
-            stringBuilder.append(s).append(",");
-        }
-        // Remove the last comma
-        stringBuilder.setLength(stringBuilder.length() - 1);
-        return stringBuilder.toString();
+    public static List<String> fromString(String value) {
+        Type listType = new TypeToken<List<String>>() {}.getType();
+        return new Gson().fromJson(value, listType);
     }
 
     @TypeConverter
-    public List<String> fromString(String value) {
-        return new ArrayList<>(Arrays.asList(value.split(",")));
+    public static String fromList(List<String> list) {
+        Gson gson = new Gson();
+        return gson.toJson(list);
     }
 }

@@ -25,7 +25,7 @@ public class CommentRepository {
     public CommentRepository(Application application) {
         AppDatabase db = Room.databaseBuilder(application, AppDatabase.class, "database-name").build();
         commentDao = db.commentDao();
-        apiService = RetrofitClient.getApiService();
+        //apiService = RetrofitClient.getApiService();
     }
 
     public LiveData<List<CommentData>> getComments(String videoId) {

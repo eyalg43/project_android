@@ -5,8 +5,6 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import android.content.Context;
 
-import androidx.room.TypeConverters;
-
 import com.example.project_android.dao.CommentDao;
 import com.example.project_android.dao.UserDao;
 import com.example.project_android.dao.VideoDao;
@@ -14,8 +12,7 @@ import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
 
-@Database(entities = {VideoData.class, User.class, CommentData.class} , version = 1)
-@TypeConverters({Converters.class})
+@Database(entities = {VideoData.class, User.class, CommentData.class} , version = 2)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;
     public abstract VideoDao videoDao();
@@ -32,4 +29,3 @@ public abstract class AppDatabase extends RoomDatabase {
         return instance;
     }
 }
-

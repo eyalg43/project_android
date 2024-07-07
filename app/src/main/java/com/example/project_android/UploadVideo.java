@@ -46,7 +46,7 @@ public class UploadVideo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_video);
 
-        videoViewModel = new VideoViewModel(getApplication());
+        videoViewModel = new VideoViewModel();
 
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextDescription = findViewById(R.id.editTextDescription);
@@ -130,7 +130,7 @@ public class UploadVideo extends AppCompatActivity {
             Toast.makeText(this, "Please fill all fields to upload.", Toast.LENGTH_SHORT).show();
             Log.d("UploadVideo", "Error: Please fill all fields to upload.");
         } else {
-            textViewError.setVisibility(View.GONE);
+            /*textViewError.setVisibility(View.GONE);
 
             // Log the author image URI
             String authorImageUri = UserState.getLoggedInUser().getImageUri();
@@ -146,14 +146,12 @@ public class UploadVideo extends AppCompatActivity {
                     selectedThumbnailUri.toString(),
                     selectedVideoUri.toString(),
                     uploadTime,
-                    authorImageUri,
-                    new ArrayList<String>(),
-                    new ArrayList<String>()
+                    authorImageUri
             );
             VideosState.getInstance().addVideo(newVideo);
             Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(UploadVideo.this, HomePage.class);
-            startActivity(intent);
+            startActivity(intent);*/
         }
     }
 

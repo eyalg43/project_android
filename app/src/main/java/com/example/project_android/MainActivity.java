@@ -1,16 +1,14 @@
 package com.example.project_android;
 
 import android.content.Intent;
+import android.database.CursorWindow;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.example.project_android.entities.CommentData;
+import com.example.project_android.api.VideoApi;
 import com.example.project_android.entities.VideoComments;
 import com.example.project_android.entities.VideoData;
-import com.example.project_android.viewmodels.CommentViewModel;
 import com.example.project_android.viewmodels.VideoViewModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -18,52 +16,26 @@ import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private VideoViewModel videoViewModel;
-    private CommentViewModel commentViewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize ViewModels
-        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
-        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
+        // Initialize CommentState
+        CommentState commentState = CommentState.getInstance(this);
 
-        // Load videos from server
-        videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
-            @Override
-            public void onChanged(List<VideoData> videoList) {
-                if (videoList != null && !videoList.isEmpty()) {
-                    VideosState.getInstance().setVideoList(videoList);
-                } else {
-                    // Fallback to load videos from JSON if server data is not available
-                    List<VideoData> localVideoList = loadVideosFromJson();
-                    VideosState.getInstance().setVideoList(localVideoList);
-                }
-
-                // Load comments for each video from server
-                for (VideoData video : VideosState.getInstance().getVideoList()) {
-                    String videoId = video.getId();
-                    commentViewModel.getComments(videoId).observe(MainActivity.this, new Observer<List<CommentData>>() {
-                        @Override
-                        public void onChanged(List<CommentData> comments) {
-                            if (comments != null) {
-                                // Assuming CommentRepository handles the state internally
-                                for (CommentData comment : comments) {
-                                    commentViewModel.createComment(comment);
-                                }
-                            }
-                        }
-                    });
-                }
+        // Load initial comments from JSON if the state is empty
+        if (commentState.getAllComments().isEmpty()) {
+            List<VideoComments> commentsList = loadCommentsJSONFromRaw();
+            for (VideoComments videoComments : commentsList) {
+                commentState.addCommentsForVideo(Integer.parseInt(videoComments.getVideoId()), videoComments.getComments());
             }
-        });
+        }
 
         // Apply theme based on system settings
         applyTheme();
@@ -82,6 +54,14 @@ public class MainActivity extends AppCompatActivity {
         Gson gson = new Gson();
         Type videoListType = new TypeToken<List<VideoData>>() {}.getType();
         return gson.fromJson(reader, videoListType);
+    }
+
+    private List<VideoComments> loadCommentsJSONFromRaw() {
+        InputStream inputStream = getResources().openRawResource(R.raw.comments);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        Gson gson = new Gson();
+        Type commentsListType = new TypeToken<List<VideoComments>>() {}.getType();
+        return gson.fromJson(reader, commentsListType);
     }
 
     private void applyTheme() {

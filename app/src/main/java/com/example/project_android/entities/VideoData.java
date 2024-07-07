@@ -9,7 +9,7 @@ import com.example.project_android.Converters;
 
 import java.util.List;
 
-@Entity(tableName = "VideoData")
+@Entity(tableName = "videos")
 public class VideoData {
     @PrimaryKey
     @NonNull
@@ -17,23 +17,24 @@ public class VideoData {
     private String title;
     private String description;
     private String author;
+    private String username;
     private String views;
     private String img;
     private String video;
     private String uploadTime;
     private String authorImage;
-
     @TypeConverters(Converters.class)
     private List<String> likes;
-
     @TypeConverters(Converters.class)
     private List<String> dislikes;
-    public VideoData(@NonNull String _id, String title, String description, String author,
-                     String views, String img, String video, String uploadTime, String authorImage, List<String> likes, List<String> dislikes) {
-        this._id = _id;
+
+    public VideoData(String title, String description, String author,
+                     String username, String views, String img, String video,
+                     String uploadTime, String authorImage, List<String> likes, List<String> dislikes) {
         this.title = title;
         this.description = description;
         this.author = author;
+        this.username = username;
         this.views = views;
         this.img = img;
         this.video = video;
@@ -43,12 +44,14 @@ public class VideoData {
         this.dislikes = dislikes;
     }
 
+    // Getters and setters...
+
     public String getId() {
         return _id;
     }
 
-    public void setId(@NonNull String _id) {
-        this._id = _id;
+    public void setId(String id) {
+        this._id = id;
     }
 
     public String getTitle() {
@@ -73,6 +76,14 @@ public class VideoData {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getViews() {

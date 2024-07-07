@@ -2,10 +2,9 @@ package com.example.project_android.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.Update;
 
 import com.example.project_android.entities.VideoData;
 
@@ -13,19 +12,12 @@ import java.util.List;
 
 @Dao
 public interface VideoDao {
-
-    @Query("SELECT * FROM VideoData")
+    @Query("SELECT * FROM videos")
     LiveData<List<VideoData>> getAllVideos();
 
-    @Query("SELECT * FROM VideoData WHERE _id = :id")
-    VideoData get(String id);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertVideos(List<VideoData> videos);
 
-    @Insert
-    void insert(VideoData... videoData);
-
-    @Update
-    void update(VideoData... videoData);
-
-    @Delete
-    void delete(VideoData... videoData);
+    @Query("DELETE FROM videos")
+    void deleteAllVideos();
 }
