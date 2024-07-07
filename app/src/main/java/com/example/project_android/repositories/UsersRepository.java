@@ -18,7 +18,6 @@ import com.example.project_android.entities.User;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import java.util.LinkedList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;

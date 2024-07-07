@@ -1,6 +1,7 @@
 package com.example.project_android;
 
 import android.Manifest;
+import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +24,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.example.project_android.entities.User;
+import com.example.project_android.repositories.UsersRepository;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import java.io.File;
@@ -30,6 +36,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.InputStream;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -45,6 +55,8 @@ public class SignupActivity extends AppCompatActivity {
     private TextView textViewImageError;
     private TextView textViewDisplayNameError;
     private Uri cameraImageUri;
+    private String base64Image;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,13 +136,41 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Add user to in-memory state
-                //UserState.addUser(username, password, displayName, imageUri);
+                // Convert the image to Base64
+                String base64Image = convertImageToBase64(selectedImageUri);
+                if (base64Image == null) {
+                    textViewImageError.setVisibility(View.VISIBLE);
+                    textViewImageError.setText("Error converting profile picture.");
+                    return;
+                }
 
-                // Proceed with signup logic
-                Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
-                startActivity(intent);
+                // Call createUser method from the repository
+                Application application = getApplication();
+                Log.d("SignupActivity", "Image converted to Base64: " + base64Image);
+                User user = new User(username, password, displayName, base64Image);
+                UsersRepository usersRepository = new UsersRepository(application);
+                usersRepository.createUser(user, new Callback<User>() {
+                    @Override
+                    public void onResponse(Call<User> call, Response<User> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // Handle error
+                            Log.e("SignupActivity", "Error: " + response.code());
+                            Toast.makeText(SignupActivity.this, "Username or Display Name already taken, choose different ones", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<User> call, Throwable t) {
+                        // Handle failure
+                        Log.e("SignupActivity", "Failure: " + t.getMessage());
+                        Toast.makeText(SignupActivity.this, "Failed to sign up: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }
@@ -259,6 +299,20 @@ public class SignupActivity extends AppCompatActivity {
             return file.getAbsolutePath();
         } catch (IOException e) {
             Log.e("SignupActivity", "Error saving image: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private String convertImageToBase64(Uri imageUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            return Base64.encodeToString(byteArray, Base64.DEFAULT);
+        } catch (IOException e) {
+            Log.e("SignupActivity", "Error converting image: " + e.getMessage());
             return null;
         }
     }

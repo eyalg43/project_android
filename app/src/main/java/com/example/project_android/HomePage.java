@@ -226,8 +226,10 @@ public class HomePage extends AppCompatActivity {
                 uploadVideoButton.setVisibility(View.VISIBLE);
                 welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
 
-                // Load the profile image from the app's internal storage
-                loadImageFromLocalPath(loggedInUser.getImageUri(), profileImage);
+                // load profile image
+                Converters converter = new Converters();
+                Bitmap bitmap = converter.toBitmap(loggedInUser.getProfilePicture());
+                profileImage.setImageBitmap(bitmap);
             }
         }
     }

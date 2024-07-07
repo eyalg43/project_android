@@ -44,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
                 String username = editTextUsername.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
 
+                // only for validating user
                 User user = new User(username, password , "placeholder1", "placeholder2");
                 usersRepository.signInUser(user, new UsersRepository.SignInCallback() {
                     @Override

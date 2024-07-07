@@ -1,5 +1,7 @@
 package com.example.project_android;
 
+import android.graphics.Bitmap;
+
 import com.example.project_android.entities.User;
 
 public class UserState {

@@ -83,7 +83,7 @@ public class VideoScreenActivity extends AppCompatActivity {
             displayNameTextView.setText(loggedInUser.getDisplayName());
 
             // Load user image
-            Uri imageUri = Uri.parse(loggedInUser.getImageUri());
+            Uri imageUri = Uri.parse(loggedInUser.getProfilePicture());
             userImageInput.setImageURI(imageUri);
         } else {
             commentInputSection.setVisibility(View.GONE);
@@ -118,7 +118,7 @@ public class VideoScreenActivity extends AppCompatActivity {
             if (UserState.isLoggedIn()) {
                 String commentText = commentInput.getText().toString().trim();
                 String displayName = UserState.getLoggedInUser().getDisplayName();
-                String userImage = UserState.getLoggedInUser().getImageUri();
+                String userImage = UserState.getLoggedInUser().getProfilePicture();
                 if (!commentText.isEmpty()) {
                     addComment(displayName, commentText, userImage);
                     commentInput.setText("");

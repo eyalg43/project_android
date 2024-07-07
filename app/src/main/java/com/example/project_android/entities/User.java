@@ -1,5 +1,7 @@
 package com.example.project_android.entities;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -11,13 +13,15 @@ public class User {
     private String username;
     private String password;
     private String displayName;
-    private String imageUri;  // Added imageUri field
+    private String profilePicture;
 
-    public User(String username, String password, String displayName, String imageUri) {
+
+
+    public User(String username, String password, String displayName, String profilePicture) {
         this.username = username;
         this.password = password;
         this.displayName = displayName;
-        this.imageUri = imageUri;
+        this.profilePicture = profilePicture;
     }
 
     public int getId() {
@@ -31,6 +35,10 @@ public class User {
         return username;
     }
 
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -39,7 +47,7 @@ public class User {
         return displayName;
     }
 
-    public String getImageUri() {
-        return imageUri;
+    public String getProfilePicture() {
+        return profilePicture;
     }
 }

@@ -35,8 +35,6 @@ public class UserViewmodel extends AndroidViewModel {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Handle successful response
-                    // For example, notify the UI or update the LiveData
                     Log.d("UserViewModel", "User created successfully: " + response.body().toString());
                 } else {
                     // Handle error response
