@@ -21,6 +21,7 @@ import com.example.project_android.viewmodels.VideoViewModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class UploadVideo extends AppCompatActivity {
 
@@ -122,7 +123,6 @@ public class UploadVideo extends AppCompatActivity {
         String title = editTextTitle.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
         String uploadTime = getElapsedTime(System.currentTimeMillis());
-        int newVideoId = VideosState.getInstance().getLatestVideoId() + 1;
 
         // converts bitmap to base64 string and vice versa
         Converters converter = new Converters();
@@ -138,7 +138,6 @@ public class UploadVideo extends AppCompatActivity {
 
             // Add new video to the state
             VideoData newVideo = new VideoData(
-                    null,
                     title,
                     description,
                     author,
@@ -147,8 +146,8 @@ public class UploadVideo extends AppCompatActivity {
                     videoUriString,
                     uploadTime,
                     authorImageBase64,
-                    new List<String>(),
-                    new List<String>()
+                    new ArrayList<String>(),
+                    new ArrayList<String>()
             );
             // VideosState.getInstance().addVideo(newVideo);
             // uploadVideoToServer(newVideo);

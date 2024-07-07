@@ -232,6 +232,7 @@ public class HomePage extends AppCompatActivity {
                 profileImage.setImageBitmap(bitmap);
             }
         }
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -278,3 +279,5 @@ public class HomePage extends AppCompatActivity {
         }
     }
 }
+
+

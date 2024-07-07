@@ -33,10 +33,9 @@ public class VideoData {
     private String video; // Base64 encoded video data
     private String authorImage; // Base64 encoded author image data
 
-    public VideoData(@NonNull String _id, String title, String description, String author,
+    public VideoData(String title, String description, String author,
                      String views, String imgPath, String videoPath, String uploadTime, String authorImagePath,
                      String img, String video, String authorImage, List<String> likes, List<String> dislikes) {
-        this._id = _id;
         this.title = title;
         this.description = description;
         this.author = author;
