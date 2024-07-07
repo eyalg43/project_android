@@ -1,7 +1,9 @@
 package com.example.project_android.viewmodels;
 
+import android.app.Application;
 import android.util.Log;
 
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -11,21 +13,18 @@ import com.example.project_android.repositories.VideoRepository;
 import java.util.List;
 
 
-public class VideoViewModel extends ViewModel {
+public class VideoViewModel extends AndroidViewModel {
     private VideoRepository videoRepository;
     private LiveData<List<VideoData>> allVideos;
 
-    public VideoViewModel() {
-        videoRepository = new VideoRepository();
+    public VideoViewModel(Application application) {
+        super(application);
+        videoRepository = new VideoRepository(application);
         allVideos = videoRepository.getAllVideos();
     }
 
     public LiveData<List<VideoData>> getAllVideos() {
         return allVideos;
-    }
-
-    public LiveData<VideoData> getVideoById(String videoId) {
-        return videoRepository.getVideoById(videoId);
     }
 
 

@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.project_android.VideosState;
 import com.example.project_android.entities.VideoData;
 import com.example.project_android.viewmodels.VideoViewModel;
@@ -46,7 +48,7 @@ public class UploadVideo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_video);
 
-        videoViewModel = new VideoViewModel();
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
 
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextDescription = findViewById(R.id.editTextDescription);

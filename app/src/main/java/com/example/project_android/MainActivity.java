@@ -2,6 +2,7 @@ package com.example.project_android;
 
 import android.content.Intent;
 import android.database.CursorWindow;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -25,6 +26,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Increase the CursorWindow size
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
+                field.setAccessible(true);
+                field.set(null, 100 * 1024 * 1024); // 100MB
+            } else {
+                Field field = CursorWindow.class.getDeclaredField("mWindowSize");
+                field.setAccessible(true);
+                field.set(null, 100 * 1024 * 1024); // 100MB
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Initialize CommentState
         CommentState commentState = CommentState.getInstance(this);
