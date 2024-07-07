@@ -16,6 +16,9 @@ public interface CommentDao {
     @Query("SELECT * FROM comments WHERE videoId = :videoId")
     List<CommentData> getCommentsForVideo(String videoId);
 
+    @Query("SELECT * FROM comments WHERE _id = :commentId")
+    CommentData getCommentById(String commentId);
+
     @Insert
     void insertComment(CommentData comment);
 

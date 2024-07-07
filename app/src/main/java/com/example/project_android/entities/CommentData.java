@@ -13,7 +13,7 @@ import java.util.List;
 public class CommentData {
     @PrimaryKey
     @NonNull
-    private String id;
+    private String _id;
     private String text;
     private String username;
     private String displayName;
@@ -34,8 +34,8 @@ public class CommentData {
     }
 
     // Constructor with parameters
-    public CommentData(@NonNull String id, String text, String username, String displayName, String date, String img, String videoId, List<String> likes, List<String> dislikes) {
-        this.id = id;
+    public CommentData(@NonNull String _id, String text, String username, String displayName, String date, String img, String videoId, List<String> likes, List<String> dislikes) {
+        this._id = _id;
         this.text = text;
         this.username = username;
         this.displayName = displayName;
@@ -51,11 +51,11 @@ public class CommentData {
     // Getters and Setters
     @NonNull
     public String getId() {
-        return id;
+        return _id;
     }
 
-    public void setId(@NonNull String id) {
-        this.id = id;
+    public void setId(@NonNull String _id) {
+        this._id = _id;
     }
 
     public String getText() {

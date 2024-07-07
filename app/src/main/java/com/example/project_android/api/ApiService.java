@@ -25,7 +25,7 @@ public interface ApiService {
     Call<Void> dislikeVideo(@Path("id") int videoId);
 
     @GET("api/comments")
-    Call<List<CommentData>> getComments(String videoId);
+    Call<List<CommentData>> getComments();
 
     @POST("api/comments")
     Call<CommentData> createComment(@Body CommentData comment);

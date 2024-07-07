@@ -87,7 +87,7 @@ public class VideoScreenActivity extends AppCompatActivity {
                     VideoData selectedVideo = findVideoById(videoId);
                     if (selectedVideo != null) {
                         displayVideoDetails(selectedVideo);
-                        // observeComments(selectedVideo.getId());
+                        observeComments(selectedVideo.getId());
                     }
                 }
             }
@@ -237,12 +237,12 @@ public class VideoScreenActivity extends AppCompatActivity {
 
         videoView.start();
 
-        // observeComments(video.getId());
+        observeComments(video.getId());
         updateRelatedVideos(video);
         //updateLikeDislikeButtonColors();!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 
-    /*private void observeComments(String videoId) {
+    private void observeComments(String videoId) {
         commentViewModel.getComments(videoId).observe(this, comments -> {
             if (comments != null) {
                 commentsAdapter.updateComments(reverseComments(comments));
@@ -250,7 +250,7 @@ public class VideoScreenActivity extends AppCompatActivity {
                 commentsAdapter.updateComments(Collections.emptyList());
             }
         });
-    }*/
+    }
 
     private void loadImage(String base64Str, ImageView imageView) {
         try {
