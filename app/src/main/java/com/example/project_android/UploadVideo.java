@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.project_android.VideosState;
 import com.example.project_android.entities.VideoData;
 import com.example.project_android.viewmodels.VideoViewModel;
@@ -46,7 +48,7 @@ public class UploadVideo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_video);
 
-        videoViewModel = new VideoViewModel(getApplication());
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
 
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextDescription = findViewById(R.id.editTextDescription);
@@ -72,7 +74,12 @@ public class UploadVideo extends AppCompatActivity {
             }
         });
 
-
+        buttonSubmitVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                submitVideo();
+            }
+        });
 
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +123,39 @@ public class UploadVideo extends AppCompatActivity {
         }
     }
 
+    private void submitVideo() {
+        String title = editTextTitle.getText().toString().trim();
+        String description = editTextDescription.getText().toString().trim();
+        String uploadTime = getElapsedTime(System.currentTimeMillis());
 
+        if (title.isEmpty() || description.isEmpty() || selectedThumbnailUri == null || selectedVideoUri == null) {
+            Toast.makeText(this, "Please fill all fields to upload.", Toast.LENGTH_SHORT).show();
+            Log.d("UploadVideo", "Error: Please fill all fields to upload.");
+        } else {
+            /*textViewError.setVisibility(View.GONE);
+
+            // Log the author image URI
+            String authorImageUri = UserState.getLoggedInUser().getImageUri();
+            Log.d("UploadVideo", "Author Image URI: " + authorImageUri);
+
+            // Add new video to the state
+            VideoData newVideo = new VideoData(
+                    null, // Generate new ID
+                    title,
+                    description,
+                    UserState.getLoggedInUser().getDisplayName(),
+                    "1 views",
+                    selectedThumbnailUri.toString(),
+                    selectedVideoUri.toString(),
+                    uploadTime,
+                    authorImageUri
+            );
+            VideosState.getInstance().addVideo(newVideo);
+            Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(UploadVideo.this, HomePage.class);
+            startActivity(intent);*/
+        }
+    }
 
 
     private String getElapsedTime(long uploadTime) {
