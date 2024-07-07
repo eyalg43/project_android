@@ -9,7 +9,7 @@ import com.example.project_android.Converters;
 
 import java.util.List;
 
-@Entity(tableName = "VideoData")
+@Entity(tableName = "videos")
 public class VideoData {
     @PrimaryKey
     @NonNull
@@ -17,46 +17,41 @@ public class VideoData {
     private String title;
     private String description;
     private String author;
+    private String username;
     private String views;
-    private String imgPath; // Path to image file
-    private String videoPath; // Path to video file
+    private String img;
+    private String video;
     private String uploadTime;
-    private String authorImagePath; // Path to author image file
-
+    private String authorImage;
     @TypeConverters(Converters.class)
     private List<String> likes;
-
     @TypeConverters(Converters.class)
     private List<String> dislikes;
 
-    private String img; // Base64 encoded image data
-    private String video; // Base64 encoded video data
-    private String authorImage; // Base64 encoded author image data
-
     public VideoData(String title, String description, String author,
-                     String views, String imgPath, String videoPath, String uploadTime, String authorImagePath,
-                     String img, String video, String authorImage, List<String> likes, List<String> dislikes) {
+                     String username, String views, String img, String video,
+                     String uploadTime, String authorImage, List<String> likes, List<String> dislikes) {
         this.title = title;
         this.description = description;
         this.author = author;
+        this.username = username;
         this.views = views;
-        this.imgPath = imgPath;
-        this.videoPath = videoPath;
-        this.uploadTime = uploadTime;
-        this.authorImagePath = authorImagePath;
         this.img = img;
         this.video = video;
+        this.uploadTime = uploadTime;
         this.authorImage = authorImage;
         this.likes = likes;
         this.dislikes = dislikes;
     }
 
+    // Getters and setters...
+
     public String getId() {
         return _id;
     }
 
-    public void setId(@NonNull String _id) {
-        this._id = _id;
+    public void setId(String id) {
+        this._id = id;
     }
 
     public String getTitle() {
@@ -83,44 +78,20 @@ public class VideoData {
         this.author = author;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getViews() {
         return views;
     }
 
     public void setViews(String views) {
         this.views = views;
-    }
-
-    public String getImgPath() {
-        return imgPath;
-    }
-
-    public void setImgPath(String imgPath) {
-        this.imgPath = imgPath;
-    }
-
-    public String getVideoPath() {
-        return videoPath;
-    }
-
-    public void setVideoPath(String videoPath) {
-        this.videoPath = videoPath;
-    }
-
-    public String getUploadTime() {
-        return uploadTime;
-    }
-
-    public void setUploadTime(String uploadTime) {
-        this.uploadTime = uploadTime;
-    }
-
-    public String getAuthorImagePath() {
-        return authorImagePath;
-    }
-
-    public void setAuthorImagePath(String authorImagePath) {
-        this.authorImagePath = authorImagePath;
     }
 
     public String getImg() {
@@ -137,6 +108,14 @@ public class VideoData {
 
     public void setVideo(String video) {
         this.video = video;
+    }
+
+    public String getUploadTime() {
+        return uploadTime;
+    }
+
+    public void setUploadTime(String uploadTime) {
+        this.uploadTime = uploadTime;
     }
 
     public String getAuthorImage() {
@@ -163,5 +142,3 @@ public class VideoData {
         this.dislikes = dislikes;
     }
 }
-
-
