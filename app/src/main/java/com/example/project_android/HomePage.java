@@ -51,7 +51,6 @@ public class HomePage extends AppCompatActivity {
 
     private VideoViewModel videoViewModel;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +62,7 @@ public class HomePage extends AppCompatActivity {
         adapter = new VideosListAdapter(this, new VideosListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(VideoData video) {
+                Log.d(TAG, "Video ID clicked: " + video.getId());
                 Intent intent = new Intent(HomePage.this, VideoScreenActivity.class);
                 intent.putExtra("video_id", video.getId());
                 startActivity(intent);

@@ -24,6 +24,11 @@ public class VideoViewModel extends ViewModel {
         return allVideos;
     }
 
+    public LiveData<VideoData> getVideoById(String videoId) {
+        return videoRepository.getVideoById(videoId);
+    }
+
+
     /*public void add(VideoData videoData) {
         videoRepository.add(videoData);
     }

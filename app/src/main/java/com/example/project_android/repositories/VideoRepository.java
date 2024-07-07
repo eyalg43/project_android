@@ -46,6 +46,13 @@ public class VideoRepository {
         return videoListData;
     }
 
+    public LiveData<VideoData> getVideoById(String videoId) {
+        MutableLiveData<VideoData> videoData = new MutableLiveData<>();
+        videoApi.getVideoById(videoId, videoData);
+        return videoData;
+    }
+
+
     /*public void add(final VideoData video) {
         videoApi.add(video);
     }

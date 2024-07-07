@@ -53,7 +53,7 @@ public interface ApiService {
     Call<List<VideoData>> getAllVideos();
 
     @GET("api/videos/{id}")
-    Call<VideoData> getVideo(@Path("id") int id);
+    Call<VideoData> getVideo(@Path("id") String id);
 
     @GET("api/users/{id}/videos")
     Call<List<VideoData>> getVideosByAuthor(@Path("id") String userId);

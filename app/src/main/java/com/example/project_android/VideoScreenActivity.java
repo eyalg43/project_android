@@ -29,7 +29,11 @@ import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
 import com.example.project_android.viewmodels.CommentViewModel;
+import com.example.project_android.viewmodels.VideoViewModel;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +49,8 @@ public class VideoScreenActivity extends AppCompatActivity {
     private VideoData currentVideo;
     private List<VideoData> originalVideoList;
     private NestedScrollView nestedScrollView;
+    private VideoViewModel videoViewModel;
+
     private CommentViewModel commentViewModel;
 
     @Override
@@ -52,11 +58,11 @@ public class VideoScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_screen);
 
+        // Initialize VideoViewModel
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+
         // Initialize CommentViewModel
         commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
-
-        // Load and parse the JSON files
-        originalVideoList = VideosState.getInstance().getVideoList();
 
         // Initialize NestedScrollView
         nestedScrollView = findViewById(R.id.nested_scroll_view);
@@ -68,7 +74,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         commentsRecyclerView.setAdapter(commentsAdapter);
 
         // Initialize adapter and set it to RecyclerView
-        videoAdapter = new VideoAdapter(originalVideoList, this::playSelectedVideo);
+        videoAdapter = new VideoAdapter(new ArrayList<>(), this::playSelectedVideo);
         relatedVideosRecyclerView = findViewById(R.id.related_videos_recycler_view);
         relatedVideosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         relatedVideosRecyclerView.setAdapter(videoAdapter);
@@ -93,13 +99,22 @@ public class VideoScreenActivity extends AppCompatActivity {
         }
 
         // Get the video ID from the intent
-        int videoId = getIntent().getIntExtra("video_id", -1);
-        if (videoId != -1) {
-            VideoData selectedVideo = findVideoById(videoId);
-            if (selectedVideo != null) {
-                displayVideoDetails(selectedVideo);
-                observeComments(selectedVideo.getId());
-            }
+        String videoId = getIntent().getStringExtra("video_id");
+        Log.d(TAG, "Received video ID: " + videoId); // Log received video ID
+        if (videoId != null) {
+            videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
+                @Override
+                public void onChanged(List<VideoData> videos) {
+                    if (videos != null) {
+                        originalVideoList = videos;
+                        VideoData selectedVideo = findVideoById(videoId);
+                        if (selectedVideo != null) {
+                            displayVideoDetails(selectedVideo);
+                            // observeComments(selectedVideo.getId()); // Uncomment if you add comments feature back
+                        }
+                    }
+                }
+            });
         }
 
         // Set up the show comments button
@@ -218,66 +233,93 @@ public class VideoScreenActivity extends AppCompatActivity {
         loadImage(video.getAuthorImage(), authorImageView);
 
         // Load video
-        Uri videoUri = Uri.parse(video.getVideo());
-        videoView.setVideoURI(videoUri);
+        if (video.getVideo().startsWith("data:video")) {
+            // Base64 encoded video
+            String base64Video = video.getVideo().split(",")[1];
+            byte[] decodedBytes = android.util.Base64.decode(base64Video, android.util.Base64.DEFAULT);
 
-        // Add media controls to the VideoView
-        MediaController mediaController = new MediaController(this);
-        mediaController.setAnchorView(videoView);
-        videoView.setMediaController(mediaController);
+            // Create a temporary file to store the decoded video
+            try {
+                File tempFile = File.createTempFile("video", "mp4", getCacheDir());
+                FileOutputStream fos = new FileOutputStream(tempFile);
+                fos.write(decodedBytes);
+                fos.close();
 
-        videoView.setOnPreparedListener(mp -> {
+                Uri videoUri = Uri.fromFile(tempFile);
+                videoView.setVideoURI(videoUri);
+
+                // Add media controls to the VideoView
+                MediaController mediaController = new MediaController(this);
+                mediaController.setAnchorView(videoView);
+                videoView.setMediaController(mediaController);
+
+                videoView.setOnPreparedListener(mp -> {
+                    mediaController.setAnchorView(videoView);
+                    videoView.start();
+                });
+
+                videoView.start();
+            } catch (IOException e) {
+                Log.e(TAG, "Error loading video: " + e.getMessage());
+            }
+        } else {
+            Uri videoUri = Uri.parse(video.getVideo());
+            videoView.setVideoURI(videoUri);
+
+            // Add media controls to the VideoView
+            MediaController mediaController = new MediaController(this);
             mediaController.setAnchorView(videoView);
-            videoView.start();
-        });
+            videoView.setMediaController(mediaController);
 
-        videoView.start();
+            videoView.setOnPreparedListener(mp -> {
+                mediaController.setAnchorView(videoView);
+                videoView.start();
+            });
+
+            videoView.start();
+        }
 
         // Load and display comments
-        observeComments(video.getId());
+        //observeComments(video.getId());
 
         // Update related videos
         updateRelatedVideos(video);
 
         // Update the like and dislike button colors
-        //updateLikeDislikeButtonColors();!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    }
-
-    private void observeComments(String videoId) {
-        commentViewModel.getComments(videoId).observe(this, new Observer<List<CommentData>>() {
-            @Override
-            public void onChanged(List<CommentData> comments) {
-                if (comments != null) {
-                    commentsAdapter.updateComments(reverseComments(comments));
-                } else {
-                    commentsAdapter.updateComments(Collections.emptyList());
-                }
-            }
-        });
+        //updateLikeDislikeButtonColors();
     }
 
     private void loadImage(String path, ImageView imageView) {
         try {
-            // Check if the path is a drawable resource
-            int resId = getResources().getIdentifier(path, "drawable", getPackageName());
-            if (resId != 0) {
-                imageView.setImageResource(resId);
-                Log.d(TAG, "Loaded drawable resource: " + path);
-            } else if (path.startsWith("content://") || path.startsWith("file://")) {
-                // Load from URI
-                Uri uri = Uri.parse(path);
-                InputStream inputStream = getContentResolver().openInputStream(uri);
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                imageView.setImageBitmap(bitmap);
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                Log.d(TAG, "Loaded image from URI: " + path);
+            if (path.startsWith("data:image")) {
+                // Base64 encoded image
+                String base64Image = path.split(",")[1];
+                byte[] decodedString = android.util.Base64.decode(base64Image, android.util.Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                imageView.setImageBitmap(decodedByte);
+                Log.d(TAG, "Loaded base64 image.");
             } else {
-                // Load from local file path
-                Bitmap bitmap = BitmapFactory.decodeFile(path);
-                imageView.setImageBitmap(bitmap);
-                Log.d(TAG, "Loaded image from local file path: " + path);
+                // Check if the path is a drawable resource
+                int resId = getResources().getIdentifier(path, "drawable", getPackageName());
+                if (resId != 0) {
+                    imageView.setImageResource(resId);
+                    Log.d(TAG, "Loaded drawable resource: " + path);
+                } else if (path.startsWith("content://") || path.startsWith("file://")) {
+                    // Load from URI
+                    Uri uri = Uri.parse(path);
+                    InputStream inputStream = getContentResolver().openInputStream(uri);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    imageView.setImageBitmap(bitmap);
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    Log.d(TAG, "Loaded image from URI: " + path);
+                } else {
+                    // Load from local file path
+                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    imageView.setImageBitmap(bitmap);
+                    Log.d(TAG, "Loaded image from local file path: " + path);
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "Error loading image: " + e.getMessage());
@@ -288,10 +330,12 @@ public class VideoScreenActivity extends AppCompatActivity {
         return "Just now";
     }
 
-    private VideoData findVideoById(int id) {
-        for (VideoData video : originalVideoList) {
-            if (video.getId().equals(id)) {
-                return video;
+    private VideoData findVideoById(String id) {
+        if (originalVideoList != null) {
+            for (VideoData video : originalVideoList) {
+                if (video.getId() != null && video.getId().equals(id)) {
+                    return video;
+                }
             }
         }
         return null;
@@ -313,7 +357,7 @@ public class VideoScreenActivity extends AppCompatActivity {
             List<VideoData> filteredVideos = new ArrayList<>();
 
             for (VideoData video : originalVideoList) {
-                if (video.getId() != currentVideo.getId()) {
+                if (!video.getId().equals(currentVideo.getId())) {
                     filteredVideos.add(video);
                 }
             }
