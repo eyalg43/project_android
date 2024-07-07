@@ -18,10 +18,10 @@ public interface VideoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<VideoData> videos);
 
-    @Query("SELECT * FROM VideoData")
+    @Query("SELECT * FROM videos")
     LiveData<List<VideoData>> getAllVideos();
 
-    @Query("SELECT * FROM VideoData WHERE _id = :id")
+    @Query("SELECT * FROM videos WHERE _id = :id")
     VideoData get(String id);
 
 

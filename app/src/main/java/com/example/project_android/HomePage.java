@@ -14,12 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -27,9 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.project_android.adapters.VideosListAdapter;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
-import com.example.project_android.viewmodels.VideoViewModel;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,8 +43,6 @@ public class HomePage extends AppCompatActivity {
     private LinearLayout authButtonsContainer;
     private Button signOutButton;
     private Button uploadVideoButton;
-    private VideoViewModel videoViewModel;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +55,6 @@ public class HomePage extends AppCompatActivity {
             public void onItemClick(VideoData video) {
                 Intent intent = new Intent(HomePage.this, VideoScreenActivity.class);
                 intent.putExtra("video_id", video.getId());
-                Log.d("HomePage", "Selected video ID: " + video.getId());
                 startActivity(intent);
             }
 
@@ -75,7 +67,9 @@ public class HomePage extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(VideoData video) {
-                // Handle delete
+                allVideos.remove(video);
+                adapter.setVideos(allVideos);
+                VideosState.getInstance().setVideoList(allVideos);
             }
 
 
@@ -83,10 +77,16 @@ public class HomePage extends AppCompatActivity {
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
 
-        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
-        videoViewModel.getAllVideos().observe(this, videos -> {
-            if (videos != null) {
-                adapter.setVideos(videos);
+        swipeRefreshLayout = findViewById(R.id.refreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 2000);
             }
         });
 
@@ -154,7 +154,7 @@ public class HomePage extends AppCompatActivity {
         menuHome.setOnClickListener(menuClickListener);
         menuShorts.setOnClickListener(menuClickListener);
         menuSubscriptions.setOnClickListener(menuClickListener);
-        menuYou.setOnClickListener(menuClickListener);
+//        menuYou.setOnClickListener(menuClickListener);
         menuHistory.setOnClickListener(menuClickListener);
 
         toggleModeButton = findViewById(R.id.btn_toggle_mode);
@@ -209,6 +209,14 @@ public class HomePage extends AppCompatActivity {
             }
         });
 
+        menuYou.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomePage.this, EditUserDetails.class);
+                startActivity(intent);
+            }
+        });
+
         uploadVideoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -233,11 +241,6 @@ public class HomePage extends AppCompatActivity {
             }
         }
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        videoViewModel.fetchVideosFromServer(); // Ensure the latest data is fetched when the activity resumes
-    }
 
     private void filterVideos(String text) {
         List<VideoData> filteredList = new ArrayList<>();
@@ -249,7 +252,14 @@ public class HomePage extends AppCompatActivity {
         adapter.setVideos(filteredList);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateVideos();
+    }
+
     private void updateVideos() {
+        allVideos = VideosState.getInstance().getVideoList();
         if (allVideos != null) {
             for (VideoData video : allVideos) {
                 Log.d("HomePage", "Video Author Image URI: " + video.getAuthorImage());
@@ -279,5 +289,3 @@ public class HomePage extends AppCompatActivity {
         }
     }
 }
-
-

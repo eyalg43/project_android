@@ -141,6 +141,7 @@ public class UploadVideo extends AppCompatActivity {
                     title,
                     description,
                     author,
+                    UserState.getLoggedInUser().getUsername(),
                     "1 views",
                     thumbnailBase64,
                     videoUriString,
@@ -150,6 +151,8 @@ public class UploadVideo extends AppCompatActivity {
                     new ArrayList<String>()
             );
             // VideosState.getInstance().addVideo(newVideo);
+
+            // CALLING THE UPLOAD VIDEO TO SERVER METHOD HERE
             // uploadVideoToServer(newVideo);
             Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(UploadVideo.this, HomePage.class);

@@ -16,7 +16,7 @@ import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
 
-@Database(entities = {VideoData.class, User.class, CommentData.class}, version = 2) // Incremented version number
+@Database(entities = {VideoData.class, User.class, CommentData.class}, version = 1, exportSchema = false) // Incremented version number
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;
