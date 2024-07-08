@@ -141,4 +141,10 @@ public class VideoData {
     public void setDislikes(List<String> dislikes) {
         this.dislikes = dislikes;
     }
+
+    public void setUrlForEmulator() {
+        this.img = this.img.replace("localhost", "10.0.2.2");
+        this.video = this.video.replace("localhost", "10.0.2.2");
+        this.authorImage = this.authorImage.replace("localhost", "10.0.2.2");
+    }
 }

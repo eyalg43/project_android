@@ -39,6 +39,9 @@ public class VideoRepository {
 
         remoteVideos.observeForever(videos -> {
             if (videos != null) {
+                for (VideoData video : videos) {
+                    video.setUrlForEmulator();
+                }
                 insertVideos(videos);
             }
         });

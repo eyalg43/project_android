@@ -1,8 +1,6 @@
 package com.example.project_android.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,12 +12,11 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.VideoData;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.List;
 
 public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.VideoViewHolder> {
@@ -55,13 +52,26 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
         }
 
         private void loadImage(String data, ImageView imageView) {
+            Log.d(TAG, "Loading image: " + data);
             if (data.startsWith("data:image/")) {
                 // Base64 encoded image
-                String base64Image = data.split(",")[1];
-                byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                imageView.setImageBitmap(decodedByte);
-                Log.d(TAG, "Loaded base64 image");
+                try {
+                    String base64Image = data.split(",")[1];
+                    byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+                    Glide.with(imageView.getContext())
+                            .asBitmap()
+                            .load(decodedString)
+                            .into(imageView);
+                    Log.d(TAG, "Loaded base64 image");
+                } catch (Exception e) {
+                    Log.e(TAG, "Error loading base64 image: " + e.getMessage());
+                }
+            } else if (data.startsWith("http://") || data.startsWith("https://")) {
+                // URL
+                Glide.with(imageView.getContext())
+                        .load(data)
+                        .into(imageView);
+                Log.d(TAG, "Loaded image from URL: " + data);
             } else {
                 try {
                     // Check if the path is a drawable resource
@@ -71,8 +81,9 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
                         Log.d(TAG, "Loaded drawable resource: " + data);
                     } else {
                         // Load from local file path
-                        Bitmap bitmap = BitmapFactory.decodeFile(data);
-                        imageView.setImageBitmap(bitmap);
+                        Glide.with(imageView.getContext())
+                                .load(data)
+                                .into(imageView);
                         Log.d(TAG, "Loaded image from local file path: " + data);
                     }
                 } catch (Exception e) {

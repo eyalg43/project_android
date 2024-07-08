@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.project_android.adapters.CommentsAdapter;
 import com.example.project_android.adapters.VideoAdapter;
 import com.example.project_android.entities.CommentData;
@@ -307,7 +308,16 @@ public class VideoScreenActivity extends AppCompatActivity {
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 imageView.setImageBitmap(decodedByte);
                 Log.d(TAG, "Loaded base64 image.");
-            } else {
+
+            }
+            else if (path.startsWith("http://") || path.startsWith("https://")) {
+                // URL
+                Glide.with(imageView.getContext())
+                        .load(path)
+                        .into(imageView);
+                Log.d(TAG, "Loaded image from URL: " + path);
+            }
+            else {
                 // Check if the path is a drawable resource
                 int resId = getResources().getIdentifier(path, "drawable", getPackageName());
                 if (resId != 0) {
