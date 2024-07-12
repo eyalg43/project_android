@@ -14,6 +14,8 @@ import com.example.project_android.api.ApiService;
 import com.example.project_android.api.RetrofitClient;
 import com.example.project_android.dao.CommentDao;
 import com.example.project_android.entities.CommentData;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -111,7 +113,26 @@ public class CommentRepository {
     public void updateComment(CommentData commentData) {
         Log.d("CommentRepository", "Updating comment with ID: " + commentData.getId()); // Add this log for debugging
 
-        apiService.updateComment("Bearer " + token, commentData.getId(), commentData).enqueue(new Callback<CommentData>() {
+        Gson gson = new Gson(); // Create a local instance of Gson
+
+        // Manually construct the JSON object
+        JsonObject commentJson = new JsonObject();
+        commentJson.addProperty("id", commentData.getId());
+        commentJson.addProperty("text", commentData.getText());
+        commentJson.addProperty("userName", commentData.getUsername());
+        commentJson.addProperty("userDisplayName", commentData.getDisplayName());
+        commentJson.addProperty("date", commentData.getDate());
+        commentJson.addProperty("img", commentData.getImg());
+        commentJson.addProperty("videoId", commentData.getVideoId());
+
+        // Add likes and dislikes using Gson
+        JsonArray likesArray = gson.toJsonTree(commentData.getLikes()).getAsJsonArray();
+        commentJson.add("likes", likesArray);
+
+        JsonArray dislikesArray = gson.toJsonTree(commentData.getDislikes()).getAsJsonArray();
+        commentJson.add("dislikes", dislikesArray);
+
+        apiService.updateComment("Bearer " + token, commentData.getId(), commentJson).enqueue(new Callback<CommentData>() {
             @Override
             public void onResponse(Call<CommentData> call, Response<CommentData> response) {
                 if (response.isSuccessful()) {

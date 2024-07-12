@@ -37,7 +37,8 @@ public interface ApiService {
     Call<CommentData> getComment(@Path("id") int commentId);
 
     @PATCH("api/users/{id}/comments")
-    Call<CommentData> updateComment(@Header("Authorization") String token, @Path("id") String id, @Body CommentData comment);
+    Call<CommentData> updateComment(@Header("Authorization") String token, @Path("id") String id, @Body JsonObject comment);
+
 
     @DELETE("api/users/{id}/comments")
     Call<Void> deleteComment(@Header("Authorization") String token, @Path("id") String id);
