@@ -13,6 +13,7 @@ import com.example.project_android.api.VideoApi;
 import com.example.project_android.dao.VideoDao;
 import com.example.project_android.entities.VideoData;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +48,10 @@ public class VideoRepository {
                 }
             }
         });
+    }
+
+    public void uploadVideo(String token, String userId, File imgFile, File videoFile, String title, String description, String author, String username, String authorImage, String uploadTime, VideoApi.UploadCallback callback) {
+        videoApi.uploadVideo(token, userId, imgFile, videoFile, title, description, author, username, authorImage, uploadTime, callback);
     }
 
     /*public void add(final VideoData video) {
