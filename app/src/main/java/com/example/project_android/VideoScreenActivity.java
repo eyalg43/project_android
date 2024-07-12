@@ -226,7 +226,7 @@ public class VideoScreenActivity extends AppCompatActivity {
 
         titleTextView.setText(video.getTitle());
         viewsTextView.setText(video.getViews() + " views");
-        uploadTimeTextView.setText(video.getUploadTime());
+        uploadTimeTextView.setText(DataUtils.getTimeAgo(video.getUploadTime()));
         descriptionTextView.setText(video.getDescription());
         authorTextView.setText(video.getAuthor());
 
