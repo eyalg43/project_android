@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.project_android.DataUtils;
 import com.example.project_android.R;
 import com.example.project_android.entities.VideoData;
 
@@ -52,7 +53,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         holder.titleTextView.setText(videoData.getTitle());
         holder.authorViewsUploadTimeTextView.setText(
                 context.getString(R.string.video_author_views_uploadtime,
-                        videoData.getAuthor(), videoData.getViews(), videoData.getUploadTime())
+                        videoData.getAuthor(), videoData.getViews(), DataUtils.getTimeAgo(videoData.getUploadTime()))
         );
 
         // Load video thumbnail
