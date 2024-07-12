@@ -34,4 +34,12 @@ public class CommentViewModel extends AndroidViewModel {
     public void deleteComment(CommentData commentData) {
         commentRepository.deleteComment(commentData);
     }
+
+    public void likeComment(String commentId, String userDisplayName) {
+        commentRepository.likeComment(commentId, userDisplayName);
+    }
+
+    public void dislikeComment(String commentId, String userDisplayName) {
+        commentRepository.dislikeComment(commentId, userDisplayName);
+    }
 }

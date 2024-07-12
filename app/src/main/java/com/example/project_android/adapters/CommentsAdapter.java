@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -25,6 +26,7 @@ import com.example.project_android.DataUtils;
 import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.CommentData;
+import com.example.project_android.entities.User;
 import com.example.project_android.viewmodels.CommentViewModel;
 
 import java.io.InputStream;
@@ -133,25 +135,38 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
 
     private void handleLikeDislike(CommentData commentData, boolean isLike, CommentViewHolder holder) {
+        User loggedInUser = UserState.getLoggedInUser();
+        if (loggedInUser == null) {
+            Toast.makeText(context, "You need to be logged in to perform this action.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userDisplayName = loggedInUser.getDisplayName();
+
         if (isLike) {
             if (commentData.isLiked()) {
                 commentData.setLiked(false);
+                commentViewModel.dislikeComment(commentData.getId(), userDisplayName); // Remove like on server
             } else {
                 commentData.setLiked(true);
                 commentData.setDisliked(false);
+                commentViewModel.likeComment(commentData.getId(), userDisplayName); // Like on server
             }
         } else {
             if (commentData.isDisliked()) {
                 commentData.setDisliked(false);
+                commentViewModel.dislikeComment(commentData.getId(), userDisplayName); // Remove dislike on server
             } else {
                 commentData.setDisliked(true);
                 commentData.setLiked(false);
+                commentViewModel.dislikeComment(commentData.getId(), userDisplayName); // Dislike on server
             }
         }
 
         commentViewModel.updateComment(commentData); // Use ViewModel to update comment
         updateLikeDislikeButtonColors(commentData, holder);
     }
+
 
     private void updateLikeDislikeButtonColors(CommentData commentData, CommentViewHolder holder) {
         if (commentData.isLiked()) {

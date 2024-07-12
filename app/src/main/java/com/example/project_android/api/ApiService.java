@@ -44,10 +44,10 @@ public interface ApiService {
     Call<Void> deleteComment(@Header("Authorization") String token, @Path("id") String id);
 
     @PATCH("api/{id}/like")
-    Call<Void> likeComment(@Path("id") int commentId);
+    Call<Void> likeComment(@Header("Authorization") String token, @Path("id") String commentId, @Body JsonObject displayName);
 
     @PATCH("api/{id}/dislike")
-    Call<Void> dislikeComment(@Path("id") int commentId);
+    Call<Void> dislikeComment(@Header("Authorization") String token, @Path("id") String commentId, @Body JsonObject displayName);
 
     // Video-related endpoints
     @GET("api/videos")
@@ -72,10 +72,10 @@ public interface ApiService {
     Call<Void> deleteVideo(@Path("id") String userId, @Path("pid") int videoId);
 
     @PATCH("api/videos/{id}/like")
-    Call<VideoData> likeVideo(@Path("id") int videoId, @Body String userDisplayName);
+    Call<VideoData> likeVideo(@Header("Authorization") String token, @Path("id") String videoId, @Body JsonObject displayName);
 
     @PATCH("api/videos/{id}/dislike")
-    Call<VideoData> dislikeVideo(@Path("id") int videoId, @Body String userDisplayName);
+    Call<VideoData> dislikeVideo(@Header("Authorization") String token, @Path("id") String videoId, @Body JsonObject displayName);
 
     // User-related endpoints
     @POST("api/users")

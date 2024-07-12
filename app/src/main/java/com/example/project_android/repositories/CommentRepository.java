@@ -68,14 +68,27 @@ public class CommentRepository {
     }
 
     private List<CommentData> filterCommentsByVideoId(List<CommentData> comments, String videoId) {
+        String currentUser = null;
+        if (UserState.isLoggedIn()) {
+            currentUser = UserState.getLoggedInUser().getDisplayName();
+        }
+
         List<CommentData> filteredComments = new ArrayList<>();
         for (CommentData comment : comments) {
             if (comment.getVideoId().equals(videoId)) {
+                if (currentUser != null) {
+                    comment.setLiked(comment.getLikes().contains(currentUser));
+                    comment.setDisliked(comment.getDislikes().contains(currentUser));
+                } else {
+                    comment.setLiked(false);
+                    comment.setDisliked(false);
+                }
                 filteredComments.add(comment);
             }
         }
         return filteredComments;
     }
+
 
     // CommentRepository.java
     public void createComment(CommentData commentData) {
@@ -191,6 +204,48 @@ public class CommentRepository {
             @Override
             public void onFailure(Call<List<CommentData>> call, Throwable t) {
                 Log.e("CommentRepository", "Error refreshing comments: " + t.getMessage());
+            }
+        });
+    }
+
+    public void likeComment(String commentId, String userDisplayName) {
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("userDisplayName", userDisplayName);
+
+        apiService.likeComment("Bearer " + token, commentId, requestBody).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d("CommentRepository", "Successfully liked comment with ID: " + commentId);
+                } else {
+                    Log.e("CommentRepository", "Failed to like comment: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("CommentRepository", "Error liking comment: " + t.getMessage());
+            }
+        });
+    }
+
+    public void dislikeComment(String commentId, String userDisplayName) {
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("userDisplayName", userDisplayName);
+
+        apiService.dislikeComment("Bearer " + token, commentId, requestBody).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d("CommentRepository", "Successfully disliked comment with ID: " + commentId);
+                } else {
+                    Log.e("CommentRepository", "Failed to dislike comment: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("CommentRepository", "Error disliking comment: " + t.getMessage());
             }
         });
     }
