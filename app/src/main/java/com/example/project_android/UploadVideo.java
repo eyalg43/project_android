@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.project_android.api.VideoApi;
@@ -144,32 +145,19 @@ public class UploadVideo extends AppCompatActivity {
                     UserState.getLoggedInUser().getDisplayName(),
                     UserState.getLoggedInUser().getUsername(),
                     UserState.getLoggedInUser().getProfilePicture(),
-                    uploadTime,
-                    new VideoApi.UploadCallback() {
-                        @Override
-                        public void onSuccess(VideoData videoData) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(UploadVideo.this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(UploadVideo.this, HomePage.class);
-                                    startActivity(intent);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onFailure(String error) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(UploadVideo.this, "Error uploading video: " + error, Toast.LENGTH_SHORT).show();
-                                    Log.d("UploadVideo", "Error uploading video: " + error);
-                                }
-                            });
-                        }
+                    uploadTime
+            ).observe(this, new Observer<VideoData>() {
+                @Override
+                public void onChanged(VideoData videoData) {
+                    if (videoData != null) {
+                        Toast.makeText(UploadVideo.this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(UploadVideo.this, HomePage.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(UploadVideo.this, "Error uploading video.", Toast.LENGTH_SHORT).show();
                     }
-            );
+                }
+            });
         }
     }
 }

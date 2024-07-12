@@ -28,9 +28,27 @@ public class VideoViewModel extends ViewModel {
         return allVideos;
     }
 
-    public void uploadVideo(String token, String userId, File imgFile, File videoFile, String title, String description, String author, String username, String authorImage, String uploadTime, VideoApi.UploadCallback callback) {
-        videoRepository.uploadVideo(token, userId, imgFile, videoFile, title, description, author, username, authorImage, uploadTime, callback);
+    public LiveData<VideoData> getVideoById(String videoId) {
+        return videoRepository.getVideoById(videoId);
     }
+
+    public LiveData<VideoData> uploadVideo(String token, String userId, File imgFile, File videoFile, String title, String description, String author, String username, String authorImage, String uploadTime) {
+        return videoRepository.uploadVideo(token, userId, imgFile, videoFile, title, description, author, username, authorImage, uploadTime);
+    }
+
+
+    public LiveData<VideoData> updateVideo(String token, String userId, String videoId, File imgFile, File videoFile, String title, String description) {
+        return videoRepository.updateVideo(token, userId, videoId, imgFile, videoFile, title, description);
+    }
+
+    public LiveData<Boolean> deleteVideo(String token, String userId, String videoId) {
+        return videoRepository.deleteVideo(token, userId, videoId);
+    }
+
+    public void syncWithServerAfterDeletion() {
+        videoRepository.syncWithServer();
+    }
+
 
     /*public void add(VideoData videoData) {
         videoRepository.add(videoData);

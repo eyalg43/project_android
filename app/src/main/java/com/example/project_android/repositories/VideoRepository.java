@@ -32,6 +32,12 @@ public class VideoRepository {
         return allVideos;
     }
 
+    public LiveData<VideoData> getVideoById(String videoId) {
+        MutableLiveData<VideoData> videoData = new MutableLiveData<>();
+        videoApi.getVideoById(videoId, videoData);
+        return videoData;
+    }
+
     public void syncWithServer() {
         MutableLiveData<List<VideoData>> remoteVideos = new MutableLiveData<>();
         videoApi.getAllVideos(remoteVideos);
@@ -50,9 +56,56 @@ public class VideoRepository {
         });
     }
 
-    public void uploadVideo(String token, String userId, File imgFile, File videoFile, String title, String description, String author, String username, String authorImage, String uploadTime, VideoApi.UploadCallback callback) {
-        videoApi.uploadVideo(token, userId, imgFile, videoFile, title, description, author, username, authorImage, uploadTime, callback);
+    public LiveData<VideoData> uploadVideo(String token, String userId, File imgFile, File videoFile, String title, String description, String author, String username, String authorImage, String uploadTime) {
+        MutableLiveData<VideoData> uploadedVideo = new MutableLiveData<>();
+        videoApi.uploadVideo(token, userId, imgFile, videoFile, title, description, author, username, authorImage, uploadTime, new VideoApi.UploadCallback() {
+            @Override
+            public void onSuccess(VideoData videoData) {
+                uploadedVideo.postValue(videoData);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("VideoRepository", "Upload failed: " + error);
+            }
+        });
+        return uploadedVideo;
     }
+
+
+    public LiveData<VideoData> updateVideo(String token, String userId, String videoId, File imgFile, File videoFile, String title, String description) {
+        MutableLiveData<VideoData> updatedVideo = new MutableLiveData<>();
+        videoApi.updateVideo(token, userId, videoId, imgFile, videoFile, title, description, new VideoApi.UploadCallback() {
+            @Override
+            public void onSuccess(VideoData videoData) {
+                updatedVideo.postValue(videoData);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("VideoRepository", "Update failed: " + error);
+            }
+        });
+        return updatedVideo;
+    }
+
+    public LiveData<Boolean> deleteVideo(String token, String userId, String videoId) {
+        MutableLiveData<Boolean> deleteResult = new MutableLiveData<>();
+        videoApi.deleteVideo(token, userId, videoId, new VideoApi.DeleteCallback() {
+            @Override
+            public void onSuccess() {
+                deleteResult.postValue(true);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("VideoRepository", "Delete failed: " + error);
+                deleteResult.postValue(false);
+            }
+        });
+        return deleteResult;
+    }
+
 
     /*public void add(final VideoData video) {
         videoApi.add(video);

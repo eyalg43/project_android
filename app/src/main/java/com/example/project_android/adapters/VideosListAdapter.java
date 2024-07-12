@@ -143,7 +143,7 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
                 }
             });
 
-            if (UserState.isLoggedIn()) {
+            if (UserState.isLoggedIn() && current.getUsername().equals(UserState.getLoggedInUser().getUsername())) {
                 holder.editButton.setVisibility(View.VISIBLE);
                 holder.deleteButton.setVisibility(View.VISIBLE);
             } else {

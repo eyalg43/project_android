@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -77,11 +78,20 @@ public class HomePage extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(VideoData video) {
-                allVideos.remove(video);
-                adapter.setVideos(allVideos);
+                String token = "Bearer " + TokenManager.getInstance().getToken();
+                String userId = UserState.getLoggedInUser().getUsername(); // Use username as userId
+                videoViewModel.deleteVideo(token, userId, video.getId()).observe(HomePage.this, new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean success) {
+                        if (success) {
+                            videoViewModel.syncWithServerAfterDeletion();
+                            Toast.makeText(HomePage.this, "Video successfully deleted.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(HomePage.this, "Error deleting video.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
-
-
         });
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));

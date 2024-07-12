@@ -92,4 +92,62 @@ public class VideoApi {
         void onFailure(String error);
     }
 
+    public void updateVideo(String token, String userId, String videoId, File imgFile, File videoFile, String title, String description, UploadCallback callback) {
+        RequestBody titlePart = RequestBody.create(MediaType.parse("text/plain"), title);
+        RequestBody descriptionPart = RequestBody.create(MediaType.parse("text/plain"), description);
+
+        MultipartBody.Part imgPart = null;
+        if (imgFile != null) {
+            RequestBody imgBody = RequestBody.create(MediaType.parse("image/*"), imgFile);
+            imgPart = MultipartBody.Part.createFormData("img", imgFile.getName(), imgBody);
+        }
+
+        MultipartBody.Part videoPart = null;
+        if (videoFile != null) {
+            RequestBody videoBody = RequestBody.create(MediaType.parse("video/*"), videoFile);
+            videoPart = MultipartBody.Part.createFormData("video", videoFile.getName(), videoBody);
+        }
+
+        Call<VideoData> call = apiService.updateVideo(token, userId, videoId, imgPart, videoPart, titlePart, descriptionPart);
+        call.enqueue(new Callback<VideoData>() {
+            @Override
+            public void onResponse(Call<VideoData> call, Response<VideoData> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure("Update failed with code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<VideoData> call, Throwable t) {
+                callback.onFailure("Update failed: " + t.getMessage());
+            }
+        });
+    }
+
+    public void deleteVideo(String token, String userId, String videoId, final DeleteCallback callback) {
+        Call<Void> call = apiService.deleteVideo(token, userId, videoId);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Delete failed with code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                callback.onFailure("Delete failed: " + t.getMessage());
+            }
+        });
+    }
+
+    public interface DeleteCallback {
+        void onSuccess();
+        void onFailure(String error);
+    }
+
 }

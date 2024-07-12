@@ -78,11 +78,24 @@ public interface ApiService {
             @Part("uploadTime") RequestBody uploadTime
     );
 
+    @Multipart
     @PATCH("api/users/{id}/videos/{pid}")
-    Call<VideoData> updateVideo(@Path("id") String userId, @Path("pid") int videoId, @Body VideoData videoData);
+    Call<VideoData> updateVideo(
+            @Header("Authorization") String token,
+            @Path("id") String userId,
+            @Path("pid") String videoId,
+            @Part MultipartBody.Part img,
+            @Part MultipartBody.Part video,
+            @Part("title") RequestBody title,
+            @Part("description") RequestBody description
+    );
 
     @DELETE("api/users/{id}/videos/{pid}")
-    Call<Void> deleteVideo(@Path("id") String userId, @Path("pid") int videoId);
+    Call<Void> deleteVideo(
+            @Header("Authorization") String token,
+            @Path("id") String userId,
+            @Path("pid") String videoId
+    );
 
     @PATCH("api/videos/{id}/like")
     Call<VideoData> likeVideo(@Path("id") int videoId, @Body String userDisplayName);
