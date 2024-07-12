@@ -35,4 +35,20 @@ public class VideoApi {
             }
         });
     }
+
+    public void getVideoById(String videoId, MutableLiveData<VideoData> video) {
+        Call<VideoData> call = apiService.getVideo(videoId);
+        call.enqueue(new Callback<VideoData>() {
+            @Override
+            public void onResponse(Call<VideoData> call, Response<VideoData> response) {
+                video.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<VideoData> call, Throwable t) {
+                // Handle failure
+            }
+        });
+    }
+
 }

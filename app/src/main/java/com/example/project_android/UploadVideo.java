@@ -15,13 +15,14 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.project_android.VideosState;
 import com.example.project_android.entities.VideoData;
 import com.example.project_android.viewmodels.VideoViewModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class UploadVideo extends AppCompatActivity {
 
@@ -37,14 +38,17 @@ public class UploadVideo extends AppCompatActivity {
     private Button buttonSubmitVideo;
     private TextView textViewError;
     private Button buttonCancel;
+
     private Uri selectedThumbnailUri;
     private Uri selectedVideoUri;
-    private Bitmap selectedThumbnailBitmap;
+    private VideoViewModel videoViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_video);
+
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
 
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextDescription = findViewById(R.id.editTextDescription);
@@ -106,8 +110,8 @@ public class UploadVideo extends AppCompatActivity {
             if (requestCode == REQUEST_THUMBNAIL_GET) {
                 selectedThumbnailUri = uri;
                 try {
-                    selectedThumbnailBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedThumbnailUri);
-                    imageViewThumbnail.setImageBitmap(selectedThumbnailBitmap);
+                    Bitmap thumbnailBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedThumbnailUri);
+                    imageViewThumbnail.setImageBitmap(thumbnailBitmap);
                     imageViewThumbnail.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
                     Log.e("UploadVideo", "Error loading thumbnail: " + e.getMessage());
@@ -124,43 +128,35 @@ public class UploadVideo extends AppCompatActivity {
         String description = editTextDescription.getText().toString().trim();
         String uploadTime = getElapsedTime(System.currentTimeMillis());
 
-        // converts bitmap to base64 string and vice versa
-        Converters converter = new Converters();
-
         if (title.isEmpty() || description.isEmpty() || selectedThumbnailUri == null || selectedVideoUri == null) {
             Toast.makeText(this, "Please fill all fields to upload.", Toast.LENGTH_SHORT).show();
+            Log.d("UploadVideo", "Error: Please fill all fields to upload.");
         } else {
-            textViewError.setVisibility(View.GONE);
-            String author = UserState.getLoggedInUser().getDisplayName();
-            String authorImageBase64 = UserState.getLoggedInUser().getProfilePicture();
-            String thumbnailBase64 = converter.fromBitmap(selectedThumbnailBitmap);
-            String videoUriString = selectedVideoUri.toString();
+            /*textViewError.setVisibility(View.GONE);
+
+            // Log the author image URI
+            String authorImageUri = UserState.getLoggedInUser().getImageUri();
+            Log.d("UploadVideo", "Author Image URI: " + authorImageUri);
 
             // Add new video to the state
             VideoData newVideo = new VideoData(
+                    null, // Generate new ID
                     title,
                     description,
-                    author,
-                    UserState.getLoggedInUser().getUsername(),
+                    UserState.getLoggedInUser().getDisplayName(),
                     "1 views",
-                    thumbnailBase64,
-                    videoUriString,
+                    selectedThumbnailUri.toString(),
+                    selectedVideoUri.toString(),
                     uploadTime,
-                    authorImageBase64,
-                    new ArrayList<String>(),
-                    new ArrayList<String>()
+                    authorImageUri
             );
-            // VideosState.getInstance().addVideo(newVideo);
-
-            // CALLING THE UPLOAD VIDEO TO SERVER METHOD HERE
-            // uploadVideoToServer(newVideo);
+            VideosState.getInstance().addVideo(newVideo);
             Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(UploadVideo.this, HomePage.class);
-            startActivity(intent);
+            startActivity(intent);*/
         }
     }
 
-    // ADD THE UPLOAD VIDEO TO SERVER METHOD HERE
 
     private String getElapsedTime(long uploadTime) {
         long now = System.currentTimeMillis();

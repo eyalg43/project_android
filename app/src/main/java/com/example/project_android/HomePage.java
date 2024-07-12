@@ -1,10 +1,10 @@
 package com.example.project_android;
 
 import android.content.Intent;
+import android.database.CursorWindow;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,19 +17,24 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project_android.adapters.VideosListAdapter;
+import com.example.project_android.api.VideoApi;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
+import com.example.project_android.viewmodels.VideoViewModel;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomePage extends AppCompatActivity {
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private static final String TAG = "HomePage";
+
     private VideosListAdapter adapter;
     private List<VideoData> allVideos;
     private DrawerLayout drawerLayout;
@@ -44,15 +49,20 @@ public class HomePage extends AppCompatActivity {
     private Button signOutButton;
     private Button uploadVideoButton;
 
+    private VideoViewModel videoViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+
         RecyclerView listVideos = findViewById(R.id.listVideos);
         adapter = new VideosListAdapter(this, new VideosListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(VideoData video) {
+                Log.d(TAG, "Video ID clicked: " + video.getId());
                 Intent intent = new Intent(HomePage.this, VideoScreenActivity.class);
                 intent.putExtra("video_id", video.getId());
                 startActivity(intent);
@@ -69,7 +79,6 @@ public class HomePage extends AppCompatActivity {
             public void onDeleteClick(VideoData video) {
                 allVideos.remove(video);
                 adapter.setVideos(allVideos);
-                VideosState.getInstance().setVideoList(allVideos);
             }
 
 
@@ -77,27 +86,12 @@ public class HomePage extends AppCompatActivity {
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
 
-        swipeRefreshLayout = findViewById(R.id.refreshLayout);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                }, 2000);
-            }
+        videoViewModel.getAllVideos().observe(this, videos -> {
+            allVideos = videos;
+            adapter.setVideos(videos);
         });
 
-        allVideos = VideosState.getInstance().getVideoList();
-        if (allVideos != null) {
-            adapter.setVideos(allVideos);
-        } else {
-            Log.e("HomePage", "Error getting videos");
-        }
-        swipeRefreshLayout.setRefreshing(false);
-
+        drawerLayout = findViewById(R.id.drawer_layout);
         ImageButton searchButton = findViewById(R.id.search_button);
         final SearchView searchView = findViewById(R.id.searchView);
         searchButton.setOnClickListener(new View.OnClickListener() {
@@ -154,7 +148,6 @@ public class HomePage extends AppCompatActivity {
         menuHome.setOnClickListener(menuClickListener);
         menuShorts.setOnClickListener(menuClickListener);
         menuSubscriptions.setOnClickListener(menuClickListener);
-//        menuYou.setOnClickListener(menuClickListener);
         menuHistory.setOnClickListener(menuClickListener);
 
         toggleModeButton = findViewById(R.id.btn_toggle_mode);
@@ -252,25 +245,6 @@ public class HomePage extends AppCompatActivity {
         adapter.setVideos(filteredList);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateVideos();
-    }
-
-    private void updateVideos() {
-        allVideos = VideosState.getInstance().getVideoList();
-        if (allVideos != null) {
-            for (VideoData video : allVideos) {
-                Log.d("HomePage", "Video Author Image URI: " + video.getAuthorImage());
-            }
-            adapter.setVideos(allVideos);
-        } else {
-            Log.e("HomePage", "Error getting videos");
-        }
-    }
-
-
     private void updateModeButtonText() {
         int nightMode = AppCompatDelegate.getDefaultNightMode();
         if (nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
@@ -285,7 +259,7 @@ public class HomePage extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeFile(path);
             imageView.setImageBitmap(bitmap);
         } catch (Exception e) {
-            Log.e("HomePage", "Error loading image: " + e.getMessage());
+            Log.e(TAG, "Error loading image: " + e.getMessage());
         }
     }
 }

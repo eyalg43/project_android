@@ -1,5 +1,9 @@
 package com.example.project_android;
 
+import androidx.room.TypeConverter;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -11,6 +15,7 @@ import androidx.room.TypeConverter;
 import java.io.ByteArrayOutputStream;
 
 public class Converters {
+
     @TypeConverter
     public String fromBitmap(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

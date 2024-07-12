@@ -26,7 +26,7 @@ public interface ApiService {
     Call<Void> dislikeVideo(@Path("id") int videoId);
 
     @GET("api/comments")
-    Call<List<CommentData>> getComments(String videoId);
+    Call<List<CommentData>> getComments();
 
     @POST("api/comments")
     Call<CommentData> createComment(@Body CommentData comment);
@@ -54,7 +54,7 @@ public interface ApiService {
     Call<List<VideoData>> getAllVideos();
 
     @GET("api/videos/{id}")
-    Call<VideoData> getVideo(@Path("id") int id);
+    Call<VideoData> getVideo(@Path("id") String id);
 
     @GET("api/users/{id}/videos")
     Call<List<VideoData>> getVideosByAuthor(@Path("id") String userId);
