@@ -54,7 +54,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         CommentData comment = commentsList.get(position);
-        holder.usernameTextView.setText(comment.getUsername());
+        holder.displayNameTextView.setText(comment.getDisplayName());
         holder.dateTextView.setText(DataUtils.getTimeAgo(comment.getDate()));
         holder.commentTextView.setText(comment.getText());
 
@@ -169,7 +169,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {
-        TextView usernameTextView;
+        TextView displayNameTextView;
         TextView dateTextView;
         TextView commentTextView;
         ImageView userImageView;
@@ -180,7 +180,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
-            usernameTextView = itemView.findViewById(R.id.comment_username);
+            displayNameTextView = itemView.findViewById(R.id.comment_username);
             dateTextView = itemView.findViewById(R.id.comment_date);
             commentTextView = itemView.findViewById(R.id.comment_text);
             userImageView = itemView.findViewById(R.id.comment_user_image);

@@ -139,7 +139,7 @@ public class CommentData {
     }
     public void setUrlForEmulator() {
         if (this.img != null) {
-            this.img = this.img.replace("localhost", "10.0.2.2");
+            this.img = this.img.replace("localhost", "192.168.1.121");
         }
     }
 }

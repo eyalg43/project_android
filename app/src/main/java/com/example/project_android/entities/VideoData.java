@@ -143,8 +143,8 @@ public class VideoData {
     }
 
     public void setUrlForEmulator() {
-        this.img = this.img.replace("localhost", "10.0.2.2");
-        this.video = this.video.replace("localhost", "10.0.2.2");
-        this.authorImage = this.authorImage.replace("localhost", "10.0.2.2");
+        this.img = this.img.replace("localhost", "192.168.1.121");
+        this.video = this.video.replace("localhost", "192.168.1.121");
+        this.authorImage = this.authorImage.replace("localhost", "192.168.1.121");
     }
 }
