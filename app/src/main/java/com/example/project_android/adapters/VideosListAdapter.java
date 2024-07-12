@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.project_android.Converters;
 import com.example.project_android.DataUtils;
 import com.example.project_android.R;
 import com.example.project_android.UserState;
@@ -91,7 +92,8 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
                         Log.d(TAG, "Loaded image from URI: " + path);
                     } else {
                         // Load from local file path
-                        Bitmap bitmap = BitmapFactory.decodeFile(path);
+                        Converters converter = new Converters();
+                        Bitmap bitmap = converter.toBitmap(path);
                         imageView.setImageBitmap(bitmap);
                         Log.d(TAG, "Loaded image from local file path: " + path);
                     }

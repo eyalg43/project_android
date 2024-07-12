@@ -335,7 +335,8 @@ public class VideoScreenActivity extends AppCompatActivity {
                     Log.d(TAG, "Loaded image from URI: " + path);
                 } else {
                     // Load from local file path
-                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    Converters converter = new Converters();
+                    Bitmap bitmap = converter.toBitmap(path);
                     imageView.setImageBitmap(bitmap);
                     Log.d(TAG, "Loaded image from local file path: " + path);
                 }
