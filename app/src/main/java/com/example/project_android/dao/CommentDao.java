@@ -3,6 +3,7 @@ package com.example.project_android.dao;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -19,7 +20,7 @@ public interface CommentDao {
     @Query("SELECT * FROM comments WHERE _id = :commentId")
     CommentData getCommentById(String commentId);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertComment(CommentData comment);
 
     @Update

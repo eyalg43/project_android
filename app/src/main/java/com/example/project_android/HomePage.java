@@ -86,9 +86,14 @@ public class HomePage extends AppCompatActivity {
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
 
-        videoViewModel.getAllVideos().observe(this, videos -> {
-            allVideos = videos;
-            adapter.setVideos(videos);
+        videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
+            @Override
+            public void onChanged(List<VideoData> videos) {
+                if (videos != null) {
+                    allVideos = videos;
+                    adapter.setVideos(videos);
+                }
+            }
         });
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -236,6 +241,7 @@ public class HomePage extends AppCompatActivity {
     }
 
     private void filterVideos(String text) {
+        if (allVideos == null) return;
         List<VideoData> filteredList = new ArrayList<>();
         for (VideoData video : allVideos) {
             if (video.getTitle().toLowerCase().contains(text.toLowerCase())) {

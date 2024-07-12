@@ -25,7 +25,7 @@ import retrofit2.Response;
 
 public class UsersRepository {
     private ApiService apiService;
-    String temptoken = "Bearer token"; // Replace with your hardcoded token for testing
+    String temptoken = TokenManager.getInstance().getToken();
     private static final String TAG = "MyActivity";
 
 

@@ -6,6 +6,7 @@ import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.util.List;
 
@@ -29,7 +30,8 @@ public interface ApiService {
     Call<List<CommentData>> getComments();
 
     @POST("api/comments")
-    Call<CommentData> createComment(@Body CommentData comment);
+    Call<CommentData> createComment(@Header("Authorization") String token, @Body JsonObject comment);
+
 
     @GET("comments/{id}")
     Call<CommentData> getComment(@Path("id") int commentId);

@@ -7,11 +7,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Room;
 
+import com.example.project_android.TokenManager;
 import com.example.project_android.AppDatabase;
+import com.example.project_android.UserState;
 import com.example.project_android.api.ApiService;
 import com.example.project_android.api.RetrofitClient;
 import com.example.project_android.dao.CommentDao;
 import com.example.project_android.entities.CommentData;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,7 @@ public class CommentRepository {
     private CommentDao commentDao;
     private ApiService apiService;
     private Executor executor;
+    private String temptoken = TokenManager.getInstance().getToken();
 
     public CommentRepository(Application application) {
         AppDatabase db = Room.databaseBuilder(application, AppDatabase.class, "database-name").build();
@@ -71,21 +75,42 @@ public class CommentRepository {
         return filteredComments;
     }
 
+    // CommentRepository.java
     public void createComment(CommentData commentData) {
-        apiService.createComment(commentData).enqueue(new Callback<CommentData>() {
+        JsonObject commentJson = new JsonObject();
+        commentJson.addProperty("text", commentData.getText());
+        commentJson.addProperty("userName", commentData.getUsername());
+        commentJson.addProperty("userDisplayName", commentData.getDisplayName());
+        commentJson.addProperty("date", commentData.getDate());
+        commentJson.addProperty("img", commentData.getImg());
+        commentJson.addProperty("videoId", commentData.getVideoId());
+
+        String token = TokenManager.getInstance().getToken();
+        Log.d("CommentRepository", "Using token: " + token);
+
+        apiService.createComment("Bearer " + token, commentJson).enqueue(new Callback<CommentData>() {
             @Override
             public void onResponse(Call<CommentData> call, Response<CommentData> response) {
                 if (response.isSuccessful()) {
                     executor.execute(() -> commentDao.insertComment(response.body()));
+                } else {
+                    Log.e("CommentRepository", "Failed to create comment: " + response.message());
+                    if (response.code() == 401) {
+                        Log.e("CommentRepository", "Unauthorized - logging out");
+                        UserState.logOut();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<CommentData> call, Throwable t) {
-                // Handle failure
+                Log.e("CommentRepository", "Error creating comment: " + t.getMessage());
             }
         });
     }
+
+
+
 
     public void updateComment(CommentData commentData) {
         apiService.updateComment(commentData.getId(), commentData).enqueue(new Callback<CommentData>() {
