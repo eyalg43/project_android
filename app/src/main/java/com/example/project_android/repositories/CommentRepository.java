@@ -41,6 +41,9 @@ public class CommentRepository {
             public void onResponse(Call<List<CommentData>> call, Response<List<CommentData>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     executor.execute(() -> {
+                        for (CommentData comment : response.body()) {
+                            comment.setUrlForEmulator();
+                        }
                         List<CommentData> filteredComments = filterCommentsByVideoId(response.body(), videoId);
                         comments.postValue(filteredComments);
                     });

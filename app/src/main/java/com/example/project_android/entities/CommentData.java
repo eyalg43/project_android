@@ -137,4 +137,9 @@ public class CommentData {
     public void setDislikes(List<String> dislikes) {
         this.dislikes = dislikes;
     }
+    public void setUrlForEmulator() {
+        if (this.img != null) {
+            this.img = this.img.replace("localhost", "192.168.1.121");
+        }
+    }
 }
