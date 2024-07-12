@@ -29,7 +29,7 @@ public class CommentRepository {
     private CommentDao commentDao;
     private ApiService apiService;
     private Executor executor;
-    private String temptoken = TokenManager.getInstance().getToken();
+    private String token = TokenManager.getInstance().getToken();
 
     public CommentRepository(Application application) {
         AppDatabase db = Room.databaseBuilder(application, AppDatabase.class, "database-name").build();
@@ -85,7 +85,6 @@ public class CommentRepository {
         commentJson.addProperty("img", commentData.getImg());
         commentJson.addProperty("videoId", commentData.getVideoId());
 
-        String token = TokenManager.getInstance().getToken();
         Log.d("CommentRepository", "Using token: " + token);
 
         apiService.createComment("Bearer " + token, commentJson).enqueue(new Callback<CommentData>() {
@@ -109,37 +108,68 @@ public class CommentRepository {
         });
     }
 
-
-
-
     public void updateComment(CommentData commentData) {
-        apiService.updateComment(commentData.getId(), commentData).enqueue(new Callback<CommentData>() {
+        Log.d("CommentRepository", "Updating comment with ID: " + commentData.getId()); // Add this log for debugging
+
+        apiService.updateComment("Bearer " + token, commentData.getId(), commentData).enqueue(new Callback<CommentData>() {
             @Override
             public void onResponse(Call<CommentData> call, Response<CommentData> response) {
                 if (response.isSuccessful()) {
-                    executor.execute(() -> commentDao.updateComment(response.body()));
+                    executor.execute(() -> {
+                        commentDao.updateComment(response.body());
+                        refreshComments(commentData.getVideoId());
+                    });
+                } else {
+                    Log.e("CommentRepository", "Failed to update comment: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<CommentData> call, Throwable t) {
-                // Handle failure
+                Log.e("CommentRepository", "Error updating comment: " + t.getMessage());
             }
         });
     }
 
     public void deleteComment(CommentData commentData) {
-        apiService.deleteComment(commentData.getId()).enqueue(new Callback<Void>() {
+        apiService.deleteComment("Bearer " + token, commentData.getId()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    executor.execute(() -> commentDao.deleteComment(commentData));
+                    executor.execute(() -> {
+                        commentDao.deleteComment(commentData);
+                        refreshComments(commentData.getVideoId());
+                    });
+                } else {
+                    Log.e("CommentRepository", "Failed to delete comment: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                // Handle failure
+                Log.e("CommentRepository", "Error deleting comment: " + t.getMessage());
+            }
+        });
+    }
+
+    private void refreshComments(String videoId) {
+        apiService.getComments().enqueue(new Callback<List<CommentData>>() {
+            @Override
+            public void onResponse(Call<List<CommentData>> call, Response<List<CommentData>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    executor.execute(() -> {
+                        for (CommentData comment : response.body()) {
+                            comment.setUrlForEmulator();
+                        }
+                        List<CommentData> filteredComments = filterCommentsByVideoId(response.body(), videoId);
+                        commentDao.insertComments(filteredComments);
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<CommentData>> call, Throwable t) {
+                Log.e("CommentRepository", "Error refreshing comments: " + t.getMessage());
             }
         });
     }

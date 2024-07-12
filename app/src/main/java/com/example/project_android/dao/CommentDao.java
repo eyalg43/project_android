@@ -28,4 +28,8 @@ public interface CommentDao {
 
     @Delete
     void deleteComment(CommentData comment);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertComments(List<CommentData> comments);
+
 }

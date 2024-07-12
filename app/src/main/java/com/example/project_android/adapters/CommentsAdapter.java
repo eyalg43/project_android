@@ -62,7 +62,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
         loadImage(comment.getImg(), holder.userImageView);
 
         // Show/hide edit and delete buttons based on login status and comment ownership
-        if (UserState.isLoggedIn() && UserState.getLoggedInUser().getDisplayName().equals(comment.getUsername())) {
+        if (UserState.isLoggedIn() && UserState.getLoggedInUser().getDisplayName().equals(comment.getDisplayName())) {
             holder.editButton.setVisibility(View.VISIBLE);
             holder.deleteButton.setVisibility(View.VISIBLE);
         } else {
@@ -92,33 +92,29 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     }
 
     private void showEditCommentDialog(CommentData commentData) {
-        // Create the dialog builder
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit Comment");
 
-        // Set up the input
         final EditText input = new EditText(context);
         input.setText(commentData.getText());
         input.setTextColor(context.getResources().getColor(R.color.dialog_text));
         input.setBackgroundColor(context.getResources().getColor(R.color.dialog_background));
         builder.setView(input);
 
-        // Set up the buttons
         builder.setPositiveButton("Save", (dialog, which) -> {
             String newCommentText = input.getText().toString().trim();
             if (!newCommentText.isEmpty()) {
                 commentData.setText(newCommentText);
-                commentViewModel.updateComment(commentData); // Use ViewModel to update comment
-                notifyDataSetChanged();
+                Log.d(TAG, "Editing comment with ID: " + commentData.getId());
+                commentViewModel.updateComment(commentData); // Update comment in ViewModel
+                notifyItemChanged(commentsList.indexOf(commentData)); // Update the specific item
             }
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
-        // Show the dialog
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        // Set button colors
         Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
         if (positiveButton != null && negativeButton != null) {
@@ -127,11 +123,14 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
         }
     }
 
+
     private void deleteComment(CommentData commentData) {
+        commentViewModel.deleteComment(commentData); // Delete comment in ViewModel
+        int position = commentsList.indexOf(commentData);
         commentsList.remove(commentData);
-        commentViewModel.deleteComment(commentData); // Use ViewModel to delete comment
-        notifyDataSetChanged();
+        notifyItemRemoved(position); // Remove the specific item
     }
+
 
     private void handleLikeDislike(CommentData commentData, boolean isLike, CommentViewHolder holder) {
         if (isLike) {
