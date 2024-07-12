@@ -104,19 +104,34 @@ public class SignupActivity extends AppCompatActivity {
                 if (!isPasswordValid(password)) {
                     textViewPasswordRequirements.setVisibility(View.VISIBLE);
                     textViewPasswordRequirements.setText("Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(SignupActivity.this, "Invalid password, read the guidelines", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     return;
                 }
 
                 // Check if passwords match
                 if (!password.equals(confirmPassword)) {
-                    Toast.makeText(SignupActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(SignupActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     return;
                 }
 
                 // Check if display name is filled
                 if (displayName.isEmpty()) {
-                    Toast.makeText(SignupActivity.this, "Display name is required.", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(SignupActivity.this, "Display name is required.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     return;
                 } else {
                     textViewDisplayNameError.setVisibility(View.GONE);
@@ -124,7 +139,12 @@ public class SignupActivity extends AppCompatActivity {
 
                 // Check if image is selected
                 if (selectedImageUri == null) {
-                    Toast.makeText(SignupActivity.this, "Please choose a profile picture.", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(SignupActivity.this, "Please choose a profile picture.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     return;
                 }
 
@@ -153,14 +173,24 @@ public class SignupActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                            startActivity(intent);
-                            finish();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(SignupActivity.this, "Signed up successfully!", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
                         } else {
                             // Handle error
                             Log.e("SignupActivity", "Error: " + response.code());
-                            Toast.makeText(SignupActivity.this, "Username or Display Name already taken, choose different ones", Toast.LENGTH_SHORT).show();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(SignupActivity.this, "Username or Display Name already taken, choose different ones", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     }
 
@@ -168,7 +198,12 @@ public class SignupActivity extends AppCompatActivity {
                     public void onFailure(Call<User> call, Throwable t) {
                         // Handle failure
                         Log.e("SignupActivity", "Failure: " + t.getMessage());
-                        Toast.makeText(SignupActivity.this, "Failed to sign up: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SignupActivity.this, "Failed to sign up: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
             }

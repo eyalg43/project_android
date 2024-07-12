@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -86,9 +88,14 @@ public class HomePage extends AppCompatActivity {
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
 
-        videoViewModel.getAllVideos().observe(this, videos -> {
-            allVideos = videos;
-            adapter.setVideos(videos);
+        videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
+            @Override
+            public void onChanged(List<VideoData> videos) {
+                if (videos != null) {
+                    allVideos = videos;
+                    adapter.setVideos(videos);
+                }
+            }
         });
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -205,8 +212,13 @@ public class HomePage extends AppCompatActivity {
         menuYou.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomePage.this, EditUserDetails.class);
-                startActivity(intent);
+                if (UserState.isLoggedIn()) {
+                    Intent intent = new Intent(HomePage.this, EditUserDetails.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(HomePage.this, LoginActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -227,15 +239,29 @@ public class HomePage extends AppCompatActivity {
                 uploadVideoButton.setVisibility(View.VISIBLE);
                 welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
 
+                // Replace localhost with the actual server IP address
+                String profilePicture = loggedInUser.getProfilePicture().replace("localhost", "10.0.2.2");
+
                 // load profile image
-                Converters converter = new Converters();
-                Bitmap bitmap = converter.toBitmap(loggedInUser.getProfilePicture());
-                profileImage.setImageBitmap(bitmap);
+                if (profilePicture.startsWith("http://") || profilePicture.startsWith("https://")) {
+                    // URL
+                    Glide.with(profileImage.getContext())
+                            .load(profilePicture)
+                            .into(profileImage);
+                    Log.d(TAG, "Loaded image from URL: " + profilePicture);
+                    Log.d(TAG, "image in profileImage: " + profileImage.getDrawable());
+
+                } else {
+                    Converters converter = new Converters();
+                    Bitmap bitmap = converter.toBitmap(loggedInUser.getProfilePicture());
+                    profileImage.setImageBitmap(bitmap);
+                }
             }
         }
     }
 
     private void filterVideos(String text) {
+        if (allVideos == null) return;
         List<VideoData> filteredList = new ArrayList<>();
         for (VideoData video : allVideos) {
             if (video.getTitle().toLowerCase().contains(text.toLowerCase())) {

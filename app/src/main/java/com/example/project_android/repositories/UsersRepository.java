@@ -43,6 +43,7 @@ public class UsersRepository {
                     users.setValue(userList);
                     if (userList != null) {
                         for (User user : userList) {
+                            user.setUrlForEmulator();
                             Log.d(TAG, "User: " + user.getUsername() + ", " + user.getPassword());
                         }
                     }
