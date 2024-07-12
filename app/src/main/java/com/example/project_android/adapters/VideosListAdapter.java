@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.project_android.DataUtils;
 import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.VideoData;
@@ -117,7 +118,7 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
             holder.videoTitle.setText(current.getTitle());
             holder.videoAuthor.setText(current.getAuthor());
             holder.videoViews.setText(current.getViews());
-            holder.videoUploadTime.setText(current.getUploadTime());
+            holder.videoUploadTime.setText(DataUtils.getTimeAgo(current.getUploadTime()));
 
             // Load author image
             holder.loadImage(current.getAuthorImage(), holder.videoAuthorImage);

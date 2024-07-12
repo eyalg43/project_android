@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.project_android.DataUtils;
 import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.CommentData;
@@ -54,7 +55,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         CommentData comment = commentsList.get(position);
         holder.usernameTextView.setText(comment.getUsername());
-        holder.dateTextView.setText(comment.getDate());
+        holder.dateTextView.setText(DataUtils.getTimeAgo(comment.getDate()));
         holder.commentTextView.setText(comment.getText());
 
         // Load user image
