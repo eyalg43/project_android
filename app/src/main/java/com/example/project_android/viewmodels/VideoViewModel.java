@@ -13,13 +13,12 @@ import com.example.project_android.repositories.VideoRepository;
 import java.util.List;
 
 
-public class VideoViewModel extends AndroidViewModel {
+public class VideoViewModel extends ViewModel {
     private VideoRepository videoRepository;
     private LiveData<List<VideoData>> allVideos;
 
-    public VideoViewModel(Application application) {
-        super(application);
-        videoRepository = new VideoRepository(application);
+    public VideoViewModel() {
+        videoRepository = new VideoRepository();
         allVideos = videoRepository.getAllVideos();
     }
 

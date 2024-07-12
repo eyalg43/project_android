@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.example.project_android.AppDatabase;
 import com.example.project_android.api.VideoApi;
@@ -17,19 +18,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class VideoRepository {
-    private VideoDao videoDao;
     private VideoApi videoApi;
-    private LiveData<List<VideoData>> allVideos;
+    private MutableLiveData<List<VideoData>> allVideos;
 
-    public VideoRepository(Context context) {
-        AppDatabase database = AppDatabase.getInstance(context);
-        videoDao = database.videoDao();
+    public VideoRepository() {
         videoApi = new VideoApi();
-        allVideos = videoDao.getAllVideos();
-        syncWithServer();
+        allVideos = new MutableLiveData<>();
     }
 
     public LiveData<List<VideoData>> getAllVideos() {
+        syncWithServer();
         return allVideos;
     }
 
@@ -37,33 +35,18 @@ public class VideoRepository {
         MutableLiveData<List<VideoData>> remoteVideos = new MutableLiveData<>();
         videoApi.getAllVideos(remoteVideos);
 
-        remoteVideos.observeForever(videos -> {
-            if (videos != null) {
-                for (VideoData video : videos) {
-                    video.setUrlForEmulator();
+        remoteVideos.observeForever(new Observer<List<VideoData>>() {
+            @Override
+            public void onChanged(List<VideoData> videos) {
+                if (videos != null) {
+                    for (VideoData video : videos) {
+                        video.setUrlForEmulator();
+                    }
+                    allVideos.setValue(videos);
+                    remoteVideos.removeObserver(this);  // Remove observer after getting data
                 }
-                insertVideos(videos);
             }
         });
-    }
-
-    public void insertVideos(List<VideoData> videos) {
-        new InsertVideosAsyncTask(videoDao).execute(videos);
-    }
-
-    private static class InsertVideosAsyncTask extends AsyncTask<List<VideoData>, Void, Void> {
-        private VideoDao videoDao;
-
-        private InsertVideosAsyncTask(VideoDao videoDao) {
-            this.videoDao = videoDao;
-        }
-
-        @Override
-        protected Void doInBackground(List<VideoData>... lists) {
-            videoDao.deleteAllVideos();
-            videoDao.insertVideos(lists[0]);
-            return null;
-        }
     }
 
     /*public void add(final VideoData video) {
