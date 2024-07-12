@@ -63,4 +63,10 @@ public class User {
     public String getProfilePicture() {
         return profilePicture;
     }
+
+    public void setUrlForEmulator() {
+        if (this.profilePicture != null) {
+            this.profilePicture = this.profilePicture.replace("localhost", "10.0.2.2");
+        }
+    }
 }
