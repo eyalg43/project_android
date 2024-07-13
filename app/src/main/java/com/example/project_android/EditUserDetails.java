@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,11 +35,13 @@ import retrofit2.Response;
 public class EditUserDetails extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_GET = 1;
-    private static final int REQUEST_IMAGE_CAPTURE = 2;
-    private static final int REQUEST_PERMISSION_CAMERA = 4;
+    private static final int REQUEST_IMAGE_CAPTURE = 20;
+    private static final int REQUEST_PERMISSION_READ_MEDIA_IMAGES = 3;
+    private static final int REQUEST_PERMISSION_CAMERA = 40;
     private EditText editTextUsername;
     private EditText editTextDisplayName;
     private EditText editTextPassword;
+    private ImageView imageViewProfile;
     private Button buttonUploadImage;
     private Button buttonTakePhoto;
     private Button buttonSaveChanges;
@@ -62,6 +65,7 @@ public class EditUserDetails extends AppCompatActivity {
         buttonTakePhoto = findViewById(R.id.buttonTakePhoto2);
         buttonSaveChanges = findViewById(R.id.buttonSaveChanges);
         buttonDeleteUser = findViewById(R.id.button2);
+        imageViewProfile = findViewById(R.id.imageViewProfile2);
 
         apiService = RetrofitClient.getApiService();
 
@@ -78,7 +82,7 @@ public class EditUserDetails extends AppCompatActivity {
         buttonTakePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto();
+                checkPermissionAndOpenCamera();
             }
         });
 
@@ -179,31 +183,6 @@ public class EditUserDetails extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_IMAGE_GET);
     }
 
-    private void takePhoto() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_IMAGE_GET && data != null) {
-                selectedImageUri = data.getData();
-                Log.d("EditUserDetails", "Image selected: " + selectedImageUri.toString());
-            } else if (requestCode == REQUEST_IMAGE_CAPTURE && data != null) {
-                Bundle extras = data.getExtras();
-                if (extras != null) {
-                    selectedImageBitmap = (Bitmap) extras.get("data");
-                    selectedImageUri = getImageUriFromBitmap(selectedImageBitmap);
-                    Log.d("EditUserDetails", "Photo taken: " + selectedImageUri.toString());
-                }
-            }
-        }
-    }
-
     private void deleteUser() {
         User loggedInUser = UserState.getLoggedInUser();
         if (loggedInUser != null) {
@@ -252,6 +231,65 @@ public class EditUserDetails extends AppCompatActivity {
         }
     }
 
+    // Camera and Permissions methods
+    private void checkPermissionAndOpenCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_PERMISSION_CAMERA);
+        } else {
+            openCamera();
+        }
+    }
+
+    private void openCamera() {
+        try {
+            Intent takePictureIntent = new Intent();
+            takePictureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (Exception e) {
+            Log.e("SignupActivity", "Error opening camera: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_CAMERA) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            } else {
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_GET && resultCode == RESULT_OK && data != null) {
+            selectedImageUri = data.getData();
+            try {
+                selectedImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                imageViewProfile.setImageBitmap(selectedImageBitmap);
+                // Convert the selected image to base64 if necessary
+                base64ProfilePicture = convertImageToBase64(selectedImageUri);
+                // Handle the bitmap, e.g., display in ImageView or other logic
+            } catch (IOException e) {
+                Log.e("EditUserDetails", "Error loading image: " + e.getMessage());
+            }
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            if (data != null && data.getExtras() != null) {
+                selectedImageBitmap = (Bitmap) data.getExtras().get("data");
+                imageViewProfile.setImageBitmap(selectedImageBitmap);
+                // Save the captured image URI or path
+                selectedImageUri = getImageUriFromBitmap(selectedImageBitmap);
+            }
+        }
+    }
+
+    // Image format converters
     private String convertImageToBase64(Uri imageUri) {
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
@@ -268,26 +306,5 @@ public class EditUserDetails extends AppCompatActivity {
     private Uri getImageUriFromBitmap(Bitmap bitmap) {
         String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "ProfilePicture", null);
         return Uri.parse(path);
-    }
-
-    private void checkPermissionAndOpenCamera() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    REQUEST_PERMISSION_CAMERA);
-        } else {
-            openCamera();
-        }
-    }
-
-    private void openCamera() {
-        try {
-            Intent takePictureIntent = new Intent();
-            takePictureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        } catch (Exception e) {
-            Log.e("SignupActivity", "Error opening camera: " + e.getMessage());
-        }
     }
 }

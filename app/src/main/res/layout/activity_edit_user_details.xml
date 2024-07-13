@@ -27,6 +27,17 @@
             app:layout_constraintTop_toBottomOf="@+id/buttonUploadImage"
             app:layout_constraintVertical_bias="0.024" />
 
+        <ImageView
+            android:id="@+id/imageViewProfile2"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="30dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/buttonSaveChanges"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/buttonUploadImage" />
+
         <EditText
             android:id="@+id/editTextDisplayName"
             android:layout_width="0dp"
