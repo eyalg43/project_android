@@ -113,16 +113,21 @@ public class VideoScreenActivity extends AppCompatActivity {
         String videoId = getIntent().getStringExtra("video_id");
         Log.d(TAG, "Received video ID: " + videoId); // Log received video ID
         if (videoId != null) {
+            videoViewModel.getVideoById(videoId).observe(this, new Observer<VideoData>() {
+                @Override
+                public void onChanged(VideoData video) {
+                    if (video != null) {
+                        displayVideoDetails(video);
+                        observeComments(video.getId());
+                    }
+                }
+            });
+
             videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
                 @Override
                 public void onChanged(List<VideoData> videos) {
                     if (videos != null) {
                         originalVideoList = videos;
-                        VideoData selectedVideo = findVideoById(videoId);
-                        if (selectedVideo != null) {
-                            displayVideoDetails(selectedVideo);
-                            observeComments(selectedVideo.getId()); // Uncomment if you add comments feature back
-                        }
                     }
                 }
             });
@@ -250,7 +255,6 @@ public class VideoScreenActivity extends AppCompatActivity {
         }
     }
 
-
     private void displayVideoDetails(VideoData video) {
         currentVideo = video;
         TextView titleTextView = findViewById(R.id.video_title);
@@ -357,6 +361,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         // Update the like and dislike button colors
         //updateLikeDislikeButtonColors();
     }
+
     private void observeComments(String videoId) {
         commentViewModel.getComments(videoId).observe(this, comments -> {
             if (comments != null) {
@@ -376,7 +381,6 @@ public class VideoScreenActivity extends AppCompatActivity {
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 imageView.setImageBitmap(decodedByte);
                 Log.d(TAG, "Loaded base64 image.");
-
             }
             else if (path.startsWith("http://") || path.startsWith("https://")) {
                 // URL
@@ -419,17 +423,6 @@ public class VideoScreenActivity extends AppCompatActivity {
         return sdf.format(new Date());
     }
 
-    private VideoData findVideoById(String id) {
-        if (originalVideoList != null) {
-            for (VideoData video : originalVideoList) {
-                if (video.getId() != null && video.getId().equals(id)) {
-                    return video;
-                }
-            }
-        }
-        return null;
-    }
-
     private List<CommentData> reverseComments(List<CommentData> comments) {
         List<CommentData> reversedComments = new ArrayList<>(comments);
         Collections.reverse(reversedComments);
@@ -442,18 +435,16 @@ public class VideoScreenActivity extends AppCompatActivity {
     }
 
     private void updateRelatedVideos(VideoData currentVideo) {
-        if (videoAdapter != null) {
+        if (originalVideoList != null) {
             List<VideoData> filteredVideos = new ArrayList<>();
-
             for (VideoData video : originalVideoList) {
                 if (!video.getId().equals(currentVideo.getId())) {
                     filteredVideos.add(video);
                 }
             }
-
             videoAdapter.updateVideoList(filteredVideos);
         } else {
-            Log.e(TAG, "videoAdapter is null when trying to update related videos.");
+            Log.e(TAG, "originalVideoList is null when trying to update related videos.");
         }
     }
 

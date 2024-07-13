@@ -21,16 +21,35 @@ import retrofit2.Response;
 public class VideoRepository {
     private VideoApi videoApi;
     private VideoDao videoDao;
-    private MutableLiveData<List<VideoData>> allVideos;
 
     public VideoRepository(Context context) {
         videoApi = new VideoApi();
         videoDao = AppDatabase.getInstance(context).videoDao();
-        allVideos = new MutableLiveData<>();
     }
 
     public LiveData<List<VideoData>> getAllVideos() {
-        syncWithServer();
+        MutableLiveData<List<VideoData>> allVideos = new MutableLiveData<>();
+        videoApi.getAllVideos().enqueue(new Callback<List<VideoData>>() {
+            @Override
+            public void onResponse(Call<List<VideoData>> call, Response<List<VideoData>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<VideoData> videos = response.body();
+                    for (VideoData video : videos) {
+                        video.setUrlForEmulator();
+                    }
+                    new Thread(() -> {
+                        videoDao.deleteAllVideos();
+                        videoDao.insertVideos(videos);
+                        allVideos.postValue(videos);
+                    }).start();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<VideoData>> call, Throwable t) {
+                Log.e("VideoRepository", "Get all videos failed: " + t.getMessage());
+            }
+        });
         return videoDao.getAllVideos();
     }
 
