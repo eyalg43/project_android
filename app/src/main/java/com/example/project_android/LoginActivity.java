@@ -56,9 +56,14 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSignInFailed(String errorMsg) {
-                        Toast.makeText(LoginActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "Sign-in failed: " + errorMsg);
+                    public void onSignInFailed(final String errorMsg) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(LoginActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                                Log.e(TAG, "Sign-in failed: " + errorMsg);
+                            }
+                        });
                     }
                 });
             }

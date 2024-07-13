@@ -1,6 +1,9 @@
 package com.example.project_android.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,11 +16,13 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.project_android.Converters;
 import com.example.project_android.DataUtils;
 import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.VideoData;
 
+import java.io.InputStream;
 import java.util.List;
 
 public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.VideoViewHolder> {
@@ -52,44 +57,49 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
             deleteButton = itemView.findViewById(R.id.delete_button);
         }
 
-        private void loadImage(String data, ImageView imageView) {
-            Log.d(TAG, "Loading image: " + data);
-            if (data.startsWith("data:image/")) {
-                // Base64 encoded image
-                try {
-                    String base64Image = data.split(",")[1];
-                    byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
-                    Glide.with(imageView.getContext())
-                            .asBitmap()
-                            .load(decodedString)
-                            .into(imageView);
-                    Log.d(TAG, "Loaded base64 image");
-                } catch (Exception e) {
-                    Log.e(TAG, "Error loading base64 image: " + e.getMessage());
+        private void loadImage(String path, ImageView imageView) {
+            try {
+                if (path.startsWith("data:image")) {
+                    // Base64 encoded image
+                    String base64Image = path.split(",")[1];
+                    byte[] decodedString = android.util.Base64.decode(base64Image, android.util.Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    imageView.setImageBitmap(decodedByte);
+                    Log.d(TAG, "Loaded base64 image.");
                 }
-            } else if (data.startsWith("http://") || data.startsWith("https://")) {
-                // URL
-                Glide.with(imageView.getContext())
-                        .load(data)
-                        .into(imageView);
-                Log.d(TAG, "Loaded image from URL: " + data);
-            } else {
-                try {
+                else if (path.startsWith("http://") || path.startsWith("https://")) {
+                    // URL
+                    Glide.with(imageView.getContext())
+                            .load(path)
+                            .into(imageView);
+                    Log.d(TAG, "Loaded image from URL: " + path);
+                }
+                else {
                     // Check if the path is a drawable resource
-                    int resId = imageView.getContext().getResources().getIdentifier(data, "drawable", imageView.getContext().getPackageName());
+                    int resId = imageView.getContext().getResources().getIdentifier(path, "drawable", imageView.getContext().getPackageName());
                     if (resId != 0) {
                         imageView.setImageResource(resId);
-                        Log.d(TAG, "Loaded drawable resource: " + data);
+                        Log.d(TAG, "Loaded drawable resource: " + path);
+                    } else if (path.startsWith("content://") || path.startsWith("file://")) {
+                        // Load from URI
+                        Uri uri = Uri.parse(path);
+                        InputStream inputStream = imageView.getContext().getContentResolver().openInputStream(uri);
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        imageView.setImageBitmap(bitmap);
+                        if (inputStream != null) {
+                            inputStream.close();
+                        }
+                        Log.d(TAG, "Loaded image from URI: " + path);
                     } else {
                         // Load from local file path
-                        Glide.with(imageView.getContext())
-                                .load(data)
-                                .into(imageView);
-                        Log.d(TAG, "Loaded image from local file path: " + data);
+                        Converters converter = new Converters();
+                        Bitmap bitmap = converter.toBitmap(path);
+                        imageView.setImageBitmap(bitmap);
+                        Log.d(TAG, "Loaded image from local file path: " + path);
                     }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error loading image: " + e.getMessage());
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "Error loading image: " + e.getMessage());
             }
         }
     }
@@ -135,7 +145,7 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
                 }
             });
 
-            if (UserState.isLoggedIn()) {
+            if (UserState.isLoggedIn() && current.getUsername().equals(UserState.getLoggedInUser().getUsername())) {
                 holder.editButton.setVisibility(View.VISIBLE);
                 holder.deleteButton.setVisibility(View.VISIBLE);
             } else {

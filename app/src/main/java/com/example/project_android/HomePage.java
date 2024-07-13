@@ -5,6 +5,7 @@ import android.database.CursorWindow;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -21,6 +25,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project_android.adapters.VideosListAdapter;
 import com.example.project_android.api.VideoApi;
@@ -35,6 +40,7 @@ import java.util.List;
 public class HomePage extends AppCompatActivity {
     private static final String TAG = "HomePage";
 
+    private SwipeRefreshLayout swipeRefreshLayout;
     private VideosListAdapter adapter;
     private List<VideoData> allVideos;
     private DrawerLayout drawerLayout;
@@ -77,16 +83,42 @@ public class HomePage extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(VideoData video) {
-                allVideos.remove(video);
-                adapter.setVideos(allVideos);
+                String token = "Bearer " + TokenManager.getInstance().getToken();
+                String userId = UserState.getLoggedInUser().getUsername(); // Use username as userId
+                videoViewModel.deleteVideo(token, userId, video.getId()).observe(HomePage.this, new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean success) {
+                        if (success) {
+                            videoViewModel.syncWithServerAfterDeletion();
+                            Toast.makeText(HomePage.this, "Video successfully deleted.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(HomePage.this, "Error deleting video.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
-
-
         });
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
 
-        videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
+        swipeRefreshLayout = findViewById(R.id.refreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                videoViewModel.getLimitedVideos().observe(HomePage.this, new Observer<List<VideoData>>() {
+                    @Override
+                    public void onChanged(List<VideoData> videos) {
+                        if (videos != null) {
+                            allVideos = videos;
+                            adapter.setVideos(videos);
+                        }
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }
+        });
+
+        videoViewModel.getLimitedVideos().observe(this, new Observer<List<VideoData>>() {
             @Override
             public void onChanged(List<VideoData> videos) {
                 if (videos != null) {
@@ -210,8 +242,13 @@ public class HomePage extends AppCompatActivity {
         menuYou.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomePage.this, EditUserDetails.class);
-                startActivity(intent);
+                if (UserState.isLoggedIn()) {
+                    Intent intent = new Intent(HomePage.this, EditUserDetails.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(HomePage.this, LoginActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -232,10 +269,23 @@ public class HomePage extends AppCompatActivity {
                 uploadVideoButton.setVisibility(View.VISIBLE);
                 welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
 
+                // Replace localhost with the actual server IP address
+                String profilePicture = loggedInUser.getProfilePicture().replace("localhost", "10.0.2.2");
+
                 // load profile image
-                Converters converter = new Converters();
-                Bitmap bitmap = converter.toBitmap(loggedInUser.getProfilePicture());
-                profileImage.setImageBitmap(bitmap);
+                if (profilePicture.startsWith("http://") || profilePicture.startsWith("https://")) {
+                    // URL
+                    Glide.with(profileImage.getContext())
+                            .load(profilePicture)
+                            .into(profileImage);
+                    Log.d(TAG, "Loaded image from URL: " + profilePicture);
+                    Log.d(TAG, "image in profileImage: " + profileImage.getDrawable());
+
+                } else {
+                    Converters converter = new Converters();
+                    Bitmap bitmap = converter.toBitmap(loggedInUser.getProfilePicture());
+                    profileImage.setImageBitmap(bitmap);
+                }
             }
         }
     }

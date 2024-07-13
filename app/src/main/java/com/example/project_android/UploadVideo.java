@@ -15,14 +15,15 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.project_android.VideosState;
+import com.example.project_android.api.VideoApi;
 import com.example.project_android.entities.VideoData;
 import com.example.project_android.viewmodels.VideoViewModel;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class UploadVideo extends AppCompatActivity {
 
@@ -89,17 +90,14 @@ public class UploadVideo extends AppCompatActivity {
         });
     }
 
-
     private void openGalleryForThumbnail() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_THUMBNAIL_GET);
     }
 
-
     private void openGalleryForVideo() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_VIDEO_GET);
-
     }
 
     @Override
@@ -126,50 +124,40 @@ public class UploadVideo extends AppCompatActivity {
     private void submitVideo() {
         String title = editTextTitle.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
-        String uploadTime = getElapsedTime(System.currentTimeMillis());
+        String uploadTime = DataUtils.getCurrentDateTime(); // Use DataUtils to get current date and time
 
         if (title.isEmpty() || description.isEmpty() || selectedThumbnailUri == null || selectedVideoUri == null) {
             Toast.makeText(this, "Please fill all fields to upload.", Toast.LENGTH_SHORT).show();
             Log.d("UploadVideo", "Error: Please fill all fields to upload.");
         } else {
-            /*textViewError.setVisibility(View.GONE);
+            textViewError.setVisibility(View.GONE);
 
-            // Log the author image URI
-            String authorImageUri = UserState.getLoggedInUser().getImageUri();
-            Log.d("UploadVideo", "Author Image URI: " + authorImageUri);
+            String thumbnailPath = DataUtils.getPath(this, selectedThumbnailUri);
+            String videoPath = DataUtils.getPath(this, selectedVideoUri);
 
-            // Add new video to the state
-            VideoData newVideo = new VideoData(
-                    null, // Generate new ID
+            videoViewModel.uploadVideo(
+                    "Bearer " + TokenManager.getInstance().getToken(),
+                    UserState.getLoggedInUser().getUsername(), // Use username as userId
+                    new File(thumbnailPath),
+                    new File(videoPath),
                     title,
                     description,
                     UserState.getLoggedInUser().getDisplayName(),
-                    "1 views",
-                    selectedThumbnailUri.toString(),
-                    selectedVideoUri.toString(),
-                    uploadTime,
-                    authorImageUri
-            );
-            VideosState.getInstance().addVideo(newVideo);
-            Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(UploadVideo.this, HomePage.class);
-            startActivity(intent);*/
-        }
-    }
-
-
-    private String getElapsedTime(long uploadTime) {
-        long now = System.currentTimeMillis();
-        long diff = now - uploadTime;
-
-        if (diff < 60000) {
-            return "just now";
-        } else if (diff < 3600000) {
-            return (diff / 60000) + " minutes ago";
-        } else if (diff < 86400000) {
-            return (diff / 3600000) + " hours ago";
-        } else {
-            return (diff / 86400000) + " days ago";
+                    UserState.getLoggedInUser().getUsername(),
+                    UserState.getLoggedInUser().getProfilePicture(),
+                    uploadTime
+            ).observe(this, new Observer<VideoData>() {
+                @Override
+                public void onChanged(VideoData videoData) {
+                    if (videoData != null) {
+                        Toast.makeText(UploadVideo.this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(UploadVideo.this, HomePage.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(UploadVideo.this, "Error uploading video.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 }

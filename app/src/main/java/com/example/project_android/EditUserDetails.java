@@ -1,6 +1,8 @@
 package com.example.project_android;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,7 +35,7 @@ public class EditUserDetails extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_GET = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
-
+    private static final int REQUEST_PERMISSION_CAMERA = 4;
     private EditText editTextUsername;
     private EditText editTextDisplayName;
     private EditText editTextPassword;
@@ -100,7 +102,6 @@ public class EditUserDetails extends AppCompatActivity {
         if (currentUser != null) {
             editTextUsername.setText(currentUser.getUsername());
             editTextDisplayName.setText(currentUser.getDisplayName());
-            // Don't load password for security reasons
         }
     }
 
@@ -139,16 +140,29 @@ public class EditUserDetails extends AppCompatActivity {
         TokenManager tokenManager = TokenManager.getInstance();
 
         // Update user details via API
-        apiService.updateUser("Bearer " + tokenManager.getToken() , loggedInUser.getUsername(), updatedUser).enqueue(new Callback<User>() {
+        apiService.updateUser("Bearer " + tokenManager.getToken(), loggedInUser.getUsername(), updatedUser).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     User updatedUser = response.body();
                     UserState.setLoggedInUser(updatedUser); // Update UserState with updated user
-                    Toast.makeText(EditUserDetails.this, "User details updated successfully.", Toast.LENGTH_SHORT).show();
-                    finish();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(EditUserDetails.this, "User details updated successfully.", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(EditUserDetails.this, HomePage.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
                 } else {
-                    Toast.makeText(EditUserDetails.this, "Failed to update user details.", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(EditUserDetails.this, "Failed to update user details.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
 
@@ -178,10 +192,14 @@ public class EditUserDetails extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_IMAGE_GET && data != null) {
                 selectedImageUri = data.getData();
+                Log.d("EditUserDetails", "Image selected: " + selectedImageUri.toString());
             } else if (requestCode == REQUEST_IMAGE_CAPTURE && data != null) {
                 Bundle extras = data.getExtras();
-                selectedImageBitmap = (Bitmap) extras.get("data");
-                selectedImageUri = getImageUriFromBitmap(selectedImageBitmap);
+                if (extras != null) {
+                    selectedImageBitmap = (Bitmap) extras.get("data");
+                    selectedImageUri = getImageUriFromBitmap(selectedImageBitmap);
+                    Log.d("EditUserDetails", "Photo taken: " + selectedImageUri.toString());
+                }
             }
         }
     }
@@ -197,28 +215,42 @@ public class EditUserDetails extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
-                        // Handle successful deletion
-                        Toast.makeText(EditUserDetails.this, "User deleted successfully.", Toast.LENGTH_SHORT).show();
-                        // Optionally navigate to a different activity upon deletion
-                        Intent intent = new Intent(EditUserDetails.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish(); // Close current activity
+                        // Show success message on the UI thread
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(EditUserDetails.this, "User deleted successfully.", Toast.LENGTH_SHORT).show();
+                                UserState.logOut();
+                                Intent intent = new Intent(EditUserDetails.this, HomePage.class);
+                                startActivity(intent);
+                                finish(); // Close current activity
+                            }
+                        });
                     } else {
-                        // Handle deletion failure
-                        Toast.makeText(EditUserDetails.this, "Failed to delete user.", Toast.LENGTH_SHORT).show();
+                        // Show failure message on the UI thread
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(EditUserDetails.this, "Failed to delete user.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    // Handle deletion failure
-                    Log.e("EditUserDetails", "Error deleting user: " + t.getMessage());
-                    Toast.makeText(EditUserDetails.this, "Error deleting user.", Toast.LENGTH_SHORT).show();
+                    // Show failure message on the UI thread
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("EditUserDetails", "Error deleting user: " + t.getMessage());
+                            Toast.makeText(EditUserDetails.this, "Error deleting user.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             });
         }
     }
-
 
     private String convertImageToBase64(Uri imageUri) {
         try {
@@ -236,5 +268,26 @@ public class EditUserDetails extends AppCompatActivity {
     private Uri getImageUriFromBitmap(Bitmap bitmap) {
         String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "ProfilePicture", null);
         return Uri.parse(path);
+    }
+
+    private void checkPermissionAndOpenCamera() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_PERMISSION_CAMERA);
+        } else {
+            openCamera();
+        }
+    }
+
+    private void openCamera() {
+        try {
+            Intent takePictureIntent = new Intent();
+            takePictureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (Exception e) {
+            Log.e("SignupActivity", "Error opening camera: " + e.getMessage());
+        }
     }
 }

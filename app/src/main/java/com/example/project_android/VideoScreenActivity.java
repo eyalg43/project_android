@@ -2,6 +2,7 @@ package com.example.project_android;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.Observer;
@@ -24,6 +27,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.project_android.adapters.CommentsAdapter;
 import com.example.project_android.adapters.VideoAdapter;
 import com.example.project_android.entities.CommentData;
@@ -286,7 +291,38 @@ public class VideoScreenActivity extends AppCompatActivity {
             } catch (IOException e) {
                 Log.e(TAG, "Error loading video: " + e.getMessage());
             }
-        } else {
+        }
+        else if (video.getVideo().startsWith("http://") || video.getVideo().startsWith("https://")) {
+            // Use Glide to load video
+            Glide.with(this)
+                    .asFile()
+                    .load(video.getVideo())
+                    .into(new CustomTarget<File>() {
+                        @Override
+                        public void onResourceReady(@NonNull File resource, @Nullable Transition<? super File> transition) {
+                            Uri videoUri = Uri.fromFile(resource);
+                            videoView.setVideoURI(videoUri);
+
+                            // Add media controls to the VideoView
+                            MediaController mediaController = new MediaController(VideoScreenActivity.this);
+                            mediaController.setAnchorView(videoView);
+                            videoView.setMediaController(mediaController);
+
+                            videoView.setOnPreparedListener(mp -> {
+                                mediaController.setAnchorView(videoView);
+                                videoView.start();
+                            });
+
+                            videoView.start();
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                            // Handle placeholder if needed
+                        }
+                    });
+        }
+        else {
             Uri videoUri = Uri.parse(video.getVideo());
             videoView.setVideoURI(videoUri);
 
@@ -358,7 +394,8 @@ public class VideoScreenActivity extends AppCompatActivity {
                     Log.d(TAG, "Loaded image from URI: " + path);
                 } else {
                     // Load from local file path
-                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    Converters converter = new Converters();
+                    Bitmap bitmap = converter.toBitmap(path);
                     imageView.setImageBitmap(bitmap);
                     Log.d(TAG, "Loaded image from local file path: " + path);
                 }
