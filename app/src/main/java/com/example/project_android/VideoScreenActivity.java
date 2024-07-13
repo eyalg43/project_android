@@ -99,11 +99,11 @@ public class VideoScreenActivity extends AppCompatActivity {
         if (UserState.isLoggedIn()) {
             commentInputSection.setVisibility(View.VISIBLE);
             User loggedInUser = UserState.getLoggedInUser();
+            loggedInUser.setUrlForEmulator();
             displayNameTextView.setText(loggedInUser.getDisplayName());
 
             // Load user image
-            Uri imageUri = Uri.parse(loggedInUser.getProfilePicture());
-            userImageInput.setImageURI(imageUri);
+            loadUserProfileImage(loggedInUser.getProfilePicture(), userImageInput);
         } else {
             commentInputSection.setVisibility(View.GONE);
         }
@@ -120,7 +120,7 @@ public class VideoScreenActivity extends AppCompatActivity {
                         VideoData selectedVideo = findVideoById(videoId);
                         if (selectedVideo != null) {
                             displayVideoDetails(selectedVideo);
-                            observeComments(selectedVideo.getId()); // Uncomment if you add comments feature back
+                            observeComments(selectedVideo.getId());
                         }
                     }
                 }
@@ -402,6 +402,19 @@ public class VideoScreenActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error loading image: " + e.getMessage());
+        }
+    }
+
+    private void loadUserProfileImage(String profilePicture, ImageView userImageInput) {
+        if (profilePicture.startsWith("http://") || profilePicture.startsWith("https://")) {
+            Glide.with(userImageInput.getContext())
+                    .load(profilePicture)
+                    .into(userImageInput);
+            Log.d(TAG, "Loaded image from URL: " + profilePicture);
+        } else {
+            Converters converter = new Converters();
+            Bitmap bitmap = converter.toBitmap(profilePicture);
+            userImageInput.setImageBitmap(bitmap);
         }
     }
 
