@@ -5,6 +5,7 @@ import android.database.CursorWindow;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project_android.adapters.VideosListAdapter;
 import com.example.project_android.api.VideoApi;
@@ -38,6 +40,7 @@ import java.util.List;
 public class HomePage extends AppCompatActivity {
     private static final String TAG = "HomePage";
 
+    private SwipeRefreshLayout swipeRefreshLayout;
     private VideosListAdapter adapter;
     private List<VideoData> allVideos;
     private DrawerLayout drawerLayout;
@@ -98,7 +101,24 @@ public class HomePage extends AppCompatActivity {
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
 
-        videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
+        swipeRefreshLayout = findViewById(R.id.refreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                videoViewModel.getLimitedVideos().observe(HomePage.this, new Observer<List<VideoData>>() {
+                    @Override
+                    public void onChanged(List<VideoData> videos) {
+                        if (videos != null) {
+                            allVideos = videos;
+                            adapter.setVideos(videos);
+                        }
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }
+        });
+
+        videoViewModel.getLimitedVideos().observe(this, new Observer<List<VideoData>>() {
             @Override
             public void onChanged(List<VideoData> videos) {
                 if (videos != null) {
