@@ -25,19 +25,8 @@ public class VideoApi {
         apiService = retrofit.create(ApiService.class);
     }
 
-    public void getAllVideos(MutableLiveData<List<VideoData>> videos) {
-        Call<List<VideoData>> call = apiService.getAllVideos();
-        call.enqueue(new Callback<List<VideoData>>() {
-            @Override
-            public void onResponse(Call<List<VideoData>> call, Response<List<VideoData>> response) {
-                videos.postValue(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<List<VideoData>> call, Throwable t) {
-
-            }
-        });
+    public Call<List<VideoData>> getAllVideos() {
+        return apiService.getAllVideos();
     }
 
     public void getVideoById(String videoId, MutableLiveData<VideoData> video) {
