@@ -66,7 +66,7 @@ public class User {
 
     public void setUrlForEmulator() {
         if (this.profilePicture != null) {
-            this.profilePicture = this.profilePicture.replace("localhost", "10.0.2.2");
+            this.profilePicture = this.profilePicture.replace("localhost", "192.168.1.121");
         }
     }
 }
