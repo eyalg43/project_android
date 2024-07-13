@@ -35,6 +35,10 @@ public class VideoViewModel extends AndroidViewModel {
         return videoRepository.getLimitedVideos();
     }
 
+    public LiveData<List<VideoData>> getVideosByAuthor(String username) {
+        return videoRepository.getVideosByAuthor(username);
+    }
+
     public LiveData<VideoData> uploadVideo(String token, String userId, File imgFile, File videoFile, String title, String description, String author, String username, String authorImage, String uploadTime) {
         return videoRepository.uploadVideo(token, userId, imgFile, videoFile, title, description, author, username, authorImage, uploadTime);
     }
@@ -51,16 +55,4 @@ public class VideoViewModel extends AndroidViewModel {
         videoRepository.syncWithServer();
     }
 
-
-    /*public void add(VideoData videoData) {
-        videoRepository.add(videoData);
-    }
-
-    public void delete(VideoData videoData) {
-        videoRepository.delete(videoData);
-    }
-
-    public void reload() {
-        videoRepository.reload();
-    }*/
 }

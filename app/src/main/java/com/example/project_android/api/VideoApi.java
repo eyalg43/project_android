@@ -58,6 +58,21 @@ public class VideoApi {
         });
     }
 
+    public void getVideosByAuthor(String userId, MutableLiveData<List<VideoData>> videos) {
+        Call<List<VideoData>> call = apiService.getVideosByAuthor(userId);
+        call.enqueue(new Callback<List<VideoData>>() {
+            @Override
+            public void onResponse(Call<List<VideoData>> call, Response<List<VideoData>> response) {
+                videos.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<VideoData>> call, Throwable t) {
+                // Handle failure
+            }
+        });
+    }
+
     public void uploadVideo(String token, String userId, File imgFile, File videoFile, String title, String description, String author, String username, String authorImage, String uploadTime, UploadCallback callback) {
         RequestBody titlePart = RequestBody.create(MediaType.parse("text/plain"), title);
         RequestBody descriptionPart = RequestBody.create(MediaType.parse("text/plain"), description);
