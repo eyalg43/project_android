@@ -45,6 +45,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class VideoScreenActivity extends AppCompatActivity {
 
     private static final String TAG = "VideoScreenActivity";
@@ -149,7 +153,12 @@ public class VideoScreenActivity extends AppCompatActivity {
                     commentInput.setText("");
                 }
             } else {
-                Toast.makeText(VideoScreenActivity.this, "You need to be logged in to comment.", Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(VideoScreenActivity.this, "You need to be logged in to comment.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
@@ -206,18 +215,32 @@ public class VideoScreenActivity extends AppCompatActivity {
 
     private void addComment(String displayName, String commentText, String userImage) {
         if (currentVideo != null) {
-            CommentData newComment = new CommentData();
-            // No need to set the ID manually, MongoDB will handle it
-            newComment.setText(commentText);
-            newComment.setUsername(UserState.getLoggedInUser().getUsername());
-            newComment.setDisplayName(displayName);
-            newComment.setDate(getCurrentTime());
-            newComment.setImg(userImage);
-            newComment.setVideoId(currentVideo.getId());
+            User loggedInUser = UserState.getLoggedInUser();
+            if (loggedInUser != null) {
+                CommentData newComment = new CommentData();
+                // No need to set the ID manually, MongoDB will handle it
+                newComment.setText(commentText);
+                newComment.setUsername(loggedInUser.getUsername());
+                newComment.setDisplayName(loggedInUser.getDisplayName());
+                newComment.setDate(getCurrentTime());
+                newComment.setImg(userImage);
+                newComment.setVideoId(currentVideo.getId());
 
-            commentViewModel.createComment(newComment); // Use ViewModel to handle comment creation
+                Log.d(TAG, "Creating comment with username: " + loggedInUser.getUsername() + " and displayName: " + loggedInUser.getDisplayName());
+
+                commentViewModel.createComment(newComment);
+
+                // Refresh the comments list after adding the new comment
+                observeComments(currentVideo.getId());
+
+            } else {
+                Log.e(TAG, "User is not logged in");
+            }
+        } else {
+            Log.e(TAG, "Current video is null");
         }
     }
+
 
     private void displayVideoDetails(VideoData video) {
         currentVideo = video;
@@ -383,7 +406,8 @@ public class VideoScreenActivity extends AppCompatActivity {
     }
 
     private String getCurrentTime() {
-        return "Just now";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault());
+        return sdf.format(new Date());
     }
 
     private VideoData findVideoById(String id) {

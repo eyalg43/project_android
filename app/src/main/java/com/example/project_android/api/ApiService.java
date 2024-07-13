@@ -6,6 +6,7 @@ import com.example.project_android.entities.CommentData;
 import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.util.List;
 
@@ -33,22 +34,24 @@ public interface ApiService {
     Call<List<CommentData>> getComments();
 
     @POST("api/comments")
-    Call<CommentData> createComment(@Body CommentData comment);
+    Call<CommentData> createComment(@Header("Authorization") String token, @Body JsonObject comment);
+
 
     @GET("comments/{id}")
     Call<CommentData> getComment(@Path("id") int commentId);
 
     @PATCH("api/users/{id}/comments")
-    Call<CommentData> updateComment(@Path("id") String id, @Body CommentData comment);
+    Call<CommentData> updateComment(@Header("Authorization") String token, @Path("id") String id, @Body JsonObject comment);
+
 
     @DELETE("api/users/{id}/comments")
-    Call<Void> deleteComment(@Path("id") String id);
+    Call<Void> deleteComment(@Header("Authorization") String token, @Path("id") String id);
 
     @PATCH("api/{id}/like")
-    Call<Void> likeComment(@Path("id") int commentId);
+    Call<Void> likeComment(@Header("Authorization") String token, @Path("id") String commentId, @Body JsonObject displayName);
 
     @PATCH("api/{id}/dislike")
-    Call<Void> dislikeComment(@Path("id") int commentId);
+    Call<Void> dislikeComment(@Header("Authorization") String token, @Path("id") String commentId, @Body JsonObject displayName);
 
     // Video-related endpoints
     @GET("api/videos")
@@ -98,10 +101,10 @@ public interface ApiService {
     );
 
     @PATCH("api/videos/{id}/like")
-    Call<VideoData> likeVideo(@Path("id") int videoId, @Body String userDisplayName);
+    Call<VideoData> likeVideo(@Header("Authorization") String token, @Path("id") String videoId, @Body JsonObject displayName);
 
     @PATCH("api/videos/{id}/dislike")
-    Call<VideoData> dislikeVideo(@Path("id") int videoId, @Body String userDisplayName);
+    Call<VideoData> dislikeVideo(@Header("Authorization") String token, @Path("id") String videoId, @Body JsonObject displayName);
 
     // User-related endpoints
     @POST("api/users")

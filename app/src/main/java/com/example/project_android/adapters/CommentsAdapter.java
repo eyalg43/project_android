@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -25,6 +26,7 @@ import com.example.project_android.DataUtils;
 import com.example.project_android.R;
 import com.example.project_android.UserState;
 import com.example.project_android.entities.CommentData;
+import com.example.project_android.entities.User;
 import com.example.project_android.viewmodels.CommentViewModel;
 
 import java.io.InputStream;
@@ -54,7 +56,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         CommentData comment = commentsList.get(position);
-        holder.usernameTextView.setText(comment.getUsername());
+        holder.displayNameTextView.setText(comment.getDisplayName());
         holder.dateTextView.setText(DataUtils.getTimeAgo(comment.getDate()));
         holder.commentTextView.setText(comment.getText());
 
@@ -62,7 +64,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
         loadImage(comment.getImg(), holder.userImageView);
 
         // Show/hide edit and delete buttons based on login status and comment ownership
-        if (UserState.isLoggedIn() && UserState.getLoggedInUser().getDisplayName().equals(comment.getUsername())) {
+        if (UserState.isLoggedIn() && UserState.getLoggedInUser().getDisplayName().equals(comment.getDisplayName())) {
             holder.editButton.setVisibility(View.VISIBLE);
             holder.deleteButton.setVisibility(View.VISIBLE);
         } else {
@@ -92,33 +94,29 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     }
 
     private void showEditCommentDialog(CommentData commentData) {
-        // Create the dialog builder
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit Comment");
 
-        // Set up the input
         final EditText input = new EditText(context);
         input.setText(commentData.getText());
         input.setTextColor(context.getResources().getColor(R.color.dialog_text));
         input.setBackgroundColor(context.getResources().getColor(R.color.dialog_background));
         builder.setView(input);
 
-        // Set up the buttons
         builder.setPositiveButton("Save", (dialog, which) -> {
             String newCommentText = input.getText().toString().trim();
             if (!newCommentText.isEmpty()) {
                 commentData.setText(newCommentText);
-                commentViewModel.updateComment(commentData); // Use ViewModel to update comment
-                notifyDataSetChanged();
+                Log.d(TAG, "Editing comment with ID: " + commentData.getId());
+                commentViewModel.updateComment(commentData); // Update comment in ViewModel
+                notifyItemChanged(commentsList.indexOf(commentData)); // Update the specific item
             }
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
-        // Show the dialog
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        // Set button colors
         Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
         if (positiveButton != null && negativeButton != null) {
@@ -127,32 +125,48 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
         }
     }
 
+
     private void deleteComment(CommentData commentData) {
+        commentViewModel.deleteComment(commentData); // Delete comment in ViewModel
+        int position = commentsList.indexOf(commentData);
         commentsList.remove(commentData);
-        commentViewModel.deleteComment(commentData); // Use ViewModel to delete comment
-        notifyDataSetChanged();
+        notifyItemRemoved(position); // Remove the specific item
     }
 
+
     private void handleLikeDislike(CommentData commentData, boolean isLike, CommentViewHolder holder) {
+        User loggedInUser = UserState.getLoggedInUser();
+        if (loggedInUser == null) {
+            Toast.makeText(context, "You need to be logged in to perform this action.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userDisplayName = loggedInUser.getDisplayName();
+
         if (isLike) {
             if (commentData.isLiked()) {
                 commentData.setLiked(false);
+                commentViewModel.dislikeComment(commentData.getId(), userDisplayName); // Remove like on server
             } else {
                 commentData.setLiked(true);
                 commentData.setDisliked(false);
+                commentViewModel.likeComment(commentData.getId(), userDisplayName); // Like on server
             }
         } else {
             if (commentData.isDisliked()) {
                 commentData.setDisliked(false);
+                commentViewModel.dislikeComment(commentData.getId(), userDisplayName); // Remove dislike on server
             } else {
                 commentData.setDisliked(true);
                 commentData.setLiked(false);
+                commentViewModel.dislikeComment(commentData.getId(), userDisplayName); // Dislike on server
             }
         }
 
         commentViewModel.updateComment(commentData); // Use ViewModel to update comment
         updateLikeDislikeButtonColors(commentData, holder);
     }
+
 
     private void updateLikeDislikeButtonColors(CommentData commentData, CommentViewHolder holder) {
         if (commentData.isLiked()) {
@@ -169,7 +183,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {
-        TextView usernameTextView;
+        TextView displayNameTextView;
         TextView dateTextView;
         TextView commentTextView;
         ImageView userImageView;
@@ -180,7 +194,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
-            usernameTextView = itemView.findViewById(R.id.comment_username);
+            displayNameTextView = itemView.findViewById(R.id.comment_username);
             dateTextView = itemView.findViewById(R.id.comment_date);
             commentTextView = itemView.findViewById(R.id.comment_text);
             userImageView = itemView.findViewById(R.id.comment_user_image);

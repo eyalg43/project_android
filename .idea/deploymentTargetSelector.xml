@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-07-06T10:23:37.405550300Z">
+        <DropdownSelection timestamp="2024-07-12T13:06:24.178652400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\omri\.android\avd\Pixel_2_API_30_test.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CR419YXLK" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -15,10 +15,10 @@
       </SelectionState>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-07-06T10:23:37.405550300Z">
+        <DropdownSelection timestamp="2024-07-12T13:06:24.178652400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\omri\.android\avd\Pixel_2_API_30_test.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CR419YXLK" />
             </handle>
           </Target>
         </DropdownSelection>
