@@ -60,7 +60,6 @@ public class VideoScreenActivity extends AppCompatActivity {
     private List<VideoData> originalVideoList;
     private NestedScrollView nestedScrollView;
     private VideoViewModel videoViewModel;
-
     private CommentViewModel commentViewModel;
 
     @Override
@@ -153,12 +152,7 @@ public class VideoScreenActivity extends AppCompatActivity {
                     commentInput.setText("");
                 }
             } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(VideoScreenActivity.this, "You need to be logged in to comment.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(VideoScreenActivity.this, "You need to be logged in to comment.", Toast.LENGTH_SHORT).show());
             }
         });
 
@@ -166,52 +160,64 @@ public class VideoScreenActivity extends AppCompatActivity {
         ImageButton likeButton = findViewById(R.id.like_button);
         ImageButton dislikeButton = findViewById(R.id.dislike_button);
 
-        /*likeButton.setOnClickListener(v -> handleLikeDislike(true));!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        dislikeButton.setOnClickListener(v -> handleLikeDislike(false));!!!!!!!!!!!!!!!!!!!!!!!*/
+        likeButton.setOnClickListener(v -> handleLikeDislike(true));
+        dislikeButton.setOnClickListener(v -> handleLikeDislike(false));
     }
 
-    /*private void handleLikeDislike(boolean isLike) {
+    private void handleLikeDislike(boolean isLike) {
         if (currentVideo != null) {
-            if (isLike) {
-                if (currentVideo.isLiked()) {
-                    currentVideo.setLiked(false);
+            User loggedInUser = UserState.getLoggedInUser();
+            if (loggedInUser != null) {
+                String displayName = loggedInUser.getDisplayName();
+                if (isLike) {
+                    if (currentVideo.getLikes().contains(displayName)) {
+                        currentVideo.getLikes().remove(displayName);
+                        videoViewModel.likeVideo(currentVideo.getId(), displayName);
+                    } else {
+                        currentVideo.getLikes().add(displayName);
+                        currentVideo.getDislikes().remove(displayName);
+                        videoViewModel.likeVideo(currentVideo.getId(), displayName);
+                    }
                 } else {
-                    currentVideo.setLiked(true);
-                    currentVideo.setDisliked(false);
+                    if (currentVideo.getDislikes().contains(displayName)) {
+                        currentVideo.getDislikes().remove(displayName);
+                        videoViewModel.dislikeVideo(currentVideo.getId(), displayName);
+                    } else {
+                        currentVideo.getDislikes().add(displayName);
+                        currentVideo.getLikes().remove(displayName);
+                        videoViewModel.dislikeVideo(currentVideo.getId(), displayName);
+                    }
                 }
+                updateLikeDislikeButtonColors();
             } else {
-                if (currentVideo.isDisliked()) {
-                    currentVideo.setDisliked(false);
-                } else {
-                    currentVideo.setDisliked(true);
-                    currentVideo.setLiked(false);
-                }
+                Toast.makeText(this, "You need to be logged in to like or dislike.", Toast.LENGTH_SHORT).show();
             }
-
-            // Update the video state
-            VideosState.getInstance().updateVideo(currentVideo);
-
-            // Update button colors
-            updateLikeDislikeButtonColors();
         }
-    }*/
+    }
 
-    /*private void updateLikeDislikeButtonColors() {
+    private void updateLikeDislikeButtonColors() {
         ImageButton likeButton = findViewById(R.id.like_button);
         ImageButton dislikeButton = findViewById(R.id.dislike_button);
 
-        if (currentVideo.isLiked()) {
-            likeButton.setColorFilter(getResources().getColor(R.color.like_green));
+        User loggedInUser = UserState.getLoggedInUser();
+        if (loggedInUser != null) {
+            String displayName = loggedInUser.getDisplayName();
+            if (currentVideo.getLikes().contains(displayName)) {
+                likeButton.setColorFilter(getResources().getColor(R.color.like_green));
+            } else {
+                likeButton.setColorFilter(null);
+            }
+
+            if (currentVideo.getDislikes().contains(displayName)) {
+                dislikeButton.setColorFilter(getResources().getColor(R.color.dislike_red));
+            } else {
+                dislikeButton.setColorFilter(null);
+            }
         } else {
             likeButton.setColorFilter(null);
-        }
-
-        if (currentVideo.isDisliked()) {
-            dislikeButton.setColorFilter(getResources().getColor(R.color.dislike_red));
-        } else {
             dislikeButton.setColorFilter(null);
         }
-    }*/
+    }
 
     private void addComment(String displayName, String commentText, String userImage) {
         if (currentVideo != null) {
@@ -240,7 +246,6 @@ public class VideoScreenActivity extends AppCompatActivity {
             Log.e(TAG, "Current video is null");
         }
     }
-
 
     private void displayVideoDetails(VideoData video) {
         currentVideo = video;
@@ -291,8 +296,7 @@ public class VideoScreenActivity extends AppCompatActivity {
             } catch (IOException e) {
                 Log.e(TAG, "Error loading video: " + e.getMessage());
             }
-        }
-        else if (video.getVideo().startsWith("http://") || video.getVideo().startsWith("https://")) {
+        } else if (video.getVideo().startsWith("http://") || video.getVideo().startsWith("https://")) {
             // Use Glide to load video
             Glide.with(this)
                     .asFile()
@@ -321,8 +325,7 @@ public class VideoScreenActivity extends AppCompatActivity {
                             // Handle placeholder if needed
                         }
                     });
-        }
-        else {
+        } else {
             Uri videoUri = Uri.parse(video.getVideo());
             videoView.setVideoURI(videoUri);
 
@@ -346,8 +349,9 @@ public class VideoScreenActivity extends AppCompatActivity {
         updateRelatedVideos(video);
 
         // Update the like and dislike button colors
-        //updateLikeDislikeButtonColors();
+        updateLikeDislikeButtonColors();
     }
+
     private void observeComments(String videoId) {
         commentViewModel.getComments(videoId).observe(this, comments -> {
             if (comments != null) {
@@ -367,16 +371,13 @@ public class VideoScreenActivity extends AppCompatActivity {
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 imageView.setImageBitmap(decodedByte);
                 Log.d(TAG, "Loaded base64 image.");
-
-            }
-            else if (path.startsWith("http://") || path.startsWith("https://")) {
+            } else if (path.startsWith("http://") || path.startsWith("https://")) {
                 // URL
                 Glide.with(imageView.getContext())
                         .load(path)
                         .into(imageView);
                 Log.d(TAG, "Loaded image from URL: " + path);
-            }
-            else {
+            } else {
                 // Check if the path is a drawable resource
                 int resId = getResources().getIdentifier(path, "drawable", getPackageName());
                 if (resId != 0) {

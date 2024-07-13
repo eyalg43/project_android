@@ -63,4 +63,12 @@ public class VideoViewModel extends AndroidViewModel {
     public void reload() {
         videoRepository.reload();
     }*/
+
+    public void likeVideo(String videoId, String userDisplayName) {
+        videoRepository.likeVideo(videoId, userDisplayName);
+    }
+
+    public void dislikeVideo(String videoId, String userDisplayName) {
+        videoRepository.dislikeVideo(videoId, userDisplayName);
+    }
 }
