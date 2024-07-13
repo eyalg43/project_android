@@ -55,6 +55,23 @@ public class VideoRepository {
         return videoDao.getVideoById(videoId);
     }
 
+    public LiveData<List<VideoData>> getVideosByAuthor(String username) {
+        MutableLiveData<List<VideoData>> videosByAuthor = new MutableLiveData<>();
+        videoApi.getVideosByAuthor(username, videosByAuthor);
+        videosByAuthor.observeForever(videos -> {
+            if (videos != null) {
+                for (VideoData video : videos) {
+                    video.setUrlForEmulator();
+                }
+                new Thread(() -> {
+                    videoDao.deleteAllVideos();
+                    videoDao.insertVideos(videos);
+                }).start();
+            }
+        });
+        return videoDao.getVideosByAuthor(username);
+    }
+
     public LiveData<VideoData> uploadVideo(String token, String userId, File imgFile, File videoFile, String title, String description, String author, String username, String authorImage, String uploadTime) {
         MutableLiveData<VideoData> uploadedVideo = new MutableLiveData<>();
         videoApi.uploadVideo(token, userId, imgFile, videoFile, title, description, author, username, authorImage, uploadTime, new VideoApi.UploadCallback() {

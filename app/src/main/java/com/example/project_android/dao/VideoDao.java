@@ -36,4 +36,7 @@ public interface VideoDao {
 
     @Query("SELECT * FROM videos LIMIT 20")
     LiveData<List<VideoData>> getLimitedVideos();
+
+    @Query("SELECT * FROM videos WHERE username = :username")
+    LiveData<List<VideoData>> getVideosByAuthor(String username);
 }

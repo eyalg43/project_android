@@ -79,4 +79,7 @@
     <string name="save_changes">Save Changes</string>
     <string name="edit_your_details">Edit Your Details</string>
     <string name="edit_profile_picture">Edit Profile Picture</string>
+    <string name="user_videos_icon_text">user_videos_icon</string>
+    <string name="user_s_videos">User\'s Videos</string>
+    <string name="author_name_description">author_name_description</string>
 </resources>

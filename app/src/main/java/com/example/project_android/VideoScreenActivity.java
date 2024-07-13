@@ -1,5 +1,6 @@
 package com.example.project_android;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -168,6 +169,14 @@ public class VideoScreenActivity extends AppCompatActivity {
 
         /*likeButton.setOnClickListener(v -> handleLikeDislike(true));!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         dislikeButton.setOnClickListener(v -> handleLikeDislike(false));!!!!!!!!!!!!!!!!!!!!!!!*/
+
+        // Set click listeners for author name and image
+        TextView authorName = findViewById(R.id.author_name);
+        ImageView authorImage = findViewById(R.id.author_image);
+
+        View.OnClickListener onAuthorClickListener = v -> navigateToUserVideos(currentVideo.getUsername());
+        authorName.setOnClickListener(onAuthorClickListener);
+        authorImage.setOnClickListener(onAuthorClickListener);
     }
 
     /*private void handleLikeDislike(boolean isLike) {
@@ -451,5 +460,11 @@ public class VideoScreenActivity extends AppCompatActivity {
     private void resetScrollPosition() {
         // Reset the scroll position to the top
         nestedScrollView.scrollTo(0, 0);
+    }
+
+    private void navigateToUserVideos(String username) {
+        Intent intent = new Intent(VideoScreenActivity.this, UserVideosActivity.class);
+        intent.putExtra("username", username);
+        startActivity(intent);
     }
 }
