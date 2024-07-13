@@ -34,6 +34,23 @@ public class VideoRepository {
         return videoDao.getAllVideos();
     }
 
+    public LiveData<List<VideoData>> getLimitedVideos() {
+        MutableLiveData<List<VideoData>> limitedVideos = new MutableLiveData<>();
+        videoApi.getLimitedVideos(limitedVideos);
+        limitedVideos.observeForever(videos -> {
+            if (videos != null) {
+                for (VideoData video : videos) {
+                video.setUrlForEmulator();
+                }
+                new Thread(() -> {
+                    videoDao.deleteAllVideos();
+                    videoDao.insertVideos(videos);
+                }).start();
+            }
+        });
+        return videoDao.getLimitedVideos();
+    }
+
     public LiveData<VideoData> getVideoById(String videoId) {
         return videoDao.getVideoById(videoId);
     }

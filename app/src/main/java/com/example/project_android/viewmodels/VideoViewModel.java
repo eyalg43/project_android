@@ -31,6 +31,10 @@ public class VideoViewModel extends AndroidViewModel {
         return videoRepository.getVideoById(videoId);
     }
 
+    public LiveData<List<VideoData>> getLimitedVideos() {
+        return videoRepository.getLimitedVideos();
+    }
+
     public LiveData<VideoData> uploadVideo(String token, String userId, File imgFile, File videoFile, String title, String description, String author, String username, String authorImage, String uploadTime) {
         return videoRepository.uploadVideo(token, userId, imgFile, videoFile, title, description, author, username, authorImage, uploadTime);
     }

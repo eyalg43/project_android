@@ -29,6 +29,20 @@ public class VideoApi {
         return apiService.getAllVideos();
     }
 
+    public void getLimitedVideos(MutableLiveData<List<VideoData>> videos) {
+        Call<List<VideoData>> call = apiService.getVideos();
+        call.enqueue(new Callback<List<VideoData>>() {
+            @Override
+            public void onResponse(Call<List<VideoData>> call, Response<List<VideoData>> response) {
+                videos.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<VideoData>> call, Throwable t) {
+                // Handle failure
+            }
+        });
+    }
     public void getVideoById(String videoId, MutableLiveData<VideoData> video) {
         Call<VideoData> call = apiService.getVideo(videoId);
         call.enqueue(new Callback<VideoData>() {

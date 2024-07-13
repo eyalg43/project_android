@@ -33,4 +33,7 @@ public interface VideoDao {
 
     @Query("DELETE FROM videos")
     void deleteAllVideos();
+
+    @Query("SELECT * FROM videos LIMIT 20")
+    LiveData<List<VideoData>> getLimitedVideos();
 }
