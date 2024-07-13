@@ -236,6 +236,9 @@ public class VideoScreenActivity extends AppCompatActivity {
 
                 commentViewModel.createComment(newComment);
 
+                // Add the comment to the adapter immediately
+                commentsAdapter.updateComments(Collections.singletonList(newComment));
+
                 // Refresh the comments list after adding the new comment
                 observeComments(currentVideo.getId());
 

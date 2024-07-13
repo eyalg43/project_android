@@ -1,5 +1,6 @@
 package com.example.project_android.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -32,4 +33,6 @@ public interface CommentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertComments(List<CommentData> comments);
 
+    @Query("SELECT * FROM comments WHERE videoId = :videoId")
+    LiveData<List<CommentData>> getCommentsForVideoLive(String videoId);
 }
