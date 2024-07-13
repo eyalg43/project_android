@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -39,6 +40,7 @@ import java.util.List;
 
 public class HomePage extends AppCompatActivity {
     private static final String TAG = "HomePage";
+    private static final int EDIT_VIDEO_REQUEST_CODE = 1;
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private VideosListAdapter adapter;
@@ -78,7 +80,7 @@ public class HomePage extends AppCompatActivity {
             public void onEditClick(VideoData video) {
                 Intent intent = new Intent(HomePage.this, EditVideo.class);
                 intent.putExtra("video_id", video.getId());
-                startActivity(intent);
+                startActivityForResult(intent, EDIT_VIDEO_REQUEST_CODE);
             }
 
             @Override
@@ -261,6 +263,25 @@ public class HomePage extends AppCompatActivity {
         });
 
         // Check if user is logged in
+        checkUserState();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkUserState();
+        videoViewModel.getLimitedVideos().observe(this, new Observer<List<VideoData>>() {
+            @Override
+            public void onChanged(List<VideoData> videos) {
+                if (videos != null) {
+                    allVideos = videos;
+                    adapter.setVideos(videos);
+                }
+            }
+        });
+    }
+
+    private void checkUserState() {
         if (UserState.isLoggedIn()) {
             User loggedInUser = UserState.getLoggedInUser();
             if (loggedInUser != null) {
@@ -270,7 +291,7 @@ public class HomePage extends AppCompatActivity {
                 welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
 
                 // Replace localhost with the actual server IP address
-                String profilePicture = loggedInUser.getProfilePicture().replace("localhost", "192.168.1.121");
+                String profilePicture = loggedInUser.getProfilePicture().replace("localhost", "10.0.2.2");
 
                 // load profile image
                 if (profilePicture.startsWith("http://") || profilePicture.startsWith("https://")) {
@@ -287,6 +308,27 @@ public class HomePage extends AppCompatActivity {
                     profileImage.setImageBitmap(bitmap);
                 }
             }
+        } else {
+            authButtonsContainer.setVisibility(View.VISIBLE);
+            profileContainer.setVisibility(View.GONE);
+            uploadVideoButton.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == EDIT_VIDEO_REQUEST_CODE && resultCode == RESULT_OK) {
+            // Update the video list
+            videoViewModel.getLimitedVideos().observe(this, new Observer<List<VideoData>>() {
+                @Override
+                public void onChanged(List<VideoData> videos) {
+                    if (videos != null) {
+                        allVideos = videos;
+                        adapter.setVideos(videos);
+                    }
+                }
+            });
         }
     }
 
