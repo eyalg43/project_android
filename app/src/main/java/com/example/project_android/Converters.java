@@ -24,11 +24,21 @@ public class Converters {
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
 
+//    @TypeConverter
+//    public Bitmap toBitmap(String base64String) {
+//        byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
+//        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+//    }
+
     @TypeConverter
     public Bitmap toBitmap(String base64String) {
+        if (base64String.startsWith("data:image/png;base64,")) {
+            base64String = base64String.substring("data:image/png;base64,".length());
+        }
         byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
     }
+
 
     @TypeConverter
     public String fromList(List<String> list) {

@@ -296,7 +296,7 @@ public class EditUserDetails extends AppCompatActivity {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream.toByteArray();
-            return Base64.encodeToString(byteArray, Base64.DEFAULT);
+            return "data:image/png;base64," + Base64.encodeToString(byteArray, Base64.DEFAULT);
         } catch (IOException e) {
             Log.e("EditUserDetails", "Error converting image to base64: " + e.getMessage());
             return null;
