@@ -110,23 +110,18 @@ public class VideoScreenActivity extends AppCompatActivity {
 
         // Get the video ID from the intent
         String videoId = getIntent().getStringExtra("video_id");
-        Log.d(TAG, "Received video ID: " + videoId); // Log received video ID
+        Log.d(TAG, "Received video ID: " + videoId);
         if (videoId != null) {
-            videoViewModel.getVideoById(videoId).observe(this, new Observer<VideoData>() {
-                @Override
-                public void onChanged(VideoData video) {
-                    if (video != null) {
-                        displayVideoDetails(video);
-                        observeComments(video.getId());
-                    }
-                }
-            });
-
             videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
                 @Override
                 public void onChanged(List<VideoData> videos) {
                     if (videos != null) {
                         originalVideoList = videos;
+                        VideoData selectedVideo = findVideoById(videoId);
+                        if (selectedVideo != null) {
+                            displayVideoDetails(selectedVideo);
+                            observeComments(selectedVideo.getId());
+                        }
                     }
                 }
             });
@@ -468,6 +463,17 @@ public class VideoScreenActivity extends AppCompatActivity {
     private void resetScrollPosition() {
         // Reset the scroll position to the top
         nestedScrollView.scrollTo(0, 0);
+    }
+
+    private VideoData findVideoById(String id) {
+        if (originalVideoList != null) {
+            for (VideoData video : originalVideoList) {
+                if (video.getId() != null && video.getId().equals(id)) {
+                    return video;
+                }
+            }
+        }
+        return null;
     }
 
     private void navigateToUserVideos(String username) {
