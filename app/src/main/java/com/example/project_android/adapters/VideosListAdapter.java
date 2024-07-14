@@ -72,14 +72,12 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
                     Glide.with(imageView.getContext())
                             .load(path)
                             .into(imageView);
-                    Log.d(TAG, "Loaded image from URL: " + path);
                 }
                 else {
                     // Check if the path is a drawable resource
                     int resId = imageView.getContext().getResources().getIdentifier(path, "drawable", imageView.getContext().getPackageName());
                     if (resId != 0) {
                         imageView.setImageResource(resId);
-                        Log.d(TAG, "Loaded drawable resource: " + path);
                     } else if (path.startsWith("content://") || path.startsWith("file://")) {
                         // Load from URI
                         Uri uri = Uri.parse(path);
@@ -89,13 +87,11 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Vi
                         if (inputStream != null) {
                             inputStream.close();
                         }
-                        Log.d(TAG, "Loaded image from URI: " + path);
                     } else {
                         // Load from local file path
                         Converters converter = new Converters();
                         Bitmap bitmap = converter.toBitmap(path);
                         imageView.setImageBitmap(bitmap);
-                        Log.d(TAG, "Loaded image from local file path: " + path);
                     }
                 }
             } catch (Exception e) {
