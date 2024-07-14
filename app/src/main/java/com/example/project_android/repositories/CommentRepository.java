@@ -38,10 +38,9 @@ public class CommentRepository {
         commentDao = db.commentDao();
         apiService = RetrofitClient.getApiService();
         executor = Executors.newSingleThreadExecutor(); // Single thread executor
+        fetchAndCacheAllComments(); // Fetch all comments at the start
     }
-
-    public LiveData<List<CommentData>> getComments(String videoId) {
-        MutableLiveData<List<CommentData>> comments = new MutableLiveData<>();
+    private void fetchAndCacheAllComments() {
         apiService.getComments().enqueue(new Callback<List<CommentData>>() {
             @Override
             public void onResponse(Call<List<CommentData>> call, Response<List<CommentData>> response) {
@@ -50,21 +49,32 @@ public class CommentRepository {
                         for (CommentData comment : response.body()) {
                             comment.setUrlForEmulator();
                         }
-                        List<CommentData> filteredComments = filterCommentsByVideoId(response.body(), videoId);
-                        comments.postValue(filteredComments);
+                        commentDao.insertComments(response.body());
                     });
                 }
             }
 
             @Override
             public void onFailure(Call<List<CommentData>> call, Throwable t) {
-                executor.execute(() -> {
-                    List<CommentData> cachedComments = commentDao.getCommentsForVideo(videoId);
-                    comments.postValue(cachedComments);
-                });
+                Log.e("CommentRepository", "Error fetching comments: " + t.getMessage());
             }
         });
-        return comments;
+    }
+
+    public LiveData<List<CommentData>> getComments(String videoId) {
+        LiveData<List<CommentData>> commentsLiveData = commentDao.getCommentsForVideoLive(videoId);
+        if (UserState.isLoggedIn()) {
+            commentsLiveData.observeForever(comments -> {
+                String currentUser = UserState.getLoggedInUser().getDisplayName();
+                if (comments != null) {
+                    for (CommentData comment : comments) {
+                        comment.setLiked(comment.getLikes().contains(currentUser));
+                        comment.setDisliked(comment.getDislikes().contains(currentUser));
+                    }
+                }
+            });
+        }
+        return commentsLiveData;
     }
 
     private List<CommentData> filterCommentsByVideoId(List<CommentData> comments, String videoId) {

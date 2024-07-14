@@ -24,11 +24,6 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public interface ApiService {
-    @PATCH("videos/{id}/like")
-    Call<Void> likeVideo(@Path("id") int videoId);
-
-    @PATCH("videos/{id}/dislike")
-    Call<Void> dislikeVideo(@Path("id") int videoId);
 
     @GET("api/comments")
     Call<List<CommentData>> getComments();
@@ -101,10 +96,10 @@ public interface ApiService {
     );
 
     @PATCH("api/videos/{id}/like")
-    Call<VideoData> likeVideo(@Header("Authorization") String token, @Path("id") String videoId, @Body JsonObject displayName);
+    Call<Void> likeVideo(@Header("Authorization") String token, @Path("id") String videoId, @Body JsonObject displayName);
 
     @PATCH("api/videos/{id}/dislike")
-    Call<VideoData> dislikeVideo(@Header("Authorization") String token, @Path("id") String videoId, @Body JsonObject displayName);
+    Call<Void> dislikeVideo(@Header("Authorization") String token, @Path("id") String videoId, @Body JsonObject displayName);
 
     // User-related endpoints
     @POST("api/users")

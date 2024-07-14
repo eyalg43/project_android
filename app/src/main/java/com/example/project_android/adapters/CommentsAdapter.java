@@ -146,7 +146,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
         if (isLike) {
             if (commentData.isLiked()) {
                 commentData.setLiked(false);
-                commentViewModel.dislikeComment(commentData.getId(), userDisplayName); // Remove like on server
+                commentViewModel.likeComment(commentData.getId(), userDisplayName); // Remove like on server
             } else {
                 commentData.setLiked(true);
                 commentData.setDisliked(false);

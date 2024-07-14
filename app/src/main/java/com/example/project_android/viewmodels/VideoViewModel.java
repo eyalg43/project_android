@@ -55,4 +55,11 @@ public class VideoViewModel extends AndroidViewModel {
         videoRepository.syncWithServer();
     }
 
+    public void likeVideo(String videoId, String userDisplayName) {
+        videoRepository.likeVideo(videoId, userDisplayName);
+    }
+
+    public void dislikeVideo(String videoId, String userDisplayName) {
+        videoRepository.dislikeVideo(videoId, userDisplayName);
+    }
 }

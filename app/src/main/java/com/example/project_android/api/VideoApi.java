@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.project_android.entities.VideoData;
+import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.util.List;
@@ -166,6 +167,44 @@ public class VideoApi {
     public interface DeleteCallback {
         void onSuccess();
         void onFailure(String error);
+    }
+
+    public void likeVideo(String token, String videoId, JsonObject requestBody) {
+        Call<Void> call = apiService.likeVideo(token, videoId, requestBody);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d("VideoApi", "Successfully liked video with ID: " + videoId);
+                } else {
+                    Log.e("VideoApi", "Failed to like video: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("VideoApi", "Error liking video: " + t.getMessage());
+            }
+        });
+    }
+
+    public void dislikeVideo(String token, String videoId, JsonObject requestBody) {
+        Call<Void> call = apiService.dislikeVideo(token, videoId, requestBody);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d("VideoApi", "Successfully disliked video with ID: " + videoId);
+                } else {
+                    Log.e("VideoApi", "Failed to dislike video: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("VideoApi", "Error disliking video: " + t.getMessage());
+            }
+        });
     }
 
 }

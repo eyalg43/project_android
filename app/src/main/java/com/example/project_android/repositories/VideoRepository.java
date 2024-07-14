@@ -7,9 +7,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.project_android.AppDatabase;
+import com.example.project_android.TokenManager;
 import com.example.project_android.api.VideoApi;
 import com.example.project_android.dao.VideoDao;
 import com.example.project_android.entities.VideoData;
+import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.util.List;
@@ -149,6 +151,19 @@ public class VideoRepository {
             }
         });
         return deleteResult;
+    }
+    public void likeVideo(String videoId, String userDisplayName) {
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("userDisplayName", userDisplayName);
+
+        videoApi.likeVideo("Bearer " + TokenManager.getInstance().getToken(), videoId, requestBody);
+    }
+
+    public void dislikeVideo(String videoId, String userDisplayName) {
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("userDisplayName", userDisplayName);
+
+        videoApi.dislikeVideo("Bearer " + TokenManager.getInstance().getToken(), videoId, requestBody);
     }
 
     public void syncWithServer() {
