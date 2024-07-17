@@ -1,6 +1,8 @@
 # VidTube-Android app
 <img src="/Android-app-screenshots/logo_vidtube.png" alt="Example Image" width="300">
 
+NOTE: this branch is for part 1 of the project, for the frontend that is adjusted to work with the server (part 3 of the project), go to branch "mainPart3".
+
 The VidTube app is a video sharing app, made for allowing users across the world to upload and share their video content, comment their thoughts and interact with each other.
 This Readme file contains an overview of the Android app and its features, along with a guide on how to run it on your machine.
 
