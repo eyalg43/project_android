@@ -82,4 +82,6 @@
     <string name="user_videos_icon_text">user_videos_icon</string>
     <string name="user_s_videos">User\'s Videos</string>
     <string name="author_name_description">author_name_description</string>
+    <string name="like_button_description">Like</string>
+    <string name="dislike_button_description">Dislike</string>
 </resources>

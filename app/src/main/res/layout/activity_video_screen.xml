@@ -172,7 +172,8 @@
                             android:layout_height="64dp"
                             android:src="@drawable/ic_like"
                             android:background="?attr/selectableItemBackgroundBorderless"
-                            android:padding="8dp" />
+                            android:padding="8dp"
+                            android:contentDescription="@string/like_button_description"/>
 
                         <ImageButton
                             android:id="@+id/dislike_button"
@@ -181,7 +182,8 @@
                             android:src="@drawable/ic_dislike"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:layout_marginStart="8dp"
-                            android:padding="8dp" />
+                            android:padding="8dp"
+                            android:contentDescription="@string/dislike_button_description"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/share_button"
