@@ -270,6 +270,7 @@ public class HomePage extends AppCompatActivity {
             String username = loggedInUser.getUsername();
             View.OnClickListener onAuthorClickListener = v -> navigateToUserVideos(username);
             profileImage.setOnClickListener(onAuthorClickListener);
+            welcomeMessage.setOnClickListener(onAuthorClickListener);
         }
     }
 
