@@ -1,4 +1,5 @@
 package com.example.project_android;
+
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -6,7 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import java.io.File;
@@ -15,11 +16,15 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+
 public class DataUtils {
     private static final String TAG = "DataUtils";
+
     public static String getTimeAgo(String dateString) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        format.setTimeZone(TimeZone.getTimeZone("UTC")); // Ensure the format is in UTC
         try {
             Date past = format.parse(dateString);
             Date now = new Date();
@@ -77,7 +82,8 @@ public class DataUtils {
     }
 
     public static String getCurrentDateTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // Ensure the format is in UTC
         return sdf.format(new Date());
     }
 }
