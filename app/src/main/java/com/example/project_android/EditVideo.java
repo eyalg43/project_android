@@ -1,5 +1,6 @@
 package com.example.project_android;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -42,6 +43,7 @@ public class EditVideo extends AppCompatActivity {
     private Uri selectedVideoUri;
     private VideoData videoData;
     private VideoViewModel videoViewModel;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,10 @@ public class EditVideo extends AppCompatActivity {
         textViewError = findViewById(R.id.textViewError);
         imageViewThumbnail = findViewById(R.id.imageViewThumbnail);
         textViewVideoDetails = findViewById(R.id.textViewVideoDetails);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Updating video...");
+        progressDialog.setCancelable(false);
 
         Intent intent = getIntent();
         String videoId = intent.getStringExtra("video_id");
@@ -167,6 +173,8 @@ public class EditVideo extends AppCompatActivity {
             String thumbnailPath = selectedThumbnailUri != null ? DataUtils.getPath(this, selectedThumbnailUri) : null;
             String videoPath = selectedVideoUri != null ? DataUtils.getPath(this, selectedVideoUri) : null;
 
+            progressDialog.show();
+
             videoViewModel.updateVideo(
                     "Bearer " + TokenManager.getInstance().getToken(),
                     UserState.getLoggedInUser().getUsername(),
@@ -178,6 +186,7 @@ public class EditVideo extends AppCompatActivity {
             ).observe(this, new Observer<VideoData>() {
                 @Override
                 public void onChanged(VideoData videoData) {
+                    progressDialog.dismiss();
                     if (videoData != null) {
                         Toast.makeText(EditVideo.this, "Video successfully updated.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(EditVideo.this, HomePage.class);
