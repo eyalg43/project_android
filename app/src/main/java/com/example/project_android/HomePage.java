@@ -264,6 +264,13 @@ public class HomePage extends AppCompatActivity {
 
         // Check if user is logged in
         checkUserState();
+
+        if (UserState.isLoggedIn()){
+            User loggedInUser = UserState.getLoggedInUser();
+            String username = loggedInUser.getUsername();
+            View.OnClickListener onAuthorClickListener = v -> navigateToUserVideos(username);
+            profileImage.setOnClickListener(onAuthorClickListener);
+        }
     }
 
     @Override
@@ -360,4 +367,10 @@ public class HomePage extends AppCompatActivity {
             Log.e(TAG, "Error loading image: " + e.getMessage());
         }
     }
+    private void navigateToUserVideos(String username) {
+        Intent intent = new Intent(HomePage.this, UserVideosActivity.class);
+        intent.putExtra("username", username);
+        startActivity(intent);
+    }
+
 }
