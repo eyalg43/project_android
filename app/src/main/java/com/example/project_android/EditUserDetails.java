@@ -122,6 +122,11 @@ public class EditUserDetails extends AppCompatActivity {
             editTextDisplayName.setError("Display Name is required.");
             return;
         }
+        // Validate password if it is not empty
+        if (!password.isEmpty() && !isPasswordValid(password)) {
+            editTextPassword.setError("Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.");
+            return;
+        }
 
         // If username or password is empty, retain existing values from UserState
         User loggedInUser = UserState.getLoggedInUser();
@@ -319,5 +324,10 @@ public class EditUserDetails extends AppCompatActivity {
     private Uri getImageUriFromBitmap(Bitmap bitmap) {
         String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "ProfilePicture", null);
         return Uri.parse(path);
+    }
+    private boolean isPasswordValid(String password) {
+        // Password validation logic
+        return password.length() >= 8 && password.matches(".*\\d.*") && password.matches(".*[a-z].*") &&
+                password.matches(".*[A-Z].*") && password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*");
     }
 }
