@@ -125,7 +125,8 @@
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
                                 android:adjustViewBounds="true"
-                                android:contentDescription="@string/author_image" />
+                                android:contentDescription="@string/author_image"
+                                android:foreground="?attr/selectableItemBackground"/>
                         </androidx.cardview.widget.CardView>
 
                         <TextView
@@ -143,7 +144,8 @@
                             app:layout_constraintHorizontal_bias="0.042"
                             app:layout_constraintStart_toEndOf="@id/author_image_container"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintVertical_bias="0.625" />
+                            app:layout_constraintVertical_bias="0.625"
+                            android:foreground="?attr/selectableItemBackground"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/subscribe_button"
