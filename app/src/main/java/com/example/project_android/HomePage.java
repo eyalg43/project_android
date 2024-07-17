@@ -291,7 +291,7 @@ public class HomePage extends AppCompatActivity {
                 welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
 
                 // Replace localhost with the actual server IP address
-                String profilePicture = loggedInUser.getProfilePicture().replace("localhost", "192.168.1.121");
+                String profilePicture = loggedInUser.getProfilePicture().replace("localhost", "10.0.2.2");
 
                 // load profile image
                 if (profilePicture.startsWith("http://") || profilePicture.startsWith("https://")) {
