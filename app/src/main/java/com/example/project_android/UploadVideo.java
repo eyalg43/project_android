@@ -1,5 +1,6 @@
 package com.example.project_android;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -43,6 +44,7 @@ public class UploadVideo extends AppCompatActivity {
     private Uri selectedThumbnailUri;
     private Uri selectedVideoUri;
     private VideoViewModel videoViewModel;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,10 @@ public class UploadVideo extends AppCompatActivity {
         imageViewThumbnail = findViewById(R.id.imageViewThumbnail);
         textViewVideoDetails = findViewById(R.id.textViewVideoDetails);
         Button buttonCancel = findViewById(R.id.buttonCancel);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading video...");
+        progressDialog.setCancelable(false);
 
         buttonUploadThumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,6 +141,8 @@ public class UploadVideo extends AppCompatActivity {
             String thumbnailPath = DataUtils.getPath(this, selectedThumbnailUri);
             String videoPath = DataUtils.getPath(this, selectedVideoUri);
 
+            progressDialog.show();
+
             videoViewModel.uploadVideo(
                     "Bearer " + TokenManager.getInstance().getToken(),
                     UserState.getLoggedInUser().getUsername(), // Use username as userId
@@ -149,6 +157,7 @@ public class UploadVideo extends AppCompatActivity {
             ).observe(this, new Observer<VideoData>() {
                 @Override
                 public void onChanged(VideoData videoData) {
+                    progressDialog.dismiss();
                     if (videoData != null) {
                         Toast.makeText(UploadVideo.this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(UploadVideo.this, HomePage.class);

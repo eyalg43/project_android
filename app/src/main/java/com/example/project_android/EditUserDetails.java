@@ -24,6 +24,9 @@ import androidx.core.content.ContextCompat;
 import com.example.project_android.api.ApiService;
 import com.example.project_android.api.RetrofitClient;
 import com.example.project_android.entities.User;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -164,7 +167,17 @@ public class EditUserDetails extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(EditUserDetails.this, "Failed to update user details.", Toast.LENGTH_SHORT).show();
+                            String errorMessage = "Failed to update user details.";
+                            try {
+                                JsonObject errorResponse = new JsonParser().parse(response.errorBody().string()).getAsJsonObject();
+                                JsonArray errors = errorResponse.getAsJsonArray("errors");
+                                if (errors != null && errors.size() > 0) {
+                                    errorMessage = errors.get(0).getAsString();
+                                }
+                            } catch (Exception e) {
+                                Log.e("EditUserDetails", "Error parsing error response: " + e.getMessage());
+                            }
+                            Toast.makeText(EditUserDetails.this, errorMessage, Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

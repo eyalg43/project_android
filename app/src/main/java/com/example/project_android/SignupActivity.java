@@ -26,6 +26,9 @@ import androidx.core.content.FileProvider;
 
 import com.example.project_android.entities.User;
 import com.example.project_android.repositories.UsersRepository;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -188,7 +191,17 @@ public class SignupActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(SignupActivity.this, "Username or Display Name already taken, choose different ones", Toast.LENGTH_SHORT).show();
+                                    String errorMessage = "Error signing up";
+                                    try {
+                                        JsonObject errorResponse = new JsonParser().parse(response.errorBody().string()).getAsJsonObject();
+                                        JsonArray errors = errorResponse.getAsJsonArray("errors");
+                                        if (errors != null && errors.size() > 0) {
+                                            errorMessage = errors.get(0).getAsString();
+                                        }
+                                    } catch (Exception e) {
+                                        Log.e("SignupActivity", "Error parsing error response: " + e.getMessage());
+                                    }
+                                    Toast.makeText(SignupActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
