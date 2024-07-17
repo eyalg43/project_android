@@ -8,10 +8,57 @@ This Readme file contains an overview of the Android app and its features, along
 In order to run the Android app, start by cloning the repository to Android Studio, you can do this by opening the terminal and entering this command:
 `git clone https://github.com/eyalg43/project_android.git`
 
-After cloning the repository, open the project in Android Studio and run the app on an emulator or a physical device.
+After cloning the repository, open the project in Android Studio.
+(Note: if you are using a physical device, make sure to change the code, such that in every place it says "10.0.2.2" change it to your IP address)
+
+Now clone the server using your IDE of choice, you can do this by opening the terminal and entering this command: git clone https://github.com/OCDev1/VidTube-server.git and make sure you are on a branch named: "main-part3" (this is the branch of the 3rd part, the difference between the main branch and main-part3 branch is the insertData.js script that inserts data to the mongoDB, the script in main-part3 works for the android app (and the web app) so use it for this part, the script in the main branch won't work for the Android app!).
+Or download the repository to your computer.
+
+If you downloaded the repo-change the directory in your terminal to the downloaded repo directory. (if you cloned to your IDE then ignore this)
+
+While in the project directory run:
+### `npm install`
+
+and wait for it to finish installing.
+
+### Setting up config and .env.local
+In the project directory go to the "config" folder (its in the main project directory) and inside it you will find a file called ".env.local", inside
+".env.local" change the conncetion string to the connection string of your MongoDB, and set PORT to 12345.
+it should look something like this:
+
+`CONNECTION_STRING=mongodb://localhost:27017/vidtube` (change to the connection string of your MongoDB)
+<br>`PORT=12345` (NOTE: you must use 12345 for it to work)
+<br>there is also `JWT_SECRET=your_secret_key` (you can ignore this)
+
+* Open MongoDB on your computer.
+
+### insertData.js script
+
+* Included in the project is a script called "insertData.js" which will initialize the database with users, videos and comments. we highly reccomend you run this script in order to get the best experience and see all the features (and also to save you some time (: )
+
+* You can run the script by typing `node insertData.js` wait for the script to finish and your database should be initialized with videos, users and comments, hooray!
+
+* NOTE: in order for the DB to be initialized with the users, videos and comments of the script, make sure you dont already have a database called "vidtube" (or else the script won't add it's data), if you do then delete the database and run the script again.
+
+Now you can run
+
+### `npm start`
+
+Now go back to Android studio and run the app, now you should be able to use the app!
+Now you are all set up, enjoy!
 
 ## Our work process:
-We started off the same way we started the Web project, we watched Hemi's videos on the moodle tם help us build a basis of knowledge for the project, and then we continued on our own. Each of us had a responsibility for a different part of the project, Omri's part was the sign-in, sign-up and upload video pages, Max's part was the home page and Eyal's responsibility was the video page. Each of us finished his part and we connected the pages together, this was a bit harder than the Web project but we managed to figure it out. After finishing it we tested the logic of the app and fixed bugs until there were no more issues. While working on the app we used Jira to keep track of our tasks and it helped us keep our work organized.
+As usual, we started off by watching Hemi's videos, we set up the android to be in an MVVM architecture. Each group member had his responsibility, Eyal was responsible for the comments, Omri was responsible for the users and Max was responsible for the videos. We modified our code to work with the server we made in part 2, so the videos, comments and users are being kept in the database. We also added features that take advantage of the server like: users can edit and delete their own videos and comments, likes and dislikes are being saved and more.
+
+### NEW!
+* You can now delete your account or edit your user details in your profile page, you can reach it by clicking on the "You" option in the side menu.
+
+* In the watch video screen, clicking the uploaders image or name will take you to his profile page where you can see more videos that he uploaded.
+
+* Clicking your profile picture in the side menu will take you your videos page, in which you can edit and delete your videos.
+
+* Users can now edit and delete only their own comments and videos.
+
 
 ## Android App Features:
 * After running the app, the emulator (or device if ran on a physical device) will open and you will be brought to the **Home Activity**
@@ -97,17 +144,36 @@ We started off the same way we started the Web project, we watched Hemi's videos
 
 ## Upload-Video Activity:
 <img src="/Android-app-screenshots/Screenshot_12.png" alt="Example Image">
-<img src="/Android-app-screenshots/Screenshot_40.jpg" alt="Example Image">
-<img src="/Android-app-screenshots/Screenshot_41.jpg" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_13.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_14.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_145.png" alt="Example Image">
 <img src="/Android-app-screenshots/Screenshot_15.png" alt="Example Image">
 <img src="/Android-app-screenshots/Screenshot_16.png" alt="Example Image">
-<img src="/Android-app-screenshots/Screenshot_17.png" alt="Example Image">
 
 ## Edit-Video Activity (and editing a video):
 <img src="/Android-app-screenshots/Screenshot_31.png" alt="Example Image">
 <img src="/Android-app-screenshots/Screenshot_32.png" alt="Example Image">
 <img src="/Android-app-screenshots/Screenshot_33.png" alt="Example Image">
 <img src="/Android-app-screenshots/Screenshot_34.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_345.png" alt="Example Image">
 
 ## Edit-Video Activity - Dark Mode:
 <img src="/Android-app-screenshots/Screenshot_35.png" alt="Example Image">
+
+## Edit-User Activity:
+<img src="/Android-app-screenshots/Screenshot_50.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_51.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_52.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_53.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_54.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_55.png" alt="Example Image">
+
+## User-Videos Activity:
+<img src="/Android-app-screenshots/Screenshot_60.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_61.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_62.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_63.png" alt="Example Image">
+
+## Swipe to refresh:
+<img src="/Android-app-screenshots/Screenshot_70.png" alt="Example Image">
+<img src="/Android-app-screenshots/Screenshot_71.png" alt="Example Image">
