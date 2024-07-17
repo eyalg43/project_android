@@ -75,4 +75,13 @@
     <string name="profile_image">Profile Image</string>
     <string name="video_author_views_uploadtime">%1$s - %2$s views - %3$s</string>
     <string name="take_photo">Take Photo</string>
+    <string name="delete_my_account">Delete My Account</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="edit_your_details">Edit Your Details</string>
+    <string name="edit_profile_picture">Edit Profile Picture</string>
+    <string name="user_videos_icon_text">user_videos_icon</string>
+    <string name="user_s_videos">User\'s Videos</string>
+    <string name="author_name_description">author_name_description</string>
+    <string name="like_button_description">Like</string>
+    <string name="dislike_button_description">Dislike</string>
 </resources>

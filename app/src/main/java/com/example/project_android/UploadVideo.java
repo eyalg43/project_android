@@ -1,5 +1,6 @@
 package com.example.project_android;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,9 +16,14 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.project_android.VideosState;
-import com.example.project_android.entities.VideoData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.project_android.api.VideoApi;
+import com.example.project_android.entities.VideoData;
+import com.example.project_android.viewmodels.VideoViewModel;
+
+import java.io.File;
 import java.io.IOException;
 
 public class UploadVideo extends AppCompatActivity {
@@ -37,11 +43,15 @@ public class UploadVideo extends AppCompatActivity {
 
     private Uri selectedThumbnailUri;
     private Uri selectedVideoUri;
+    private VideoViewModel videoViewModel;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_video);
+
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
 
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextDescription = findViewById(R.id.editTextDescription);
@@ -52,6 +62,10 @@ public class UploadVideo extends AppCompatActivity {
         imageViewThumbnail = findViewById(R.id.imageViewThumbnail);
         textViewVideoDetails = findViewById(R.id.textViewVideoDetails);
         Button buttonCancel = findViewById(R.id.buttonCancel);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading video...");
+        progressDialog.setCancelable(false);
 
         buttonUploadThumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,17 +96,14 @@ public class UploadVideo extends AppCompatActivity {
         });
     }
 
-
     private void openGalleryForThumbnail() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_THUMBNAIL_GET);
     }
 
-
     private void openGalleryForVideo() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_VIDEO_GET);
-
     }
 
     @Override
@@ -119,51 +130,43 @@ public class UploadVideo extends AppCompatActivity {
     private void submitVideo() {
         String title = editTextTitle.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
-        String uploadTime = getElapsedTime(System.currentTimeMillis());
+        String uploadTime = DataUtils.getCurrentDateTime(); // Use DataUtils to get current date and time
 
         if (title.isEmpty() || description.isEmpty() || selectedThumbnailUri == null || selectedVideoUri == null) {
             Toast.makeText(this, "Please fill all fields to upload.", Toast.LENGTH_SHORT).show();
             Log.d("UploadVideo", "Error: Please fill all fields to upload.");
         } else {
             textViewError.setVisibility(View.GONE);
-            int newVideoId = VideosState.getInstance().getLatestVideoId() + 1;
 
-            // Log the author image URI
-            String authorImageUri = UserState.getLoggedInUser().getImageUri();
-            Log.d("UploadVideo", "Author Image URI: " + authorImageUri);
+            String thumbnailPath = DataUtils.getPath(this, selectedThumbnailUri);
+            String videoPath = DataUtils.getPath(this, selectedVideoUri);
 
-            // Add new video to the state
-            VideoData newVideo = new VideoData(
-                    newVideoId, // Generate new ID
+            progressDialog.show();
+
+            videoViewModel.uploadVideo(
+                    "Bearer " + TokenManager.getInstance().getToken(),
+                    UserState.getLoggedInUser().getUsername(), // Use username as userId
+                    new File(thumbnailPath),
+                    new File(videoPath),
                     title,
                     description,
                     UserState.getLoggedInUser().getDisplayName(),
-                    "1 views",
-                    selectedThumbnailUri.toString(),
-                    selectedVideoUri.toString(),
-                    uploadTime,
-                    authorImageUri
-            );
-            VideosState.getInstance().addVideo(newVideo);
-            Toast.makeText(this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(UploadVideo.this, HomePage.class);
-            startActivity(intent);
-        }
-    }
-
-
-    private String getElapsedTime(long uploadTime) {
-        long now = System.currentTimeMillis();
-        long diff = now - uploadTime;
-
-        if (diff < 60000) {
-            return "just now";
-        } else if (diff < 3600000) {
-            return (diff / 60000) + " minutes ago";
-        } else if (diff < 86400000) {
-            return (diff / 3600000) + " hours ago";
-        } else {
-            return (diff / 86400000) + " days ago";
+                    UserState.getLoggedInUser().getUsername(),
+                    UserState.getLoggedInUser().getProfilePicture(),
+                    uploadTime
+            ).observe(this, new Observer<VideoData>() {
+                @Override
+                public void onChanged(VideoData videoData) {
+                    progressDialog.dismiss();
+                    if (videoData != null) {
+                        Toast.makeText(UploadVideo.this, "Video successfully uploaded to Vidtube.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(UploadVideo.this, HomePage.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(UploadVideo.this, "Error uploading video.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 }

@@ -1,9 +1,9 @@
 package com.example.project_android;
 
 import android.content.Intent;
+import android.database.CursorWindow;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,24 +14,34 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.project_android.adapters.VideosListAdapter;
+import com.example.project_android.api.VideoApi;
+import com.example.project_android.entities.User;
 import com.example.project_android.entities.VideoData;
+import com.example.project_android.viewmodels.VideoViewModel;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomePage extends AppCompatActivity {
+    private static final String TAG = "HomePage";
+    private static final int EDIT_VIDEO_REQUEST_CODE = 1;
+
     private SwipeRefreshLayout swipeRefreshLayout;
     private VideosListAdapter adapter;
     private List<VideoData> allVideos;
@@ -47,15 +57,20 @@ public class HomePage extends AppCompatActivity {
     private Button signOutButton;
     private Button uploadVideoButton;
 
+    private VideoViewModel videoViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+
         RecyclerView listVideos = findViewById(R.id.listVideos);
         adapter = new VideosListAdapter(this, new VideosListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(VideoData video) {
+                Log.d(TAG, "Video ID clicked: " + video.getId());
                 Intent intent = new Intent(HomePage.this, VideoScreenActivity.class);
                 intent.putExtra("video_id", video.getId());
                 startActivity(intent);
@@ -65,17 +80,25 @@ public class HomePage extends AppCompatActivity {
             public void onEditClick(VideoData video) {
                 Intent intent = new Intent(HomePage.this, EditVideo.class);
                 intent.putExtra("video_id", video.getId());
-                startActivity(intent);
+                startActivityForResult(intent, EDIT_VIDEO_REQUEST_CODE);
             }
 
             @Override
             public void onDeleteClick(VideoData video) {
-                allVideos.remove(video);
-                adapter.setVideos(allVideos);
-                VideosState.getInstance().setVideoList(allVideos);
+                String token = "Bearer " + TokenManager.getInstance().getToken();
+                String userId = UserState.getLoggedInUser().getUsername(); // Use username as userId
+                videoViewModel.deleteVideo(token, userId, video.getId()).observe(HomePage.this, new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean success) {
+                        if (success) {
+                            videoViewModel.syncWithServerAfterDeletion();
+                            Toast.makeText(HomePage.this, "Video successfully deleted.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(HomePage.this, "Error deleting video.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
-
-
         });
         listVideos.setAdapter(adapter);
         listVideos.setLayoutManager(new LinearLayoutManager(this));
@@ -84,23 +107,30 @@ public class HomePage extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
+                videoViewModel.getLimitedVideos().observe(HomePage.this, new Observer<List<VideoData>>() {
                     @Override
-                    public void run() {
+                    public void onChanged(List<VideoData> videos) {
+                        if (videos != null) {
+                            allVideos = videos;
+                            adapter.setVideos(videos);
+                        }
                         swipeRefreshLayout.setRefreshing(false);
                     }
-                }, 2000);
+                });
             }
         });
 
-        allVideos = VideosState.getInstance().getVideoList();
-        if (allVideos != null) {
-            adapter.setVideos(allVideos);
-        } else {
-            Log.e("HomePage", "Error getting videos");
-        }
-        swipeRefreshLayout.setRefreshing(false);
+        videoViewModel.getLimitedVideos().observe(this, new Observer<List<VideoData>>() {
+            @Override
+            public void onChanged(List<VideoData> videos) {
+                if (videos != null) {
+                    allVideos = videos;
+                    adapter.setVideos(videos);
+                }
+            }
+        });
 
+        drawerLayout = findViewById(R.id.drawer_layout);
         ImageButton searchButton = findViewById(R.id.search_button);
         final SearchView searchView = findViewById(R.id.searchView);
         searchButton.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +187,6 @@ public class HomePage extends AppCompatActivity {
         menuHome.setOnClickListener(menuClickListener);
         menuShorts.setOnClickListener(menuClickListener);
         menuSubscriptions.setOnClickListener(menuClickListener);
-        menuYou.setOnClickListener(menuClickListener);
         menuHistory.setOnClickListener(menuClickListener);
 
         toggleModeButton = findViewById(R.id.btn_toggle_mode);
@@ -204,11 +233,24 @@ public class HomePage extends AppCompatActivity {
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserState.logout();
+                UserState.logOut();
                 authButtonsContainer.setVisibility(View.VISIBLE);
                 profileContainer.setVisibility(View.GONE);
                 uploadVideoButton.setVisibility(View.GONE);
                 adapter.notifyDataSetChanged();
+            }
+        });
+
+        menuYou.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (UserState.isLoggedIn()) {
+                    Intent intent = new Intent(HomePage.this, EditUserDetails.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(HomePage.this, LoginActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -221,6 +263,33 @@ public class HomePage extends AppCompatActivity {
         });
 
         // Check if user is logged in
+        checkUserState();
+
+        if (UserState.isLoggedIn()){
+            User loggedInUser = UserState.getLoggedInUser();
+            String username = loggedInUser.getUsername();
+            View.OnClickListener onAuthorClickListener = v -> navigateToUserVideos(username);
+            profileImage.setOnClickListener(onAuthorClickListener);
+            welcomeMessage.setOnClickListener(onAuthorClickListener);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkUserState();
+        videoViewModel.getLimitedVideos().observe(this, new Observer<List<VideoData>>() {
+            @Override
+            public void onChanged(List<VideoData> videos) {
+                if (videos != null) {
+                    allVideos = videos;
+                    adapter.setVideos(videos);
+                }
+            }
+        });
+    }
+
+    private void checkUserState() {
         if (UserState.isLoggedIn()) {
             User loggedInUser = UserState.getLoggedInUser();
             if (loggedInUser != null) {
@@ -229,13 +298,50 @@ public class HomePage extends AppCompatActivity {
                 uploadVideoButton.setVisibility(View.VISIBLE);
                 welcomeMessage.setText("Welcome " + loggedInUser.getDisplayName() + "!");
 
-                // Load the profile image from the app's internal storage
-                loadImageFromLocalPath(loggedInUser.getImageUri(), profileImage);
+                // Replace localhost with the actual server IP address
+                String profilePicture = loggedInUser.getProfilePicture().replace("localhost", "10.0.2.2");
+
+                // load profile image
+                if (profilePicture.startsWith("http://") || profilePicture.startsWith("https://")) {
+                    // URL
+                    Glide.with(profileImage.getContext())
+                            .load(profilePicture)
+                            .into(profileImage);
+                    Log.d(TAG, "Loaded image from URL: " + profilePicture);
+                    Log.d(TAG, "image in profileImage: " + profileImage.getDrawable());
+
+                } else {
+                    Converters converter = new Converters();
+                    Bitmap bitmap = converter.toBitmap(loggedInUser.getProfilePicture());
+                    profileImage.setImageBitmap(bitmap);
+                }
             }
+        } else {
+            authButtonsContainer.setVisibility(View.VISIBLE);
+            profileContainer.setVisibility(View.GONE);
+            uploadVideoButton.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == EDIT_VIDEO_REQUEST_CODE && resultCode == RESULT_OK) {
+            // Update the video list
+            videoViewModel.getLimitedVideos().observe(this, new Observer<List<VideoData>>() {
+                @Override
+                public void onChanged(List<VideoData> videos) {
+                    if (videos != null) {
+                        allVideos = videos;
+                        adapter.setVideos(videos);
+                    }
+                }
+            });
         }
     }
 
     private void filterVideos(String text) {
+        if (allVideos == null) return;
         List<VideoData> filteredList = new ArrayList<>();
         for (VideoData video : allVideos) {
             if (video.getTitle().toLowerCase().contains(text.toLowerCase())) {
@@ -244,25 +350,6 @@ public class HomePage extends AppCompatActivity {
         }
         adapter.setVideos(filteredList);
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateVideos();
-    }
-
-    private void updateVideos() {
-        allVideos = VideosState.getInstance().getVideoList();
-        if (allVideos != null) {
-            for (VideoData video : allVideos) {
-                Log.d("HomePage", "Video Author Image URI: " + video.getAuthorImage());
-            }
-            adapter.setVideos(allVideos);
-        } else {
-            Log.e("HomePage", "Error getting videos");
-        }
-    }
-
 
     private void updateModeButtonText() {
         int nightMode = AppCompatDelegate.getDefaultNightMode();
@@ -278,7 +365,13 @@ public class HomePage extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeFile(path);
             imageView.setImageBitmap(bitmap);
         } catch (Exception e) {
-            Log.e("HomePage", "Error loading image: " + e.getMessage());
+            Log.e(TAG, "Error loading image: " + e.getMessage());
         }
     }
+    private void navigateToUserVideos(String username) {
+        Intent intent = new Intent(HomePage.this, UserVideosActivity.class);
+        intent.putExtra("username", username);
+        startActivity(intent);
+    }
+
 }

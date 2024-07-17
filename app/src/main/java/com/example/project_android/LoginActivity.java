@@ -2,12 +2,19 @@ package com.example.project_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+
+import com.example.project_android.entities.User;
+import com.example.project_android.repositories.UsersRepository;
+
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -15,6 +22,10 @@ public class LoginActivity extends AppCompatActivity {
     private EditText editTextPassword;
     private Button buttonLogin;
     private TextView textViewSignup;
+    private UsersRepository usersRepository;
+    //for debugging
+    private static final String TAG = "MyActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         buttonLogin = findViewById(R.id.buttonLogin);
         textViewSignup = findViewById(R.id.textViewSignup);
+        usersRepository = new UsersRepository(getApplication());
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,21 +44,28 @@ public class LoginActivity extends AppCompatActivity {
                 String username = editTextUsername.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
 
-                if (UserState.validateLogin(username, password)) {
-                    // Successful login
-                    User curUser = UserState.getUser(username);
-                    if(curUser != null){
-                        UserState.setUser(curUser);
+                // only for validating user
+                User user = new User(username, password , "placeholder1", "placeholder2");
+                usersRepository.signInUser(user, new UsersRepository.SignInCallback() {
+                    @Override
+                    public void onSignInSuccess() {
+                        // Navigate to MainActivity on successful sign-in
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    Toast.makeText(LoginActivity.this, "Logged in successfully!", Toast.LENGTH_SHORT).show();
 
-                    finish();
-                } else {
-                    // Failed login
-                    Toast.makeText(LoginActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
-                }
+                    @Override
+                    public void onSignInFailed(final String errorMsg) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(LoginActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                                Log.e(TAG, "Sign-in failed: " + errorMsg);
+                            }
+                        });
+                    }
+                });
             }
         });
 

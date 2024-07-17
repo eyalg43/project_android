@@ -1,10 +1,14 @@
 package com.example.project_android.entities;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.example.project_android.entities.CommentData;
 
 import java.util.List;
-
+@Entity
 public class VideoComments {
+    @PrimaryKey
     private String videoId;
     private List<CommentData> comments;
 

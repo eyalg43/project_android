@@ -35,14 +35,6 @@ public class VideosState {
         Log.d("VideosState", "Video added successfully: " + videoData.getTitle());
     }
 
-    // Method to get the latest video ID
-    public int getLatestVideoId() {
-        if (videoList.isEmpty()) {
-            return 0; // Assuming IDs start from 1
-        } else {
-            return videoList.get(videoList.size() - 1).getId();
-        }
-    }
 
     public void updateVideo(VideoData updatedVideo) {
         for (int i = 0; i < videoList.size(); i++) {
@@ -54,16 +46,14 @@ public class VideosState {
         }
     }
 
-    public VideoData getVideoById(int id) {
+    public VideoData getVideoById(String id) {
         for (VideoData video : videoList) {
-            if (video.getId() == id) {
+            if (video.getId().equals(id)) {
                 return video;
             }
         }
         return null; // Return null if no video is found with the given ID
     }
-
-
 }
 
 

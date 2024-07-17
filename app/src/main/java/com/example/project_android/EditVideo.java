@@ -1,5 +1,6 @@
 package com.example.project_android;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,8 +16,13 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.project_android.entities.VideoData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.project_android.entities.VideoData;
+import com.example.project_android.viewmodels.VideoViewModel;
+
+import java.io.File;
 import java.io.IOException;
 
 public class EditVideo extends AppCompatActivity {
@@ -36,11 +42,15 @@ public class EditVideo extends AppCompatActivity {
     private Uri selectedThumbnailUri;
     private Uri selectedVideoUri;
     private VideoData videoData;
+    private VideoViewModel videoViewModel;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_page);
+
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
 
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextDescription = findViewById(R.id.editTextDescription);
@@ -51,23 +61,24 @@ public class EditVideo extends AppCompatActivity {
         imageViewThumbnail = findViewById(R.id.imageViewThumbnail);
         textViewVideoDetails = findViewById(R.id.textViewVideoDetails);
 
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Updating video...");
+        progressDialog.setCancelable(false);
+
         Intent intent = getIntent();
-        int videoId = intent.getIntExtra("video_id", -1);
-        if (videoId != -1) {
-            videoData = VideosState.getInstance().getVideoById(videoId);
-            if (videoData != null) {
-                editTextTitle.setText(videoData.getTitle());
-                editTextDescription.setText(videoData.getDescription());
-                selectedThumbnailUri = Uri.parse(videoData.getImg());
-                selectedVideoUri = Uri.parse(videoData.getVideo());
-                try {
-                    Bitmap thumbnailBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedThumbnailUri);
-                    imageViewThumbnail.setImageBitmap(thumbnailBitmap);
-                } catch (IOException e) {
-                    Log.e("EditVideoActivity", "Error loading thumbnail: " + e.getMessage());
+        String videoId = intent.getStringExtra("video_id");
+        if (videoId != null) {
+            videoViewModel.getVideoById(videoId).observe(this, new Observer<VideoData>() {
+                @Override
+                public void onChanged(VideoData video) {
+                    if (video != null) {
+                        videoData = video;
+                        populateVideoDetails(videoData);
+                    } else {
+                        Toast.makeText(EditVideo.this, "Error fetching video details.", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                textViewVideoDetails.setText("Video File Successfully Loaded");
-            }
+            });
         }
 
         buttonUploadThumbnail.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +111,20 @@ public class EditVideo extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
 
+    private void populateVideoDetails(VideoData video) {
+        editTextTitle.setText(video.getTitle());
+        editTextDescription.setText(video.getDescription());
+        selectedThumbnailUri = Uri.parse(video.getImg());
+        selectedVideoUri = Uri.parse(video.getVideo());
+        try {
+            Bitmap thumbnailBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedThumbnailUri);
+            imageViewThumbnail.setImageBitmap(thumbnailBitmap);
+        } catch (IOException e) {
+            Log.e("EditVideoActivity", "Error loading thumbnail: " + e.getMessage());
+        }
+        textViewVideoDetails.setText("Video File Successfully Loaded");
     }
 
     private void openGalleryForThumbnail() {
@@ -139,21 +163,39 @@ public class EditVideo extends AppCompatActivity {
         String title = editTextTitle.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
 
-        if (title.isEmpty() || description.isEmpty() || selectedThumbnailUri == null || selectedVideoUri == null) {
+        if (title.isEmpty() || description.isEmpty()) {
             textViewError.setText("Please fill all fields to upload.");
             Log.d("EditVideoActivity", "Error: Please fill all fields to upload.");
             textViewError.setVisibility(View.VISIBLE);
         } else {
             textViewError.setVisibility(View.GONE);
-            videoData.setTitle(title);
-            videoData.setDescription(description);
-            videoData.setImg(selectedThumbnailUri.toString());
-            videoData.setVideo(selectedVideoUri.toString());
 
-            VideosState.getInstance().updateVideo(videoData);
-            Toast.makeText(this, "Video successfully updated.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(EditVideo.this, HomePage.class);
-            startActivity(intent);
+            String thumbnailPath = selectedThumbnailUri != null ? DataUtils.getPath(this, selectedThumbnailUri) : null;
+            String videoPath = selectedVideoUri != null ? DataUtils.getPath(this, selectedVideoUri) : null;
+
+            progressDialog.show();
+
+            videoViewModel.updateVideo(
+                    "Bearer " + TokenManager.getInstance().getToken(),
+                    UserState.getLoggedInUser().getUsername(),
+                    videoData.getId(),
+                    thumbnailPath != null ? new File(thumbnailPath) : null,
+                    videoPath != null ? new File(videoPath) : null,
+                    title,
+                    description
+            ).observe(this, new Observer<VideoData>() {
+                @Override
+                public void onChanged(VideoData videoData) {
+                    progressDialog.dismiss();
+                    if (videoData != null) {
+                        Toast.makeText(EditVideo.this, "Video successfully updated.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(EditVideo.this, HomePage.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(EditVideo.this, "Error updating video.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 }
