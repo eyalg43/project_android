@@ -142,4 +142,9 @@ public class CommentData {
             this.img = this.img.replace("localhost", "10.0.2.2");
         }
     }
+    public void setUrlForDevice() {
+        if (this.img != null) {
+            this.img = this.img.replace("10.0.2.2", "localhost");
+        }
+    }
 }

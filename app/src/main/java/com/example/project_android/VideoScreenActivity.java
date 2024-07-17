@@ -62,6 +62,7 @@ public class VideoScreenActivity extends AppCompatActivity {
     private NestedScrollView nestedScrollView;
     private VideoViewModel videoViewModel;
     private CommentViewModel commentViewModel;
+    private String profilePicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,11 +100,11 @@ public class VideoScreenActivity extends AppCompatActivity {
         if (UserState.isLoggedIn()) {
             commentInputSection.setVisibility(View.VISIBLE);
             User loggedInUser = UserState.getLoggedInUser();
-            loggedInUser.setUrlForEmulator();
+            profilePicture = loggedInUser.getProfilePicture().replace("localhost", "10.0.2.2");
             displayNameTextView.setText(loggedInUser.getDisplayName());
 
             // Load user image
-            loadUserProfileImage(loggedInUser.getProfilePicture(), userImageInput);
+            loadUserProfileImage(profilePicture, userImageInput);
         } else {
             commentInputSection.setVisibility(View.GONE);
         }
@@ -147,7 +148,7 @@ public class VideoScreenActivity extends AppCompatActivity {
             if (UserState.isLoggedIn()) {
                 String commentText = commentInput.getText().toString().trim();
                 String displayName = UserState.getLoggedInUser().getDisplayName();
-                String userImage = UserState.getLoggedInUser().getProfilePicture();
+                String userImage = profilePicture;
                 if (!commentText.isEmpty()) {
                     addComment(displayName, commentText, userImage);
                     commentInput.setText("");

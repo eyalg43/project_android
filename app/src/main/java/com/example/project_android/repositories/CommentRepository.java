@@ -103,6 +103,7 @@ public class CommentRepository {
     // CommentRepository.java
     public void createComment(CommentData commentData) {
         JsonObject commentJson = new JsonObject();
+        commentData.setUrlForDevice();
         commentJson.addProperty("text", commentData.getText());
         commentJson.addProperty("userName", commentData.getUsername());
         commentJson.addProperty("userDisplayName", commentData.getDisplayName());
@@ -116,6 +117,7 @@ public class CommentRepository {
             @Override
             public void onResponse(Call<CommentData> call, Response<CommentData> response) {
                 if (response.isSuccessful()) {
+                    response.body().setUrlForEmulator();
                     executor.execute(() -> commentDao.insertComment(response.body()));
                 } else {
                     Log.e("CommentRepository", "Failed to create comment: " + response.message());
