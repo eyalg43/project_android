@@ -188,4 +188,11 @@ public class VideoRepository {
             }
         });
     }
+
+    public LiveData<List<VideoData>> getRecommendations(String videoId, String userId) {
+        MutableLiveData<List<VideoData>> recommendedVideos = new MutableLiveData<>();
+        videoApi.getRecommendations(videoId, userId, recommendedVideos);
+        return recommendedVideos;
+    }
+
 }

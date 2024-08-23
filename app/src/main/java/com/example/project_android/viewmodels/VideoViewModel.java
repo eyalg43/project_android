@@ -62,4 +62,8 @@ public class VideoViewModel extends AndroidViewModel {
     public void dislikeVideo(String videoId, String userDisplayName) {
         videoRepository.dislikeVideo(videoId, userDisplayName);
     }
+
+    public LiveData<List<VideoData>> getRecommendations(String videoId, String userId) {
+        return videoRepository.getRecommendations(videoId, userId);
+    }
 }

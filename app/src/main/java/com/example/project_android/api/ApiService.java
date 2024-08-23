@@ -58,6 +58,12 @@ public interface ApiService {
     @GET("api/videos/{id}")
     Call<VideoData> getVideo(@Path("id") String id);
 
+    @POST("api/videos/{id}")
+    Call<List<VideoData>> getRecommendations(
+            @Path("id") String videoId,
+            @Body JsonObject body
+    );
+
     @GET("api/users/{id}/videos")
     Call<List<VideoData>> getVideosByAuthor(@Path("id") String userId);
 

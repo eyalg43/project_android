@@ -8,8 +8,9 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
 public class User {
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    @PrimaryKey
+    @NonNull
+    private String _id;
     private String username;
     private String password;
     private String displayName;
@@ -24,12 +25,12 @@ public class User {
         this.profilePicture = profilePicture;
     }
 
-    public int getId() {
-        return id;
+    public String getId() {
+        return _id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(String id) {
+        this._id = id;
     }
 
     public void setUsername(String username) {
