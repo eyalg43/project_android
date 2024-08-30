@@ -42,12 +42,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class VideoScreenActivity extends AppCompatActivity {
@@ -63,6 +62,7 @@ public class VideoScreenActivity extends AppCompatActivity {
     private VideoViewModel videoViewModel;
     private CommentViewModel commentViewModel;
     private String profilePicture;
+    private String currentlyDisplayedVideoId = null; // Variable to track the currently displayed video ID
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,12 +116,16 @@ public class VideoScreenActivity extends AppCompatActivity {
             videoViewModel.getAllVideos().observe(this, new Observer<List<VideoData>>() {
                 @Override
                 public void onChanged(List<VideoData> videos) {
-                    if (videos != null) {
+                    if (!isFinishing() && videos != null) {
                         originalVideoList = videos;
                         VideoData selectedVideo = findVideoById(videoId);
                         if (selectedVideo != null) {
-                            displayVideoDetails(selectedVideo);
-                            observeComments(selectedVideo.getId());
+                            // Only update if this is a new video
+                            if (!videoId.equals(currentlyDisplayedVideoId)) {
+                                displayVideoDetails(selectedVideo);
+                                currentlyDisplayedVideoId = videoId;  // Update currently displayed video ID
+                                observeComments(selectedVideo.getId());
+                            }
                         }
                     }
                 }
@@ -164,6 +168,7 @@ public class VideoScreenActivity extends AppCompatActivity {
 
         likeButton.setOnClickListener(v -> handleLikeDislike(true));
         dislikeButton.setOnClickListener(v -> handleLikeDislike(false));
+
         // Set click listeners for author name and image
         TextView authorName = findViewById(R.id.author_name);
         ImageView authorImage = findViewById(R.id.author_image);
@@ -233,7 +238,6 @@ public class VideoScreenActivity extends AppCompatActivity {
             User loggedInUser = UserState.getLoggedInUser();
             if (loggedInUser != null) {
                 CommentData newComment = new CommentData();
-                // No need to set the ID manually, MongoDB will handle it
                 newComment.setText(commentText);
                 newComment.setUsername(loggedInUser.getUsername());
                 newComment.setDisplayName(loggedInUser.getDisplayName());
@@ -260,6 +264,7 @@ public class VideoScreenActivity extends AppCompatActivity {
     }
 
     private void displayVideoDetails(VideoData video) {
+        Log.e(TAG, "Displaying video");
         currentVideo = video;
         TextView titleTextView = findViewById(R.id.video_title);
         TextView viewsTextView = findViewById(R.id.video_views);
@@ -358,7 +363,7 @@ public class VideoScreenActivity extends AppCompatActivity {
         observeComments(video.getId());
 
         // Update related videos
-        updateRelatedVideos(video);
+        fetchAndDisplayRecommendations(video);
 
         // Update the like and dislike button colors
         updateLikeDislikeButtonColors();
@@ -443,8 +448,12 @@ public class VideoScreenActivity extends AppCompatActivity {
     }
 
     private void playSelectedVideo(VideoData selectedVideo) {
-        displayVideoDetails(selectedVideo);
-        resetScrollPosition();
+        // Check if the video is already being displayed to avoid redundant updates
+        if (!isFinishing() && !selectedVideo.getId().equals(currentlyDisplayedVideoId)) {
+            displayVideoDetails(selectedVideo);
+            currentlyDisplayedVideoId = selectedVideo.getId();
+            resetScrollPosition();
+        }
     }
 
     private void updateRelatedVideos(VideoData currentVideo) {
@@ -481,5 +490,19 @@ public class VideoScreenActivity extends AppCompatActivity {
         Intent intent = new Intent(VideoScreenActivity.this, UserVideosActivity.class);
         intent.putExtra("username", username);
         startActivity(intent);
+    }
+
+    private void fetchAndDisplayRecommendations(VideoData currentVideo) {
+        String videoId = currentVideo.getId();
+        User loggedInUser = UserState.getLoggedInUser();
+        String userId = loggedInUser != null ? loggedInUser.getId() : "null";
+
+        videoViewModel.getRecommendations(videoId, userId).observe(this, recommendedVideos -> {
+            if (recommendedVideos != null) {
+                videoAdapter.updateVideoList(recommendedVideos);
+            } else {
+                Log.e(TAG, "Failed to fetch recommended videos");
+            }
+        });
     }
 }

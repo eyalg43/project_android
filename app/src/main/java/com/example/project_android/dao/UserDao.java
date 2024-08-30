@@ -27,7 +27,7 @@ public interface UserDao {
     void deleteUser(User user);
 
     // Fetch a user by ID
-    @Query("SELECT * FROM users WHERE id = :userId")
+    @Query("SELECT * FROM users WHERE _id = :userId")
     LiveData<User> getUserById(String userId);
 
     // Fetch a user by Username

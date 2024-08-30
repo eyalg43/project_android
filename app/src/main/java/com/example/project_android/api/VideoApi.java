@@ -207,4 +207,30 @@ public class VideoApi {
         });
     }
 
+    public void getRecommendations(String videoId, String userId, MutableLiveData<List<VideoData>> recommendedVideos) {
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("userId", userId);
+        requestBody.addProperty("videoId", videoId);
+
+        Call<List<VideoData>> call = apiService.getRecommendations(videoId, requestBody);
+        call.enqueue(new Callback<List<VideoData>>() {
+            @Override
+            public void onResponse(Call<List<VideoData>> call, Response<List<VideoData>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<VideoData> videos = response.body();
+                    for (VideoData video : videos) {
+                        video.setUrlForEmulator();
+                    }
+                    recommendedVideos.postValue(videos);
+                } else {
+                    recommendedVideos.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<VideoData>> call, Throwable t) {
+                recommendedVideos.postValue(null);
+            }
+        });
+    }
 }
