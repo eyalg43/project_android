@@ -44,6 +44,8 @@ Now you can run
 
 ### `npm start`
 
+Because this is for the 4th part, you should also ensure that the CPP server of the 4th part runs.
+
 Now go back to Android studio and run the app, now you should be able to use the app!
 Now you are all set up, enjoy!
 
